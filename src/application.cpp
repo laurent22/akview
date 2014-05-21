@@ -16,10 +16,13 @@ void Application::initialize() {
 		MvPluginInterface *mvPlugin;
 		mvPlugin = qobject_cast<MvPluginInterface *>(plugin);
 		mvPlugin->onInitialize(dynamic_cast<IApplication*>(this));
-		qDebug() << mvPlugin->description();
+		plugins_.push_back(mvPlugin);
+		//qDebug() << mvPlugin->description();
 	}
 
-	setImageSource("https://upload.wikimedia.org/wikipedia/commons/thumb/b/b6/SIPI_Jelly_Beans_4.1.07.tiff/lossy-page1-256px-SIPI_Jelly_Beans_4.1.07.tiff.jpg");
+	setImageSource(QUrl("file:///Users/laurent/Desktop/CH_12_05_2014.jpg"));
+
+	QObject::connect(this->qmlRootObject(), SIGNAL(keypressed(int)), this, SLOT(mainWindow_keypressed(int)));
 }
 
 Application* Application::instance() {
@@ -27,18 +30,19 @@ Application* Application::instance() {
 	return application;
 }
 
-void Application::testing() {
-	qDebug() << "AAAAAAAAAAAAAAAAAAA";
-}
-
-QString Application::imageSource() const {
+QUrl Application::imageSource() const {
 	return imageSource_;
 }
 
-void Application::setImageSource(const QString &source) {
+void Application::setImageSource(const QUrl &source) {
 	if (source == imageSource_) return;
 	imageSource_ = source;
 	onImageSourceChange();
+}
+
+void Application::setImageSource(const QString &source) {
+	// TODO: handle URLs
+	this->setImageSource(QUrl("file://" + source));
 }
 
 QObject* Application::qmlRootObject() const {
@@ -47,6 +51,15 @@ QObject* Application::qmlRootObject() const {
 
 QObject* Application::qmlImage() const {
 	return qmlRootObject()->findChild<QObject*>("image");
+}
+
+void Application::mainWindow_keypressed(int key) {
+	for (int i = 0; i < plugins_.size(); i++) {
+		MvPluginInterface* plugin = plugins_[i];
+		KeypressedEvent event;
+		event.keyCode = key;
+		plugin->onKeypressed(event);
+	}
 }
 
 void Application::onImageSourceChange() {

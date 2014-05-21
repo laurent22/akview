@@ -2,6 +2,7 @@
 #define MVBROWSERPLUGIN_H
 
 #include <QObject>
+#include <QStringList>
 #include <QtPlugin>
 #include "../../src/mvplugininterface.h"
 #include "../../src/iapplication.h"
@@ -19,9 +20,18 @@ public:
 		this->application = application;
 	}
 
+	void onKeypressed(const KeypressedEvent& event);
+	QStringList sourceList() const;
+	int sourceListIndex() const;
+	void setSourceListIndex(int index);
+	void nextSource();
+	void previousSource();
+
 private:
 
 	IApplication* application;
+	mutable QStringList sourceList_;
+	mutable int sourceListIndex_;
 
 };
 

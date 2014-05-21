@@ -8,7 +8,11 @@
 #include <QGuiApplication>
 #include <QQmlApplicationEngine>
 
+#include <QDebug>
+#include <QUrl>
 #include "mvplugininterface.h"
+
+typedef std::vector<MvPluginInterface*> PluginVector;
 
 class Application : public QGuiApplication, IApplication {
 	Q_OBJECT
@@ -18,9 +22,6 @@ public:
 	explicit Application(int &argc, char **argv, int applicationFlags = ApplicationFlags);
 	static Application* instance();
 	void initialize();
-	void testing();
-	QString imageSource() const;
-	void setImageSource(const QString& source);
 
 protected:
 
@@ -30,8 +31,16 @@ protected:
 
 private:
 
-	QString imageSource_;
+	QUrl imageSource_;
 	QQmlApplicationEngine* engine_;
+	PluginVector plugins_;
+
+public slots:
+
+	void mainWindow_keypressed(int key);
+	QUrl imageSource() const;
+	void setImageSource(const QUrl& source);
+	void setImageSource(const QString& source);
 
 };
 

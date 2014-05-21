@@ -33,6 +33,8 @@ ApplicationWindow {
 	height: 480
 	title: qsTr("Hello World")
 
+	signal keypressed(int key)
+
 	menuBar: MenuBar {
 		Menu {
 			title: qsTr("File")
@@ -52,5 +54,9 @@ ApplicationWindow {
 		anchors.top: parent.top
 		anchors.bottom: parent.bottom
 		source: "file:///Users/laurent/Desktop/CH_12_05_2014.jpg"
+		focus: true
+		Keys.onPressed: {
+			mainWindow.keypressed(event.key)
+		}
 	}
 }
