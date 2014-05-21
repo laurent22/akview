@@ -2,6 +2,7 @@
 #define MVBROWSERPLUGIN_H
 
 #include <QObject>
+#include <QString>
 #include <QStringList>
 #include <QtPlugin>
 #include "../../src/mvplugininterface.h"
@@ -31,6 +32,7 @@ private:
 
 	IApplication* application;
 	mutable QStringList sourceList_;
+	mutable QString sourceListDir_;
 	mutable int sourceListIndex_;
 
 };

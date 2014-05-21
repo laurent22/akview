@@ -38,6 +38,7 @@ private:
 public slots:
 
 	void mainWindow_keypressed(int key);
+	void mainWindow_sourceSelected(QString source);
 	QUrl imageSource() const;
 	void setImageSource(const QUrl& source);
 	void setImageSource(const QString& source);

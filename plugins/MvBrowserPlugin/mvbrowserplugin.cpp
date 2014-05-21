@@ -46,10 +46,17 @@ void MvBrowserPlugin::previousSource() {
 }
 
 int MvBrowserPlugin::sourceListIndex() const {
+	QUrl sourceUrl = this->application->imageSource();
+
+	if (QFileInfo(sourceUrl.toLocalFile()).dir().absolutePath() != sourceListDir_) {
+		// Current dir has changed - reload source list
+		sourceListIndex_ = -1;
+		sourceList_.clear();
+	}
+
 	QStringList sources = sourceList();
 	if (!sources.size()) return -1;
 
-	QUrl sourceUrl = this->application->imageSource();
 	QString source = QFileInfo(sourceUrl.toLocalFile()).fileName();
 
 	// Check if the index we have is correct
@@ -74,6 +81,7 @@ QStringList MvBrowserPlugin::sourceList() const {
 	QUrl source = this->application->imageSource();
 	if (source.isLocalFile()) {
 		QDir dir = QFileInfo(source.toLocalFile()).dir();
+		sourceListDir_ = dir.absolutePath();
 		QStringList filenames = dir.entryList(QDir::Files, QDir::LocaleAware);
 		for (int i = 0; i < filenames.size(); i++) {
 			sourceList_.append(dir.absolutePath() + "/" + filenames[i]);

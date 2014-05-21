@@ -8,7 +8,8 @@ ApplicationWindow {
 		title: "Please choose a file"
 		onAccepted: {
 			console.log("You chose: " + fileDialog.fileUrls)
-			image.source = fileDialog.fileUrl
+			mainWindow.sourceSelected(fileDialog.fileUrl)
+			//image.source = fileDialog.fileUrl
 			//Qt.quit()
 		}
 		onRejected: {
@@ -34,6 +35,7 @@ ApplicationWindow {
 	title: qsTr("Hello World")
 
 	signal keypressed(int key)
+	signal sourceSelected(string source)
 
 	menuBar: MenuBar {
 		Menu {
@@ -53,7 +55,6 @@ ApplicationWindow {
 		anchors.left: parent.left
 		anchors.top: parent.top
 		anchors.bottom: parent.bottom
-		source: "file:///Users/laurent/Desktop/CH_12_05_2014.jpg"
 		focus: true
 		Keys.onPressed: {
 			mainWindow.keypressed(event.key)

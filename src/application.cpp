@@ -23,6 +23,7 @@ void Application::initialize() {
 	setImageSource(QUrl("file:///Users/laurent/Desktop/CH_12_05_2014.jpg"));
 
 	QObject::connect(this->qmlRootObject(), SIGNAL(keypressed(int)), this, SLOT(mainWindow_keypressed(int)));
+	QObject::connect(this->qmlRootObject(), SIGNAL(sourceSelected(QString)), this, SLOT(mainWindow_sourceSelected(QString)));
 }
 
 Application* Application::instance() {
@@ -42,7 +43,11 @@ void Application::setImageSource(const QUrl &source) {
 
 void Application::setImageSource(const QString &source) {
 	// TODO: handle URLs
-	this->setImageSource(QUrl("file://" + source));
+	if (source.left(7) == "file://") {
+		this->setImageSource(QUrl(source));
+	} else {
+		this->setImageSource(QUrl("file://" + source));
+	}
 }
 
 QObject* Application::qmlRootObject() const {
@@ -60,6 +65,10 @@ void Application::mainWindow_keypressed(int key) {
 		event.keyCode = key;
 		plugin->onKeypressed(event);
 	}
+}
+
+void Application::mainWindow_sourceSelected(QString source) {
+	this->setImageSource(source);
 }
 
 void Application::onImageSourceChange() {
