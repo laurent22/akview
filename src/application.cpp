@@ -10,7 +10,12 @@ void Application::initialize() {
 	engine_ = new QQmlApplicationEngine();
 	engine_->load(QUrl(QStringLiteral("qrc:///main.qml")));
 
-	QPluginLoader pluginLoader("/Users/laurent/Docs/PROGS/C++/mv/plugins/build-MvBrowserPlugin-Qt_5_3_1-Debug/libechoplugin_debug.dylib");
+#ifdef QT_DEBUG
+	QPluginLoader pluginLoader("/Users/laurent/Docs/PROGS/C++/mv/plugins/build-MvBrowserPlugin-Qt_5_2_1-Debug/libechoplugin_debug.dylib");
+#else
+	QPluginLoader pluginLoader("/Users/laurent/Docs/PROGS/C++/mv/plugins/build-MvBrowserPlugin-Qt_5_2_1-Release/libechoplugin.dylib");
+#endif
+
 	QObject *plugin = pluginLoader.instance();
 	if (plugin) {
 		MvPluginInterface *mvPlugin;
@@ -59,7 +64,7 @@ QObject* Application::qmlImage() const {
 }
 
 void Application::mainWindow_keypressed(int key) {
-	for (int i = 0; i < plugins_.size(); i++) {
+	for (unsigned int i = 0; i < plugins_.size(); i++) {
 		MvPluginInterface* plugin = plugins_[i];
 		KeypressedEvent event;
 		event.keyCode = key;

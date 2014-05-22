@@ -56,6 +56,7 @@ ApplicationWindow {
 		anchors.top: parent.top
 		anchors.bottom: parent.bottom
 		focus: true
+		smooth: true
 		Keys.onPressed: {
 			mainWindow.keypressed(event.key)
 		}

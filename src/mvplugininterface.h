@@ -10,8 +10,8 @@ public:
 
 	virtual ~MvPluginInterface() {}
 	virtual QString description() { return ""; }
-	virtual void onInitialize(IApplication* application) {}
-	virtual void onKeypressed(const KeypressedEvent& event) {}
+	virtual void onInitialize(IApplication* application) { Q_UNUSED(application); }
+	virtual void onKeypressed(const KeypressedEvent& event) { Q_UNUSED(event); }
 
 };
 

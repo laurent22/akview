@@ -3,7 +3,8 @@ TEMPLATE = app
 QT += qml quick
 
 SOURCES += main.cpp \
-    application.cpp
+    application.cpp \
+    pluginmanager.cpp
 
 RESOURCES += qml.qrc
 
@@ -16,4 +17,5 @@ include(deployment.pri)
 HEADERS += \
     mvplugininterface.h \
     application.h \
-    iapplication.h
+    iapplication.h \
+    pluginmanager.h
