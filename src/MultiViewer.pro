@@ -1,10 +1,11 @@
 TEMPLATE = app
 
-QT += qml quick
+QT += qml quick widgets
 
 SOURCES += main.cpp \
     application.cpp \
-    pluginmanager.cpp
+    pluginmanager.cpp \
+    settings.cpp
 
 RESOURCES += qml.qrc
 
@@ -19,4 +20,6 @@ HEADERS += \
     application.h \
     iapplication.h \
     pluginmanager.h \
-    pluginevents.h
+    pluginevents.h \
+    settings.h \
+    constants.h

@@ -3,35 +3,13 @@ import QtQuick.Controls 1.1
 import QtQuick.Dialogs 1.0
 
 ApplicationWindow {
-	FileDialog {
-		id: fileDialog
-		title: "Please choose a file"
-		onAccepted: {
-			console.log("You chose: " + fileDialog.fileUrls)
-			mainWindow.sourceSelected(fileDialog.fileUrl)
-		}
-		onRejected: {
-			console.log("Canceled")
-		}
-
-	}
-
-	Action {
-		id: openAction
-		text: "&Open"
-		shortcut: "Ctrl+O"
-		onTriggered: fileDialog.open()
-		tooltip: "Open an image"
-	}
-
 	id: mainWindow
 	objectName: "mainWindow"
 	visible: true
 	width: 640
 	height: 480
-	title: qsTr("Hello World")
 
-	signal keypressed(int key)
+	signal keypressed(int key, string text, int modifiers)
 	signal sourceSelected(string source)
 
 	Rectangle {
@@ -53,7 +31,7 @@ ApplicationWindow {
 		focus: true
 		smooth: true
 		Keys.onPressed: {
-			mainWindow.keypressed(event.key)
+			mainWindow.keypressed(event.key, event.text, event.modifiers)
 		}
 	}
 

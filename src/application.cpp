@@ -1,17 +1,25 @@
-#include "application.h"
 #include <QDebug>
+#include <QFileDialog>
+#include <settings.h>
 #include <QUrl>
 
-// TODO: move opening of files to C++ side
+#include "application.h"
+#include "constants.h"
+
 // TODO: plugin versioning
+// TODO: save window dimensions
 
-Application::Application(int &argc, char **argv, int applicationFlags) : QGuiApplication(argc, argv, applicationFlags) {
-
+Application::Application(int &argc, char **argv, int applicationFlags) : QApplication(argc, argv, applicationFlags) {
+	Application::setOrganizationName("mv-project");
+	Application::setOrganizationDomain("mv-project.org");
+	Application::setApplicationName(APPLICATION_TITLE);
 }
 
 void Application::initialize() {
 	engine_ = new QQmlApplicationEngine();
 	engine_->load(QUrl(QStringLiteral("qrc:///main.qml")));
+
+	qmlApplicationWindow()->setProperty("title", APPLICATION_TITLE);
 
 	pluginManager_ = new PluginManager(dynamic_cast<IApplication*>(this));
 	pluginManager_->loadPlugins("/Users/laurent/Docs/PROGS/C++/mv/plugins/build-MvBrowserPlugin-Qt_5_2_1-Debug");
@@ -24,7 +32,7 @@ void Application::initialize() {
 
 	setImageSource(QUrl("file:///Users/laurent/Desktop/CH_12_05_2014.jpg"));
 
-	QObject::connect(this->qmlRootObject(), SIGNAL(keypressed(int)), this, SLOT(mainWindow_keypressed(int)));
+	QObject::connect(this->qmlRootObject(), SIGNAL(keypressed(int, const QString&, int)), this, SLOT(mainWindow_keypressed(int, const QString&, int)));
 	QObject::connect(this->qmlRootObject(), SIGNAL(sourceSelected(QString)), this, SLOT(mainWindow_sourceSelected(QString)));
 }
 
@@ -60,18 +68,41 @@ QObject* Application::qmlImage() const {
 	return qmlRootObject()->findChild<QObject*>("image");
 }
 
-void Application::mainWindow_keypressed(int key) {
+QObject* Application::qmlApplicationWindow() const {
+	return qmlRootObject();
+}
+
+void Application::mainWindow_keypressed(int key, const QString& text, int modifiers) {
 	KeypressedEvent event;
 	event.keyCode = key;
+	event.text = text;
+	event.modifiers = modifiers;
+
+	if (event.keyCode == Qt::Key_O && event.modifiers == Qt::ControlModifier) {
+		QString filter;
+		QStringList extensions = supportedFileExtensions();
+		for (unsigned int i = 0; i < extensions.size(); i++) {
+			QString e = extensions[i];
+			if (filter != "") filter += " ";
+			filter += "*." + e;
+		}
+		Settings settings;
+		QString lastDir = settings.value("lastOpenFileDirectory").toString();
+		QString filePath = QFileDialog::getOpenFileName(NULL, tr("Open File"), lastDir, tr("Supported Files (%1)").arg(filter));
+		setImageSource(filePath);
+		settings.setValue("lastOpenFileDirectory", QVariant(QFileInfo(filePath).absolutePath()));
+	}
+
 	pluginManager_->onKeypressed(event);
 }
 
 void Application::mainWindow_sourceSelected(QString source) {
-	this->setImageSource(source);
+	setImageSource(source);
 }
 
 void Application::onImageSourceChange() {
 	qmlImage()->setProperty("source", imageSource_);
+	qmlApplicationWindow()->setProperty("title", QFileInfo(imageSource_.toLocalFile()).fileName());
 }
 
 QStringList Application::supportedFileExtensions() {

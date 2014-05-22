@@ -1,13 +1,13 @@
 #ifndef APPLICATION_H
 #define APPLICATION_H
 
-#include <QGuiApplication>
+#include <QApplication>
 #include <QQmlApplicationEngine>
 #include <QDebug>
 #include <QUrl>
 #include "pluginmanager.h"
 
-class Application : public QGuiApplication, IApplication {
+class Application : public QApplication, IApplication {
 	Q_OBJECT
 
 public:
@@ -21,6 +21,7 @@ protected:
 	void onImageSourceChange();
 	QObject* qmlRootObject() const;
 	QObject* qmlImage() const;
+	QObject* qmlApplicationWindow() const;
 
 private:
 
@@ -30,7 +31,7 @@ private:
 
 public slots:
 
-	void mainWindow_keypressed(int key);
+	void mainWindow_keypressed(int key, const QString& text, int modifiers);
 	void mainWindow_sourceSelected(QString source);
 	QUrl imageSource() const;
 	void setImageSource(const QUrl& source);
