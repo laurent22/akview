@@ -1,11 +1,12 @@
+#include <QCommandLineParser>
 #include <QDebug>
 #include <QFileDialog>
-#include <settings.h>
 #include <QUrl>
 
 #include "application.h"
 #include "constants.h"
 #include "paths.h"
+#include <settings.h>
 
 // TODO: plugin versioning
 
@@ -20,6 +21,10 @@ Application::~Application() {
 }
 
 void Application::initialize() {
+	QCommandLineParser args;
+	args.addPositionalArgument("file", tr("File to open."));
+	args.process(*this);
+
 	engine_ = new QQmlApplicationEngine();
 	engine_->load(QUrl(QStringLiteral("qrc:///main.qml")));
 
@@ -46,6 +51,9 @@ void Application::initialize() {
 
 	QObject::connect(this->qmlRootObject(), SIGNAL(keypressed(int, const QString&, int)), this, SLOT(mainWindow_keypressed(int, const QString&, int)));
 	QObject::connect(this->qmlRootObject(), SIGNAL(sourceSelected(QString)), this, SLOT(mainWindow_sourceSelected(QString)));
+
+	QStringList filePaths = args.positionalArguments();
+	if (filePaths.size() > 0) setImageSource(filePaths[0]);
 
 	win->setProperty("visible", true);
 }
