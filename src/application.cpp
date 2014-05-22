@@ -5,9 +5,9 @@
 
 #include "application.h"
 #include "constants.h"
+#include "paths.h"
 
 // TODO: plugin versioning
-// TODO: save window dimensions
 
 Application::Application(int &argc, char **argv, int applicationFlags) : QApplication(argc, argv, applicationFlags) {
 	Application::setOrganizationName("mv-project");
@@ -39,14 +39,10 @@ void Application::initialize() {
 	if (!v.isNull()) win->setProperty("y", v);
 	settings.endGroup();
 
-	pluginManager_ = new PluginManager(dynamic_cast<IApplication*>(this));
-	pluginManager_->loadPlugins("/Users/laurent/Docs/PROGS/C++/mv/plugins/build-MvBrowserPlugin-Qt_5_2_1-Debug");
+	Paths paths;
 
-//#ifdef QT_DEBUG
-//	QPluginLoader pluginLoader("/Users/laurent/Docs/PROGS/C++/mv/plugins/build-MvBrowserPlugin-Qt_5_2_1-Debug/libechoplugin_debug.dylib");
-//#else
-//	QPluginLoader pluginLoader("/Users/laurent/Docs/PROGS/C++/mv/plugins/build-MvBrowserPlugin-Qt_5_2_1-Release/libechoplugin.dylib");
-//#endif
+	pluginManager_ = new PluginManager(dynamic_cast<IApplication*>(this));
+	pluginManager_->loadPlugins(paths.pluginFolder());
 
 	QObject::connect(this->qmlRootObject(), SIGNAL(keypressed(int, const QString&, int)), this, SLOT(mainWindow_keypressed(int, const QString&, int)));
 	QObject::connect(this->qmlRootObject(), SIGNAL(sourceSelected(QString)), this, SLOT(mainWindow_sourceSelected(QString)));

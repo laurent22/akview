@@ -5,7 +5,8 @@ QT += qml quick widgets
 SOURCES += main.cpp \
     application.cpp \
     pluginmanager.cpp \
-    settings.cpp
+    settings.cpp \
+    paths.cpp
 
 RESOURCES += qml.qrc
 
@@ -22,4 +23,5 @@ HEADERS += \
     pluginmanager.h \
     pluginevents.h \
     settings.h \
-    constants.h
+    constants.h \
+    paths.h
