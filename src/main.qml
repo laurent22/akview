@@ -9,12 +9,9 @@ ApplicationWindow {
 		onAccepted: {
 			console.log("You chose: " + fileDialog.fileUrls)
 			mainWindow.sourceSelected(fileDialog.fileUrl)
-			//image.source = fileDialog.fileUrl
-			//Qt.quit()
 		}
 		onRejected: {
 			console.log("Canceled")
-			//Qt.quit()
 		}
 
 	}
@@ -37,14 +34,12 @@ ApplicationWindow {
 	signal keypressed(int key)
 	signal sourceSelected(string source)
 
-	menuBar: MenuBar {
-		Menu {
-			title: qsTr("File")
-			MenuItem {
-				text: qsTr("Exit")
-				onTriggered: Qt.quit();
-			}
-		}
+	Rectangle {
+		anchors.right: parent.right
+		anchors.left: parent.left
+		anchors.top: parent.top
+		anchors.bottom: parent.bottom
+		color: "black"
 	}
 
 	Image {
@@ -61,4 +56,5 @@ ApplicationWindow {
 			mainWindow.keypressed(event.key)
 		}
 	}
+
 }
