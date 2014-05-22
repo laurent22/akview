@@ -2,6 +2,9 @@
 #include <QDebug>
 #include <QUrl>
 
+// TODO: move opening of files to C++ side
+// TODO: plugin versioning
+
 Application::Application(int &argc, char **argv, int applicationFlags) : QGuiApplication(argc, argv, applicationFlags) {
 
 }
@@ -11,7 +14,7 @@ void Application::initialize() {
 	engine_->load(QUrl(QStringLiteral("qrc:///main.qml")));
 
 	pluginManager_ = new PluginManager(dynamic_cast<IApplication*>(this));
-	pluginManager_->loadPlugins("/Users/laurent/Docs/PROGS/C++/mv/plugins/build-MvBrowserPlugin-Qt_5_2_1-Release");
+	pluginManager_->loadPlugins("/Users/laurent/Docs/PROGS/C++/mv/plugins/build-MvBrowserPlugin-Qt_5_2_1-Debug");
 
 //#ifdef QT_DEBUG
 //	QPluginLoader pluginLoader("/Users/laurent/Docs/PROGS/C++/mv/plugins/build-MvBrowserPlugin-Qt_5_2_1-Debug/libechoplugin_debug.dylib");
@@ -69,4 +72,10 @@ void Application::mainWindow_sourceSelected(QString source) {
 
 void Application::onImageSourceChange() {
 	qmlImage()->setProperty("source", imageSource_);
+}
+
+QStringList Application::supportedFileExtensions() {
+	QStringList output;
+	output << "jpg" << "jpeg" << "png" << "gif" << "bmp" << "tif" << "tiff";
+	return output;
 }

@@ -77,14 +77,16 @@ int MvBrowserPlugin::sourceListIndex() const {
 QStringList MvBrowserPlugin::sourceList() const {
 	if (sourceList_.length()) return sourceList_;
 
+	QStringList supportedFileExtensions = application->supportedFileExtensions();
 	sourceListIndex_ = -1;
-	QUrl source = this->application->imageSource();
+	QUrl source = application->imageSource();
 	if (source.isLocalFile()) {
 		QDir dir = QFileInfo(source.toLocalFile()).dir();
 		sourceListDir_ = dir.absolutePath();
-		QStringList filenames = dir.entryList(QDir::Files, QDir::LocaleAware);
-		for (int i = 0; i < filenames.size(); i++) {
-			sourceList_.append(dir.absolutePath() + "/" + filenames[i]);
+		QFileInfoList files = dir.entryInfoList(QDir::Files, QDir::LocaleAware);
+		for (int i = 0; i < files.size(); i++) {
+			if (!supportedFileExtensions.contains(files[i].suffix().toLower())) continue;
+			sourceList_.append(files[i].absoluteFilePath());
 		}
 	}
 

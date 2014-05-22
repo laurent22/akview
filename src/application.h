@@ -35,6 +35,7 @@ public slots:
 	QUrl imageSource() const;
 	void setImageSource(const QUrl& source);
 	void setImageSource(const QString& source);
+	QStringList supportedFileExtensions();
 
 };
 
