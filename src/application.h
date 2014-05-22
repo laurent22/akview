@@ -3,16 +3,9 @@
 
 #include <QGuiApplication>
 #include <QQmlApplicationEngine>
-#include <QPluginLoader>
-#include "iapplication.h"
-#include <QGuiApplication>
-#include <QQmlApplicationEngine>
-
 #include <QDebug>
 #include <QUrl>
-#include "mvplugininterface.h"
-
-typedef std::vector<MvPluginInterface*> PluginVector;
+#include "pluginmanager.h"
 
 class Application : public QGuiApplication, IApplication {
 	Q_OBJECT
@@ -33,7 +26,7 @@ private:
 
 	QUrl imageSource_;
 	QQmlApplicationEngine* engine_;
-	PluginVector plugins_;
+	PluginManager* pluginManager_;
 
 public slots:
 

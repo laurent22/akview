@@ -1,10 +1,6 @@
 #ifndef IAPPLICATION_H
 #define IAPPLICATION_H
 
-struct KeypressedEvent {
-	int keyCode;
-};
-
 class IApplication {
 
 public slots:

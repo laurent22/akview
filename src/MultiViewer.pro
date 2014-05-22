@@ -18,4 +18,5 @@ HEADERS += \
     mvplugininterface.h \
     application.h \
     iapplication.h \
-    pluginmanager.h
+    pluginmanager.h \
+    pluginevents.h
