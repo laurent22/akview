@@ -15,11 +15,29 @@ Application::Application(int &argc, char **argv, int applicationFlags) : QApplic
 	Application::setApplicationName(APPLICATION_TITLE);
 }
 
+Application::~Application() {
+	onExit();
+}
+
 void Application::initialize() {
 	engine_ = new QQmlApplicationEngine();
 	engine_->load(QUrl(QStringLiteral("qrc:///main.qml")));
 
 	qmlApplicationWindow()->setProperty("title", APPLICATION_TITLE);
+
+	QObject* win = qmlApplicationWindow();
+	Settings settings;
+	QVariant v;
+	settings.beginGroup("applicationWindow");
+	v = settings.value("width");
+	if (!v.isNull()) win->setProperty("width", v);
+	v = settings.value("height");
+	if (!v.isNull()) win->setProperty("height", v);
+	v = settings.value("x");
+	if (!v.isNull()) win->setProperty("x", v);
+	v = settings.value("y");
+	if (!v.isNull()) win->setProperty("y", v);
+	settings.endGroup();
 
 	pluginManager_ = new PluginManager(dynamic_cast<IApplication*>(this));
 	pluginManager_->loadPlugins("/Users/laurent/Docs/PROGS/C++/mv/plugins/build-MvBrowserPlugin-Qt_5_2_1-Debug");
@@ -34,6 +52,8 @@ void Application::initialize() {
 
 	QObject::connect(this->qmlRootObject(), SIGNAL(keypressed(int, const QString&, int)), this, SLOT(mainWindow_keypressed(int, const QString&, int)));
 	QObject::connect(this->qmlRootObject(), SIGNAL(sourceSelected(QString)), this, SLOT(mainWindow_sourceSelected(QString)));
+
+	win->setProperty("visible", true);
 }
 
 Application* Application::instance() {
@@ -110,6 +130,18 @@ void Application::mainWindow_sourceSelected(QString source) {
 void Application::onImageSourceChange() {
 	qmlImage()->setProperty("source", imageSource_);
 	qmlApplicationWindow()->setProperty("title", QFileInfo(imageSource_.toLocalFile()).fileName());
+}
+
+void Application::onExit() {
+	QObject* win = qmlApplicationWindow();
+	Settings settings;
+
+	settings.beginGroup("applicationWindow");
+	settings.setValue("width", win->property("width"));
+	settings.setValue("height", win->property("height"));
+	settings.setValue("x", win->property("x"));
+	settings.setValue("y", win->property("y"));
+	settings.endGroup();
 }
 
 QStringList Application::supportedFileExtensions() {

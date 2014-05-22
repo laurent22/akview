@@ -5,7 +5,7 @@ import QtQuick.Dialogs 1.0
 ApplicationWindow {
 	id: mainWindow
 	objectName: "mainWindow"
-	visible: true
+	visible: false
 	width: 640
 	height: 480
 

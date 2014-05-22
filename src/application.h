@@ -13,12 +13,15 @@ class Application : public QApplication, IApplication {
 public:
 
 	explicit Application(int &argc, char **argv, int applicationFlags = ApplicationFlags);
+	~Application();
 	static Application* instance();
 	void initialize();
 
 protected:
 
 	void onImageSourceChange();
+	void onExit();
+
 	QObject* qmlRootObject() const;
 	QObject* qmlImage() const;
 	QObject* qmlApplicationWindow() const;
