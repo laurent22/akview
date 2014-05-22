@@ -3,6 +3,7 @@
 #include <QDir>
 #include <QFileInfo>
 
+#include "constants.h"
 #include "paths.h"
 
 Paths::Paths() {
@@ -26,8 +27,25 @@ QString Paths::pluginFolder() const {
 
 	dir.cdUp();
 	dir.cd("plugins/debug");
-	return dir.absolutePath();
+#else // QT_DEBUG
+
+#ifdef MV_DEBUG
+	if (appFilePath.indexOf(".app/Contents/MacOS/") >= 0) {
+		dir.cdUp();
+		dir.cdUp();
+		dir.cdUp();
+	}
+
+	dir.cdUp();
+	dir.cd("plugins/release");
 #else
-	return "";
-#endif
+	if (appFilePath.indexOf(".app/Contents/MacOS/") >= 0) {
+		dir.cdUp();
+		dir.cd("PlugIns/multiviewer");
+	}
+#endif // MV_DEBUG
+
+#endif // QT_DEBUG
+
+	return dir.absolutePath();
 }

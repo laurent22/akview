@@ -22,6 +22,8 @@ bool PluginManager::loadPlugin(const QString& filePath) {
 }
 
 void PluginManager::loadPlugins(const QString &folderPath) {
+	qDebug() << "Loading plugins from" << folderPath;
+
 	QDir dir(folderPath);
 	QFileInfoList files = dir.entryInfoList(QDir::Files);
 	for (unsigned int i = 0; i < files.size(); i++) {

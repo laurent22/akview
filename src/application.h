@@ -16,6 +16,7 @@ public:
 	~Application();
 	static Application* instance();
 	void initialize();
+	void setWindowTitle(const QString& title);
 
 protected:
 

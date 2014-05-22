@@ -23,7 +23,7 @@ void Application::initialize() {
 	engine_ = new QQmlApplicationEngine();
 	engine_->load(QUrl(QStringLiteral("qrc:///main.qml")));
 
-	qmlApplicationWindow()->setProperty("title", APPLICATION_TITLE);
+	setWindowTitle(APPLICATION_TITLE);
 
 	QObject* win = qmlApplicationWindow();
 	Settings settings;
@@ -48,6 +48,14 @@ void Application::initialize() {
 	QObject::connect(this->qmlRootObject(), SIGNAL(sourceSelected(QString)), this, SLOT(mainWindow_sourceSelected(QString)));
 
 	win->setProperty("visible", true);
+}
+
+void Application::setWindowTitle(const QString &title) {
+	QString prefix;
+#ifdef MV_DEBUG
+	prefix = "** DEBUG ** ";
+#endif // MV_DEBUG
+	qmlApplicationWindow()->setProperty("title", prefix + title);
 }
 
 Application* Application::instance() {
@@ -123,7 +131,7 @@ void Application::mainWindow_sourceSelected(QString source) {
 
 void Application::onImageSourceChange() {
 	qmlImage()->setProperty("source", imageSource_);
-	qmlApplicationWindow()->setProperty("title", QFileInfo(imageSource_.toLocalFile()).fileName());
+	setWindowTitle(QFileInfo(imageSource_.toLocalFile()).fileName());
 }
 
 void Application::onExit() {
