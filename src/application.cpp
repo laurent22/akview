@@ -8,8 +8,6 @@
 #include "paths.h"
 #include <settings.h>
 
-// TODO: plugin versioning
-
 Application::Application(int &argc, char **argv, int applicationFlags) : QApplication(argc, argv, applicationFlags) {
 	Application::setOrganizationName("mv-project");
 	Application::setOrganizationDomain("mv-project.org");

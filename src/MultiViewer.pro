@@ -6,7 +6,8 @@ SOURCES += main.cpp \
     application.cpp \
     pluginmanager.cpp \
     settings.cpp \
-    paths.cpp
+    paths.cpp \
+    stringutil.cpp
 
 RESOURCES += qml.qrc
 
@@ -24,4 +25,5 @@ HEADERS += \
     pluginevents.h \
     settings.h \
     constants.h \
-    paths.h
+    paths.h \
+    stringutil.h

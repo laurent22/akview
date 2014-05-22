@@ -5,10 +5,6 @@
 
 #include "mvbrowserplugin.h"
 
-QString MvBrowserPlugin::description() {
-	return "Browser Plugin";
-}
-
 void MvBrowserPlugin::onKeypressed(const KeypressedEvent& event) {
 	if (event.keyCode == Qt::Key_Left) {
 		previousSource();
