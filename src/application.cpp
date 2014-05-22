@@ -91,8 +91,15 @@ void Application::mainWindow_keypressed(int key, const QString& text, int modifi
 		QString filePath = QFileDialog::getOpenFileName(NULL, tr("Open File"), lastDir, tr("Supported Files (%1)").arg(filter));
 		setImageSource(filePath);
 		settings.setValue("lastOpenFileDirectory", QVariant(QFileInfo(filePath).absolutePath()));
+		return;
 	}
 
+	if (event.keyCode == Qt::Key_W && event.modifiers == Qt::ControlModifier) {
+		quit();
+		return;
+	}
+
+	// Keyboard events that are not handled by the application are sent to the plugins
 	pluginManager_->onKeypressed(event);
 }
 
