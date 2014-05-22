@@ -8,7 +8,7 @@ HEADERS         = \
 SOURCES         = \
     mvbrowserplugin.cpp
 
-TARGET          = $$qtLibraryTarget(echoplugin)
+TARGET          = $$qtLibraryTarget(mvbrowserplugin)
 
 OTHER_FILES += \
 	mvbrowserplugin.json

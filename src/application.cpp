@@ -48,8 +48,6 @@ void Application::initialize() {
 //	QPluginLoader pluginLoader("/Users/laurent/Docs/PROGS/C++/mv/plugins/build-MvBrowserPlugin-Qt_5_2_1-Release/libechoplugin.dylib");
 //#endif
 
-	setImageSource(QUrl("file:///Users/laurent/Desktop/CH_12_05_2014.jpg"));
-
 	QObject::connect(this->qmlRootObject(), SIGNAL(keypressed(int, const QString&, int)), this, SLOT(mainWindow_keypressed(int, const QString&, int)));
 	QObject::connect(this->qmlRootObject(), SIGNAL(sourceSelected(QString)), this, SLOT(mainWindow_sourceSelected(QString)));
 
