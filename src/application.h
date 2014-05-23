@@ -22,7 +22,7 @@ protected:
 
 	bool event(QEvent* event);
 
-	void onImageSourceChange();
+	void onMediaSourceChange();
 	void onExit();
 
 	QObject* qmlRootObject() const;
@@ -31,17 +31,16 @@ protected:
 
 private:
 
-	QUrl imageSource_;
+	QString mediaSource_;
 	QQmlApplicationEngine* engine_;
 	PluginManager* pluginManager_;
 
 public slots:
 
 	void mainWindow_keypressed(int key, const QString& text, int modifiers);
-	void mainWindow_sourceSelected(QString source);
-	QUrl imageSource() const;
-	void setImageSource(const QUrl& source);
-	void setImageSource(const QString& source);
+
+	QString mediaSource() const;
+	void setMediaSource(const QString& source);
 	QStringList supportedFileExtensions();
 
 };

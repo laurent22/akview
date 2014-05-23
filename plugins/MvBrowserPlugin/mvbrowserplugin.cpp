@@ -18,7 +18,7 @@ void MvBrowserPlugin::onKeypressed(const KeypressedEvent& event) {
 	}
 
 	if (event.keyCode == Qt::Key_Delete || (event.keyCode == Qt::Key_Backspace && event.modifiers == Qt::ControlModifier)) {
-		QString currentSource = application->imageSource().toLocalFile();
+		QString currentSource = application->mediaSource().toLocalFile();
 		if (currentSource == "") return;
 
 		int listIndex = sourceListIndex();
@@ -31,7 +31,7 @@ void MvBrowserPlugin::onKeypressed(const KeypressedEvent& event) {
 		listIndex--;
 		if (listIndex < 0) listIndex = sourceList().size() - 1;
 		if (listIndex < 0) {
-			application->setImageSource("");
+			application->setMediaSource("");
 		} else {
 			setSourceListIndex(listIndex);
 		}
@@ -45,7 +45,7 @@ void MvBrowserPlugin::setSourceListIndex(int index) {
 	QString sourceString = sources[index];
 	sourceListIndex_ = index;
 
-	this->application->setImageSource(sourceString);
+	this->application->setMediaSource(sourceString);
 }
 
 void MvBrowserPlugin::nextSource() {
@@ -65,7 +65,7 @@ void MvBrowserPlugin::previousSource() {
 }
 
 int MvBrowserPlugin::sourceListIndex() const {
-	QUrl sourceUrl = this->application->imageSource();
+	QUrl sourceUrl = this->application->mediaSource();
 
 	if (QFileInfo(sourceUrl.toLocalFile()).dir().absolutePath() != sourceListDir_) {
 		// Current dir has changed - reload source list
@@ -98,7 +98,7 @@ QStringList MvBrowserPlugin::sourceList() const {
 
 	QStringList supportedFileExtensions = application->supportedFileExtensions();
 	sourceListIndex_ = -1;
-	QUrl source = application->imageSource();
+	QUrl source = application->mediaSource();
 	if (source.isLocalFile()) {
 		QDir dir = QFileInfo(source.toLocalFile()).dir();
 		sourceListDir_ = dir.absolutePath();

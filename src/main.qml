@@ -10,7 +10,6 @@ ApplicationWindow {
 	height: 480
 
 	signal keypressed(int key, string text, int modifiers)
-	signal sourceSelected(string source)
 
 	Rectangle {
 		anchors.right: parent.right

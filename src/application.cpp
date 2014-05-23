@@ -50,10 +50,9 @@ void Application::initialize() {
 	pluginManager_->loadPlugins(paths.pluginFolder());
 
 	QObject::connect(this->qmlRootObject(), SIGNAL(keypressed(int, const QString&, int)), this, SLOT(mainWindow_keypressed(int, const QString&, int)));
-	QObject::connect(this->qmlRootObject(), SIGNAL(sourceSelected(QString)), this, SLOT(mainWindow_sourceSelected(QString)));
 
 	QStringList filePaths = args.positionalArguments();
-	if (filePaths.size() > 0) setImageSource(filePaths[0]);
+	if (filePaths.size() > 0) setMediaSource(filePaths[0]);
 
 	win->setProperty("visible", true);
 }
@@ -71,7 +70,7 @@ bool Application::event(QEvent *event) {
 
 		case QEvent::FileOpen:
 
-			setImageSource(static_cast<QFileOpenEvent *>(event)->file());
+			setMediaSource(static_cast<QFileOpenEvent *>(event)->file());
 			return true;
 
 		default:
@@ -86,23 +85,14 @@ Application* Application::instance() {
 	return application;
 }
 
-QUrl Application::imageSource() const {
-	return imageSource_;
+QString Application::mediaSource() const {
+	return mediaSource_;
 }
 
-void Application::setImageSource(const QUrl &source) {
-	if (source == imageSource_) return;
-	imageSource_ = source;
-	onImageSourceChange();
-}
-
-void Application::setImageSource(const QString &source) {
-	// TODO: handle URLs
-	if (source.left(7) == "file://") {
-		this->setImageSource(QUrl(source));
-	} else {
-		this->setImageSource(QUrl("file://" + source));
-	}
+void Application::setMediaSource(const QString &source) {
+	if (source == mediaSource_) return;
+	mediaSource_ = source;
+	onMediaSourceChange();
 }
 
 QObject* Application::qmlRootObject() const {
@@ -134,7 +124,7 @@ void Application::mainWindow_keypressed(int key, const QString& text, int modifi
 		Settings settings;
 		QString lastDir = settings.value("lastOpenFileDirectory").toString();
 		QString filePath = QFileDialog::getOpenFileName(NULL, tr("Open File"), lastDir, tr("Supported Files (%1)").arg(filter));
-		setImageSource(filePath);
+		setMediaSource(filePath);
 		settings.setValue("lastOpenFileDirectory", QVariant(QFileInfo(filePath).absolutePath()));
 		return;
 	}
@@ -148,13 +138,9 @@ void Application::mainWindow_keypressed(int key, const QString& text, int modifi
 	pluginManager_->onKeypressed(event);
 }
 
-void Application::mainWindow_sourceSelected(QString source) {
-	setImageSource(source);
-}
-
-void Application::onImageSourceChange() {
-	qmlImage()->setProperty("source", imageSource_);
-	setWindowTitle(QFileInfo(imageSource_.toLocalFile()).fileName());
+void Application::onMediaSourceChange() {
+	qmlImage()->setProperty("source", QUrl("file://" + mediaSource_));
+	setWindowTitle(QFileInfo(mediaSource_).fileName());
 }
 
 void Application::onExit() {
