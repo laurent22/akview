@@ -1,0 +1,6 @@
+{
+	"description": "File Browser Plugin",
+	"version": "1.0.0",
+	"compatibility_min_version": "1",
+	"compatibility_max_version": "1.99.99"
+}

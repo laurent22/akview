@@ -74,9 +74,11 @@ bool Application::event(QEvent *event) {
 			setImageSource(static_cast<QFileOpenEvent *>(event)->file());
 			return true;
 
-	}
+		default:
 
-	return QApplication::event(event);
+			return QApplication::event(event);
+
+	}
 }
 
 Application* Application::instance() {

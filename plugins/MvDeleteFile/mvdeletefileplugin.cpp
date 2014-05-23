@@ -1,6 +1,5 @@
 #include <QtWidgets>
 #include <QDir>
-#include <QFile>
 #include <QFileInfo>
 #include <QDebug>
 
@@ -9,32 +8,10 @@
 void MvBrowserPlugin::onKeypressed(const KeypressedEvent& event) {
 	if (event.keyCode == Qt::Key_Left) {
 		previousSource();
-		return;
 	}
 
 	if (event.keyCode == Qt::Key_Right) {
 		nextSource();
-		return;
-	}
-
-	if (event.keyCode == Qt::Key_Delete || (event.keyCode == Qt::Key_Backspace && event.modifiers == Qt::ControlModifier)) {
-		QString currentSource = application->imageSource().toLocalFile();
-		if (currentSource == "") return;
-
-		int listIndex = sourceListIndex();
-		// TODO: delete to trash
-		if (!QFile::remove(currentSource)) {
-			qWarning() << "Could not delete file" << currentSource;
-			return;
-		}
-		sourceList_.clear();
-		listIndex--;
-		if (listIndex < 0) listIndex = sourceList().size() - 1;
-		if (listIndex < 0) {
-			application->setImageSource("");
-		} else {
-			setSourceListIndex(listIndex);
-		}
 	}
 }
 

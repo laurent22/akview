@@ -11,7 +11,7 @@
 class MvBrowserPlugin : public QObject, MvPluginInterface {
 
 	Q_OBJECT
-	Q_PLUGIN_METADATA(IID "org.mv-project.MvPluginInterface" FILE "mvbrowserplugin.json")
+	Q_PLUGIN_METADATA(IID "org.mv-project.MvPluginInterface" FILE "mvdeletefileplugin.json")
 	Q_INTERFACES(MvPluginInterface)
 
 public:
