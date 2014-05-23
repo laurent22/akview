@@ -11,7 +11,7 @@ public:
 
 	virtual ~MvPluginInterface() {}
 	virtual void onInitialize(IApplication* application) { Q_UNUSED(application); }
-	virtual void onKeypressed(const KeypressedEvent& event) { Q_UNUSED(event); }
+	virtual void onKeypressed(KeypressedEvent& event) { Q_UNUSED(event); }
 
 };
 

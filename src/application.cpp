@@ -10,6 +10,8 @@
 #include "settings.h"
 #include "version.h"
 
+// TODO: fix qrc:///main.qml:22:2: QML Image: Impossible d'ouvrir file:/// : le chemin est un dossier
+
 Application::Application(int &argc, char **argv, int applicationFlags) : QApplication(argc, argv, applicationFlags) {
 	Application::setOrganizationName("mv-project");
 	Application::setOrganizationDomain("mv-project.org");
@@ -105,6 +107,10 @@ QObject* Application::qmlImage() const {
 
 QObject* Application::qmlApplicationWindow() const {
 	return qmlRootObject();
+}
+
+QObject *Application::qmlModelLayer() const {
+	return qmlRootObject()->findChild<QObject*>("modalLayer");
 }
 
 void Application::mainWindow_keypressed(int key, const QString& text, int modifiers) {
@@ -224,6 +230,11 @@ int Application::sourceIndex() const {
 		}
 	}
 	return sourceIndex_;
+}
+
+void Application::refreshSources() {
+	sources_.clear();
+	sourceIndex_ = -1;
 }
 
 QStringList Application::sources() const {

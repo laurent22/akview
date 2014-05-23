@@ -22,6 +22,16 @@ bool PluginManager::loadPlugin(const QString& filePath) {
 	QString minVersion = metadata.value("compatibility_min_version").toString();
 	QString maxVersion = metadata.value("compatibility_max_version").toString();
 	QString engineVersion = version::number();
+
+	if (minVersion == "") {
+		qWarning() << "No compatibility_min_version metadata specified";
+		return false;
+	}
+
+	if (maxVersion == "") {
+		maxVersion = engineVersion;
+	}
+
 	if (stringutil::compareVersions(engineVersion, minVersion) < 0 || stringutil::compareVersions(engineVersion, maxVersion) > 0) {
 		qWarning() << "Plugin is not compatible with version" << engineVersion;
 		return false;
@@ -31,7 +41,12 @@ bool PluginManager::loadPlugin(const QString& filePath) {
 	mvPlugin = qobject_cast<MvPluginInterface *>(plugin);
 	mvPlugin->onInitialize(application_);
 
-	plugins_.push_back(mvPlugin);
+	Plugin* info = new Plugin();
+	info->description = metadata.value("description").toString();
+	info->version = metadata.value("version").toString();
+	info->interface = mvPlugin;
+
+	plugins_.push_back(info);
 	return true;
 }
 
@@ -54,7 +69,12 @@ void PluginManager::loadPlugins(const QString &folderPath) {
 
 void PluginManager::onKeypressed(const KeypressedEvent &event) {
 	for (unsigned int i = 0; i < plugins_.size(); i++) {
-		MvPluginInterface* plugin = plugins_[i];
-		plugin->onKeypressed(event);
+		KeypressedEvent e = event;
+		Plugin* plugin = plugins_[i];
+		plugin->interface->onKeypressed(e);
+		if (e.accepted) {
+			qDebug() << "Keypress event has been accepted by plugin" << plugin->description;
+			return;
+		}
 	}
 }

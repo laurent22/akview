@@ -1,5 +1,5 @@
-#ifndef MVBROWSERPLUGIN_H
-#define MVBROWSERPLUGIN_H
+#ifndef MVDELETEFILEPLUGIN_H
+#define MVDELETEFILEPLUGIN_H
 
 #include <QObject>
 #include <QString>
@@ -8,7 +8,7 @@
 #include "../../src/mvplugininterface.h"
 #include "../../src/iapplication.h"
 
-class MvBrowserPlugin : public QObject, MvPluginInterface {
+class MvDeleteFilePlugin : public QObject, MvPluginInterface {
 
 	Q_OBJECT
 	Q_PLUGIN_METADATA(IID "org.mv-project.MvPluginInterface" FILE "mvdeletefileplugin.json")
@@ -20,19 +20,11 @@ public:
 		this->application = application;
 	}
 
-	void onKeypressed(const KeypressedEvent& event);
-	QStringList sourceList() const;
-	int sourceListIndex() const;
-	void setSourceListIndex(int index);
-	void nextSource();
-	void previousSource();
+	void onKeypressed(KeypressedEvent &event);
 
 private:
 
 	IApplication* application;
-	mutable QStringList sourceList_;
-	mutable QString sourceListDir_;
-	mutable int sourceListIndex_;
 
 };
 

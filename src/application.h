@@ -28,6 +28,7 @@ protected:
 	QObject* qmlRootObject() const;
 	QObject* qmlImage() const;
 	QObject* qmlApplicationWindow() const;
+	QObject *qmlModelLayer() const;
 
 private:
 
@@ -51,6 +52,7 @@ public slots:
 	void nextSource();
 	void previousSource();
 	QStringList sources() const;
+	void refreshSources();
 
 };
 

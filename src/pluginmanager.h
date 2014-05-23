@@ -4,7 +4,13 @@
 #include "mvplugininterface.h"
 #include "pluginevents.h"
 
-typedef std::vector<MvPluginInterface*> PluginVector;
+struct Plugin {
+	MvPluginInterface* interface;
+	QString description;
+	QString version;
+};
+
+typedef std::vector<Plugin*> PluginVector;
 
 class PluginManager {
 
