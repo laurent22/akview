@@ -7,7 +7,7 @@ public slots:
 
 	virtual QString mediaSource() const = 0;
 	virtual void setMediaSource(const QString& source) = 0;
-	virtual QStringList supportedFileExtensions() = 0;
+	virtual QStringList supportedFileExtensions() const = 0;
 
 };
 

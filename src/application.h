@@ -34,6 +34,9 @@ private:
 	QString mediaSource_;
 	QQmlApplicationEngine* engine_;
 	PluginManager* pluginManager_;
+	mutable QStringList sources_;
+	mutable int sourceIndex_;
+	mutable QString sourceDir_;
 
 public slots:
 
@@ -41,7 +44,13 @@ public slots:
 
 	QString mediaSource() const;
 	void setMediaSource(const QString& source);
-	QStringList supportedFileExtensions();
+	QStringList supportedFileExtensions() const;
+
+	int sourceIndex() const;
+	void setSourceIndex(int index);
+	void nextSource();
+	void previousSource();
+	QStringList sources() const;
 
 };
 

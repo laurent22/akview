@@ -134,6 +134,16 @@ void Application::mainWindow_keypressed(int key, const QString& text, int modifi
 		return;
 	}
 
+	if (event.keyCode == Qt::Key_Left) {
+		previousSource();
+		return;
+	}
+
+	if (event.keyCode == Qt::Key_Right) {
+		nextSource();
+		return;
+	}
+
 	// Keyboard events that are not handled by the application are sent to the plugins
 	pluginManager_->onKeypressed(event);
 }
@@ -155,8 +165,81 @@ void Application::onExit() {
 	settings.endGroup();
 }
 
-QStringList Application::supportedFileExtensions() {
+QStringList Application::supportedFileExtensions() const {
 	QStringList output;
 	output << "jpg" << "jpeg" << "png" << "gif" << "bmp" << "tif" << "tiff";
 	return output;
+}
+
+void Application::setSourceIndex(int index) {
+	QStringList sources = this->sources();
+	if (!sources.size()) return;
+
+	QString source = sources[index];
+	sourceIndex_ = index;
+
+	setMediaSource(source);
+}
+
+void Application::nextSource() {
+	int index = sourceIndex();
+	QStringList sources = this->sources();
+	index++;
+	if (index >= sources.size()) index = 0;
+	setSourceIndex(index);
+}
+
+void Application::previousSource() {
+	int index = sourceIndex();
+	QStringList sources = this->sources();
+	index--;
+	if (index < 0) index = sources.size() - 1;
+	setSourceIndex(index);
+}
+
+int Application::sourceIndex() const {
+	QString source = mediaSource();
+
+	if (QFileInfo(source).dir().absolutePath() != sourceDir_) {
+		// Current dir has changed - reload source list
+		sourceIndex_ = -1;
+		sources_.clear();
+	}
+
+	QStringList sources = this->sources();
+	if (!sources.size()) return -1;
+
+	source = QFileInfo(source).fileName();
+
+	// Check if the index we have is correct
+	if (sourceIndex_ >= 0 && sourceIndex_ < sources.size() && sources[sourceIndex_] == source) return sourceIndex_;
+
+	// If it's not correct, try to get it from the current source and source list
+	sourceIndex_ = -1;
+
+	for (int i = 0; i < sources.size(); i++) {
+		if (QFileInfo(sources[i]).fileName() == source) {
+			sourceIndex_ = i;
+			break;
+		}
+	}
+	return sourceIndex_;
+}
+
+QStringList Application::sources() const {
+	if (sources_.length()) return sources_;
+
+	QStringList supportedFileExtensions = this->supportedFileExtensions();
+	sourceIndex_ = -1;
+	QString source = mediaSource();
+
+	QDir dir = QFileInfo(source).dir();
+	sourceDir_ = dir.absolutePath();
+	QFileInfoList files = dir.entryInfoList(QDir::Files, QDir::LocaleAware);
+	for (int i = 0; i < files.size(); i++) {
+		if (!supportedFileExtensions.contains(files[i].suffix().toLower())) continue;
+		sources_.append(files[i].absoluteFilePath());
+	}
+
+	return sources_;
 }
