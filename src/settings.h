@@ -3,6 +3,8 @@
 
 #include <QSettings>
 
+namespace mv {
+
 class Settings : public QSettings  {
 
 	Q_OBJECT
@@ -12,5 +14,7 @@ public:
 	explicit Settings();
 
 };
+
+}
 
 #endif // SETTINGS_H

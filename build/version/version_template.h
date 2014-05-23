@@ -18,11 +18,13 @@
 
 #include <QString>
 
+namespace mv {
 namespace version {
 
 	int majorNumber();
 	QString number();
 
 } // version
+}
 
 #endif // VERSION_H

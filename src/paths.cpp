@@ -6,6 +6,8 @@
 #include "constants.h"
 #include "paths.h"
 
+namespace mv {
+
 Paths::Paths() {
 
 }
@@ -48,4 +50,6 @@ QString Paths::pluginFolder() const {
 #endif // QT_DEBUG
 
 	return dir.absolutePath();
+}
+
 }

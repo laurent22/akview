@@ -3,7 +3,7 @@
 #include "mvdeletefileplugin.h"
 #include "qxtrash.h"
 
-void MvDeleteFilePlugin::onKeypressed(KeypressedEvent& event) {
+void MvDeleteFilePlugin::onKeypressed(mv::KeypressedEvent& event) {
 	if (event.keyCode == Qt::Key_Delete || (event.keyCode == Qt::Key_Backspace && event.modifiers == Qt::ControlModifier)) {
 		event.accepted = true;
 

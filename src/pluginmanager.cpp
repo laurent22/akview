@@ -7,6 +7,8 @@
 #include "stringutil.h"
 #include "version.h"
 
+namespace mv {
+
 PluginManager::PluginManager(IApplication *application) {
 	application_ = application;
 }
@@ -77,4 +79,6 @@ void PluginManager::onKeypressed(const KeypressedEvent &event) {
 			return;
 		}
 	}
+}
+
 }

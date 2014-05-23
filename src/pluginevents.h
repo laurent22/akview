@@ -3,6 +3,8 @@
 
 #include <QString>
 
+namespace mv {
+
 struct KeypressedEvent {
 	int keyCode;
 	QString text;
@@ -13,5 +15,7 @@ struct KeypressedEvent {
 		accepted = false;
 	}
 };
+
+}
 
 #endif // PLUGINEVENTS_H

@@ -1,6 +1,8 @@
 #ifndef IAPPLICATION_H
 #define IAPPLICATION_H
 
+namespace mv {
+
 class IApplication {
 
 public slots:
@@ -14,5 +16,7 @@ public slots:
 	virtual void setSourceIndex(int index) = 0;
 
 };
+
+}
 
 #endif // IAPPLICATION_H

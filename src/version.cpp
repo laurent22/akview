@@ -3,6 +3,7 @@
 #include <QString>
 #include <QStringList>
 
+namespace mv {
 namespace version {
 
 int majorNumber() {
@@ -14,4 +15,5 @@ QString number() {
     return QString("%1").arg(VER_PRODUCTVERSION_STR);
 }
 
+}
 }

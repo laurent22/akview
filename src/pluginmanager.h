@@ -4,6 +4,8 @@
 #include "mvplugininterface.h"
 #include "pluginevents.h"
 
+namespace mv {
+
 struct Plugin {
 	MvPluginInterface* interface;
 	QString description;
@@ -28,5 +30,7 @@ private:
 	IApplication* application_;
 
 };
+
+}
 
 #endif // PLUGINMANAGER_H

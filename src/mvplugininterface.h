@@ -5,6 +5,8 @@
 #include "pluginevents.h"
 #include <QString>
 
+namespace mv {
+
 class MvPluginInterface {
 
 public:
@@ -15,9 +17,11 @@ public:
 
 };
 
+}
+
 QT_BEGIN_NAMESPACE
 #define MvPluginInterface_iid "org.mv-project.MvPluginInterface"
-Q_DECLARE_INTERFACE(MvPluginInterface, MvPluginInterface_iid)
+Q_DECLARE_INTERFACE(mv::MvPluginInterface, MvPluginInterface_iid)
 QT_END_NAMESPACE
 
 #endif

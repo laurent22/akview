@@ -7,6 +7,8 @@
 #include <QUrl>
 #include "pluginmanager.h"
 
+namespace mv {
+
 class Application : public QApplication, IApplication {
 	Q_OBJECT
 
@@ -55,5 +57,7 @@ public slots:
 	void refreshSources();
 
 };
+
+}
 
 #endif // APPLICATION_H

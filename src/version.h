@@ -1,11 +1,11 @@
 #ifndef VERSION_H
 #define VERSION_H
 
-#define VER_FILEVERSION             1,0,82
-#define VER_FILEVERSION_STR         "1.0.82\0"
+#define VER_FILEVERSION             1,0,90
+#define VER_FILEVERSION_STR         "1.0.90\0"
 
-#define VER_PRODUCTVERSION          1,0,82
-#define VER_PRODUCTVERSION_STR      "1.0.82\0"
+#define VER_PRODUCTVERSION          1,0,90
+#define VER_PRODUCTVERSION_STR      "1.0.90\0"
 
 #define VER_COMPANYNAME_STR         "MV Project"
 #define VER_FILEDESCRIPTION_STR     "MultiViewer"
@@ -18,11 +18,13 @@
 
 #include <QString>
 
+namespace mv {
 namespace version {
 
 	int majorNumber();
 	QString number();
 
 } // version
+}
 
 #endif // VERSION_H

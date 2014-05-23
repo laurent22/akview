@@ -8,23 +8,23 @@
 #include "../../src/mvplugininterface.h"
 #include "../../src/iapplication.h"
 
-class MvDeleteFilePlugin : public QObject, MvPluginInterface {
+class MvDeleteFilePlugin : public QObject, mv::MvPluginInterface {
 
 	Q_OBJECT
 	Q_PLUGIN_METADATA(IID "org.mv-project.MvPluginInterface" FILE "mvdeletefileplugin.json")
-	Q_INTERFACES(MvPluginInterface)
+	Q_INTERFACES(mv::MvPluginInterface)
 
 public:
 
-	void onInitialize(IApplication* application) {
+	void onInitialize(mv::IApplication* application) {
 		this->application = application;
 	}
 
-	void onKeypressed(KeypressedEvent &event);
+	void onKeypressed(mv::KeypressedEvent &event);
 
 private:
 
-	IApplication* application;
+	mv::IApplication* application;
 
 };
 

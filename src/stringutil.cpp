@@ -2,6 +2,7 @@
 
 #include <QStringList>
 
+namespace mv {
 namespace stringutil {
 
 int compareVersions(const QString& v1, const QString& v2) {
@@ -24,6 +25,7 @@ int compareVersions(const QString& v1, const QString& v2) {
 	}
 
 	return 0;
+}
 }
 
 } // stringutil

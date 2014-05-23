@@ -10,6 +10,8 @@
 #include "settings.h"
 #include "version.h"
 
+namespace mv {
+
 Application::Application(int &argc, char **argv, int applicationFlags) : QApplication(argc, argv, applicationFlags) {
 	Application::setOrganizationName("mv-project");
 	Application::setOrganizationDomain("mv-project.org");
@@ -251,4 +253,6 @@ QStringList Application::sources() const {
 	}
 
 	return sources_;
+}
+
 }
