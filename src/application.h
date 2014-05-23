@@ -20,6 +20,8 @@ public:
 
 protected:
 
+	bool event(QEvent* event);
+
 	void onImageSourceChange();
 	void onExit();
 

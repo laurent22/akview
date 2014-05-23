@@ -1,12 +1,14 @@
 #include <QCommandLineParser>
 #include <QDebug>
 #include <QFileDialog>
+#include <QFileOpenEvent>
 #include <QUrl>
 
 #include "application.h"
 #include "constants.h"
 #include "paths.h"
-#include <settings.h>
+#include "settings.h"
+#include "version.h"
 
 Application::Application(int &argc, char **argv, int applicationFlags) : QApplication(argc, argv, applicationFlags) {
 	Application::setOrganizationName("mv-project");
@@ -61,7 +63,20 @@ void Application::setWindowTitle(const QString &title) {
 #ifdef MV_DEBUG
 	prefix = "** DEBUG ** ";
 #endif // MV_DEBUG
-	qmlApplicationWindow()->setProperty("title", prefix + title);
+	qmlApplicationWindow()->setProperty("title", prefix + title + " (" + version::number() + ")");
+}
+
+bool Application::event(QEvent *event) {
+	switch (event->type()) {
+
+		case QEvent::FileOpen:
+
+			setImageSource(static_cast<QFileOpenEvent *>(event)->file());
+			return true;
+
+	}
+
+	return QApplication::event(event);
 }
 
 Application* Application::instance() {
@@ -109,7 +124,7 @@ void Application::mainWindow_keypressed(int key, const QString& text, int modifi
 	if (event.keyCode == Qt::Key_O && event.modifiers == Qt::ControlModifier) {
 		QString filter;
 		QStringList extensions = supportedFileExtensions();
-		for (unsigned int i = 0; i < extensions.size(); i++) {
+		for (int i = 0; i < extensions.size(); i++) {
 			QString e = extensions[i];
 			if (filter != "") filter += " ";
 			filter += "*." + e;

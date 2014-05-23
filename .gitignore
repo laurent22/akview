@@ -3,3 +3,4 @@ build-*
 *.pro.user
 plugins/debug
 plugins/release
+build/version/CreateVersionInfo
