@@ -10,7 +10,7 @@ SOURCES         = \
 	mvdeletefileplugin.cpp \
     qxtrash.cpp
 
-TARGET          = $$qtLibraryTarget(mvbrowserplugin)
+TARGET          = $$qtLibraryTarget(mvdeletefileplugin)
 
 OTHER_FILES += \
 	mvdeletefileplugin.json

@@ -1,5 +1,12 @@
 {
 	"description": "File Delete Plugin",
 	"version": "1.0.0",
-	"compatibility_min_version": "1"
+	"compatibility_min_version": "1",
+	"actions": [
+		{
+			"name": "delete",
+			"description": "Move current file to trash",
+			"shortcuts": ["Ctrl + Backspace", "Delete"]
+		}
+	]
 }
