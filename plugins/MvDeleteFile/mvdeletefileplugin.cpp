@@ -9,7 +9,7 @@ void MvDeleteFilePlugin::onKeypressed(mv::KeypressedEvent& event) {
 
 		QxTrash trash;
 		int sourceIndex = application->sourceIndex();
-		QString source = application->mediaSource();
+		QString source = application->source();
 		if (source == "") return;
 
 		bool ok = trash.moveToTrash(source);
@@ -24,7 +24,7 @@ void MvDeleteFilePlugin::onKeypressed(mv::KeypressedEvent& event) {
 			}
 
 			if (sourceIndex < 0) {
-				application->setMediaSource("");
+				application->setSource("");
 			} else {
 				application->setSourceIndex(sourceIndex);
 			}

@@ -62,7 +62,7 @@ void Application::initialize() {
 	QObject::connect(this->qmlRootObject(), SIGNAL(keypressed(int, const QString&, int)), this, SLOT(mainWindow_keypressed(int, const QString&, int)));
 
 	QStringList filePaths = args.positionalArguments();
-	if (filePaths.size() > 0) setMediaSource(filePaths[0]);
+	if (filePaths.size() > 0) setSource(filePaths[0]);
 
 	win->setProperty("visible", true);
 }
@@ -80,7 +80,7 @@ bool Application::event(QEvent *event) {
 
 		case QEvent::FileOpen:
 
-			setMediaSource(static_cast<QFileOpenEvent *>(event)->file());
+			setSource(static_cast<QFileOpenEvent *>(event)->file());
 			return true;
 
 		default:
@@ -95,13 +95,13 @@ Application* Application::instance() {
 	return application;
 }
 
-QString Application::mediaSource() const {
-	return mediaSource_;
+QString Application::source() const {
+	return source_;
 }
 
-void Application::setMediaSource(const QString &source) {
-	if (source == mediaSource_) return;
-	mediaSource_ = source;
+void Application::setSource(const QString &source) {
+	if (source == source_) return;
+	source_ = source;
 	onMediaSourceChange();
 }
 
@@ -139,7 +139,7 @@ void Application::mainWindow_keypressed(int key, const QString& text, int modifi
 		QString lastDir = settings.value("lastOpenFileDirectory").toString();
 		QString filePath = QFileDialog::getOpenFileName(NULL, tr("Open File"), lastDir, tr("Supported Files (%1)").arg(filter));
 		if (filePath != "") {
-			setMediaSource(filePath);
+			setSource(filePath);
 			settings.setValue("lastOpenFileDirectory", QVariant(QFileInfo(filePath).absolutePath()));
 		}
 		return;
@@ -165,8 +165,8 @@ void Application::mainWindow_keypressed(int key, const QString& text, int modifi
 }
 
 void Application::onMediaSourceChange() {
-	qmlImage()->setProperty("source", mediaSource_ == "" ? QUrl("") : QUrl("file://" + mediaSource_));
-	setWindowTitle(QFileInfo(mediaSource_).fileName());
+	qmlImage()->setProperty("source", source_ == "" ? QUrl("") : QUrl("file://" + source_));
+	setWindowTitle(QFileInfo(source_).fileName());
 }
 
 void Application::onExit() {
@@ -194,7 +194,7 @@ void Application::setSourceIndex(int index) {
 	QString source = sources[index];
 	sourceIndex_ = index;
 
-	setMediaSource(source);
+	setSource(source);
 }
 
 void Application::nextSource() {
@@ -214,7 +214,7 @@ void Application::previousSource() {
 }
 
 int Application::sourceIndex() const {
-	QString source = mediaSource();
+	QString source = this->source();
 
 	if (QFileInfo(source).dir().absolutePath() != sourceDir_) {
 		// Current dir has changed - reload source list
@@ -264,7 +264,7 @@ QStringList Application::sources() const {
 
 	QStringList supportedFileExtensions = this->supportedFileExtensions();
 	sourceIndex_ = -1;
-	QString source = mediaSource();
+	QString source = this->source();
 
 	QDir dir = QFileInfo(source).dir();
 	sourceDir_ = dir.absolutePath();

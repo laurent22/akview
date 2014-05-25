@@ -68,7 +68,7 @@ void MvJpegToolsPlugin::onKeypressed(mv::KeypressedEvent& event) {
 			if (r == 180) op = FIJPEG_OP_ROTATE_180;
 			if (r == 270) op = FIJPEG_OP_ROTATE_270;
 			if (op != FIJPEG_OP_NONE) {
-				QString sourcePath = application->mediaSource();
+				QString sourcePath = application->source();
 				bool ok = FreeImage_JPEGTransform(sourcePath.toStdString().c_str(), sourcePath.toStdString().c_str(), op, 0);
 				if (ok) application->reloadSource();
 			}

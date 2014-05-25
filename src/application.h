@@ -35,7 +35,7 @@ protected:
 
 private:
 
-	QString mediaSource_;
+	QString source_;
 	QQmlApplicationEngine* engine_;
 	PluginManager* pluginManager_;
 	mutable QStringList sources_;
@@ -47,8 +47,8 @@ public slots:
 
 	void mainWindow_keypressed(int key, const QString& text, int modifiers);
 
-	QString mediaSource() const;
-	void setMediaSource(const QString& source);
+	QString source() const;
+	void setSource(const QString& source);
 	QStringList supportedFileExtensions() const;
 
 	int sourceIndex() const;
