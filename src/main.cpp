@@ -2,28 +2,38 @@
 
 #include "application.h"
 
-#include <QByteArray>
 #include <QFile>
-#include <QJsonObject>
-#include <QJsonDocument>
+#include <QTextStream>
+#include <QtGlobal>
+#include <QtGui>
 
-//#include <FreeImage.h>
-
-//void FreeImageErrorHandler(FREE_IMAGE_FORMAT fif, const char *message) {
-//	qDebug() << FreeImage_GetFormatFromFIF(fif) << message;
-//}
+//void myMessageHandler(QtMsgType type, const char *msg)
+void myMessageHandler(QtMsgType type, const QMessageLogContext &, const QString & msg)
+{
+	QString txt;
+	switch (type) {
+	case QtDebugMsg:
+		txt = QString("Debug: %1").arg(msg);
+		break;
+	case QtWarningMsg:
+		txt = QString("Warning: %1").arg(msg);
+	break;
+	case QtCriticalMsg:
+		txt = QString("Critical: %1").arg(msg);
+	break;
+	case QtFatalMsg:
+		txt = QString("Fatal: %1").arg(msg);
+	break;
+	}
+	QFile outFile("/Users/laurent/mv.log");
+	outFile.open(QIODevice::WriteOnly | QIODevice::Append);
+	QTextStream ts(&outFile);
+	ts << txt << endl;
+}
 
 int main(int argc, char *argv[]) {
 	mv::Application app(argc, argv);
+	qInstallMessageHandler(myMessageHandler);
 	app.initialize();
-
-//	FreeImage_SetOutputMessage(FreeImageErrorHandler);
-
-//	const char *src_file = "/Users/laurent/Desktop/test/CH_12_05_2014.jpg";
-//	const char *dst_file = "/Users/laurent/Desktop/test/CH_12_05_2014_CONV.jpg";
-
-//	bool ok = FreeImage_JPEGTransform(src_file, dst_file, FIJPEG_OP_ROTATE_90, 0);
-//	qDebug() << ok;
-
 	return app.exec();
 }

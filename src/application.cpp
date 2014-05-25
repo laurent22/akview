@@ -10,11 +10,19 @@
 #include "settings.h"
 #include "version.h"
 
+// TODO: test with unicode file names
+// TODO: when deleting don't change file index
+// TODO: reveal in folder plugin
+// TODO: Fix - large images cannot be open
+// TODO: don't hardcode shortcuts in plugins
+
 namespace mv {
 
 Application::Application(int &argc, char **argv, int applicationFlags) : QApplication(argc, argv, applicationFlags) {
-	Application::setOrganizationName("mv-project");
-	Application::setOrganizationDomain("mv-project.org");
+	settings_ = NULL;
+
+	Application::setOrganizationName(VER_COMPANYNAME_STR);
+	Application::setOrganizationDomain(VER_DOMAIN_STR);
 	Application::setApplicationName(APPLICATION_TITLE);
 }
 
@@ -130,8 +138,10 @@ void Application::mainWindow_keypressed(int key, const QString& text, int modifi
 		Settings settings;
 		QString lastDir = settings.value("lastOpenFileDirectory").toString();
 		QString filePath = QFileDialog::getOpenFileName(NULL, tr("Open File"), lastDir, tr("Supported Files (%1)").arg(filter));
-		setMediaSource(filePath);
-		settings.setValue("lastOpenFileDirectory", QVariant(QFileInfo(filePath).absolutePath()));
+		if (filePath != "") {
+			setMediaSource(filePath);
+			settings.setValue("lastOpenFileDirectory", QVariant(QFileInfo(filePath).absolutePath()));
+		}
 		return;
 	}
 
@@ -235,6 +245,18 @@ int Application::sourceIndex() const {
 void Application::refreshSources() {
 	sources_.clear();
 	sourceIndex_ = -1;
+}
+
+void Application::reloadSource() const {
+	QString currentSource = qmlImage()->property("source").toString();
+	qmlImage()->setProperty("source", "");
+	qmlImage()->setProperty("source", currentSource);
+}
+
+Settings *Application::settings() const {
+	if (settings_) return settings_;
+	settings_ = new Settings();
+	return settings_;
 }
 
 QStringList Application::sources() const {

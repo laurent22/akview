@@ -27,6 +27,7 @@ ApplicationWindow {
 		anchors.left: parent.left
 		anchors.top: parent.top
 		anchors.bottom: parent.bottom
+		cache: true
 		focus: true
 		smooth: true
 		Keys.onPressed: {

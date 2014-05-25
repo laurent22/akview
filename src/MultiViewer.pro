@@ -12,9 +12,6 @@ SOURCES += main.cpp \
 
 RESOURCES += qml.qrc
 
-INCLUDEPATH += "/usr/local/Cellar/freeimage/3.15.4/include"
-LIBS += /usr/local/Cellar/freeimage/3.15.4/lib/libfreeimage.dylib
-
 # Additional import path used to resolve QML modules in Qt Creator's code model
 QML_IMPORT_PATH =
 

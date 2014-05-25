@@ -5,6 +5,7 @@
 #include <QQmlApplicationEngine>
 #include <QDebug>
 #include <QUrl>
+
 #include "pluginmanager.h"
 
 namespace mv {
@@ -40,6 +41,7 @@ private:
 	mutable QStringList sources_;
 	mutable int sourceIndex_;
 	mutable QString sourceDir_;
+	mutable Settings* settings_;
 
 public slots:
 
@@ -55,6 +57,9 @@ public slots:
 	void previousSource();
 	QStringList sources() const;
 	void refreshSources();
+	void reloadSource() const;
+
+	Settings* settings() const;
 
 };
 
