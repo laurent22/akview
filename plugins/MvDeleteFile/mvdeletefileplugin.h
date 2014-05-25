@@ -20,7 +20,7 @@ public:
 		this->application = application;
 	}
 
-	void onKeypressed(mv::KeypressedEvent &event);
+	void onAction(const QString& action);
 
 private:
 

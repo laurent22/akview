@@ -27,7 +27,7 @@ private:
 
 };
 
-typedef std::vector<PluginAction> PluginActionVector;
+typedef std::vector<PluginAction*> PluginActionVector;
 
 class Plugin {
 
@@ -46,6 +46,7 @@ public:
 	QString toString() const;
 	bool supports(const KeypressedEvent& event) const;
 	bool interfaceLoaded() const;
+	PluginAction *findAction(const KeypressedEvent &event) const;
 
 private:
 
@@ -59,7 +60,7 @@ private:
 
 };
 
-typedef std::vector<Plugin> PluginVector;
+typedef std::vector<Plugin*> PluginVector;
 
 class PluginManager {
 

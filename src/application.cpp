@@ -13,7 +13,6 @@
 // TODO: test with unicode file names
 // TODO: reveal in folder plugin
 // TODO: Fix - large images cannot be open
-// TODO: don't hardcode shortcuts in plugins
 
 namespace mv {
 

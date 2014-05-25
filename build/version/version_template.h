@@ -15,6 +15,7 @@
 #define VER_LEGALTRADEMARKS2_STR    VER_LEGALTRADEMARKS1_STR
 #define VER_ORIGINALFILENAME_STR    "MultiViewer.exe"
 #define VER_PRODUCTNAME_STR         "MultiViewer"
+#define VER_DOMAIN_STR              "mv-project.org"
 
 #include <QString>
 

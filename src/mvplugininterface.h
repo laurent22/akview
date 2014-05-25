@@ -13,7 +13,7 @@ public:
 
 	virtual ~MvPluginInterface() {}
 	virtual void onInitialize(IApplication* application) { Q_UNUSED(application); }
-	virtual void onKeypressed(KeypressedEvent& event) { Q_UNUSED(event); }
+	virtual void onAction(const QString& action) { Q_UNUSED(action); }
 
 };
 

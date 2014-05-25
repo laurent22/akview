@@ -16,10 +16,10 @@ PluginManager::PluginManager(IApplication *application) {
 }
 
 bool PluginManager::loadPlugin(const QString& filePath) {
-	Plugin plugin(application_, filePath);
-	bool ok = plugin.loadMetadata();
+	Plugin* plugin = new Plugin(application_, filePath);
+	bool ok = plugin->loadMetadata();
 	if (!ok) {
-		qWarning() << "could not load plugin" << filePath << ":" << plugin.errorMessage();
+		qWarning() << "could not load plugin" << filePath << ":" << plugin->errorMessage();
 		return false;
 	}
 
@@ -46,23 +46,21 @@ void PluginManager::loadPlugins(const QString &folderPath) {
 
 void PluginManager::onKeypressed(const KeypressedEvent &event) {
 	for (unsigned int i = 0; i < plugins_.size(); i++) {
-		Plugin& plugin = plugins_[i];
-		if (!plugin.supports(event)) continue;
+		Plugin* plugin = plugins_[i];
+		PluginAction* action = plugin->findAction(event);
+		if (!action) continue;
 
-		if (!plugin.interfaceLoaded()) {
-			bool ok = plugin.loadInterface();
+		if (!plugin->interfaceLoaded()) {
+			bool ok = plugin->loadInterface();
 			if (!ok) {
-				qWarning() << "could not load plugin interface of" << plugin.description() << ":" << plugin.errorMessage();
+				qWarning() << "could not load plugin interface of" << plugin->description() << ":" << plugin->errorMessage();
 				continue;
 			}
 		}
 
-		KeypressedEvent e = event;
-		plugin.interface()->onKeypressed(e);
-		if (e.accepted) {
-			qDebug() << "Keypress event has been accepted by plugin" << plugin.description();
-			return;
-		}
+		plugin->interface()->onAction(action->name());
+		qDebug() << "Keypress event has been processed by plugin" << plugin->description();
+		return;
 	}
 }
 
@@ -107,7 +105,7 @@ bool Plugin::loadMetadata() {
 	QJsonArray actionObjects = metadata_.value("actions").toArray();
 	for (int i = 0; i < actionObjects.size(); i++) {
 		QJsonObject o = actionObjects[i].toObject();
-		PluginAction action(o);
+		PluginAction* action = new PluginAction(o);
 		actions_.push_back(action);
 	}
 
@@ -177,18 +175,23 @@ QString Plugin::toString() const {
 	s += QString("Interface: %1\n").arg(interface_ ? "loaded" : "not loaded");
 	s += "Actions:\n";
 	for (unsigned int i = 0; i < actions_.size(); i++) {
-		s += actions_[i].toString();
+		s += actions_[i]->toString();
 	}
 	s += "\n";
 	return s;
 }
 
 bool Plugin::supports(const KeypressedEvent &event) const {
+	PluginAction* a = findAction(event);
+	return a ? true : false;
+}
+
+PluginAction* Plugin::findAction(const KeypressedEvent &event) const {
 	for (unsigned int i = 0; i < actions_.size(); i++) {
-		PluginAction a = actions_[i];
-		if (a.supports(event)) return true;
+		PluginAction* a = actions_[i];
+		if (a->supports(event)) return a;
 	}
-	return false;
+	return NULL;
 }
 
 bool Plugin::interfaceLoaded() const {
