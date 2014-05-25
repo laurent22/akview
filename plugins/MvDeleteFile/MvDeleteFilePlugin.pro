@@ -7,10 +7,18 @@ HEADERS         = \
 	../../src/iapplication.h \
     qxtrash.h
 SOURCES         = \
-	mvdeletefileplugin.cpp \
-    qxtrash.cpp
+	mvdeletefileplugin.cpp
 
-TARGET          = $$qtLibraryTarget(mvdeletefileplugin)
+win32 {
+	SOURCES += qxtrash_win.cpp
+}
+
+mac {
+	OBJECTIVE_SOURCES += qxtrash_osx.mm
+	LIBS += -framework AppKit -framework Foundation
+}
+
+TARGET = $$qtLibraryTarget(mvdeletefileplugin)
 
 OTHER_FILES += \
 	mvdeletefileplugin.json

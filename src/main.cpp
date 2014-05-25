@@ -7,7 +7,6 @@
 #include <QtGlobal>
 #include <QtGui>
 
-//void myMessageHandler(QtMsgType type, const char *msg)
 void myMessageHandler(QtMsgType type, const QMessageLogContext &, const QString & msg)
 {
 	QString txt;

@@ -15,17 +15,11 @@ void MvDeleteFilePlugin::onKeypressed(mv::KeypressedEvent& event) {
 		bool ok = trash.moveToTrash(source);
 		if (ok) {
 			application->refreshSources();
-			sourceIndex--;
-			if (sourceIndex < 0) {
-				QStringList sources = application->sources();
-				if (sources.size() > 0) {
-					sourceIndex = sources.size() - 1;
-				}
-			}
-
-			if (sourceIndex < 0) {
+			QStringList sources = application->sources();
+			if (sources.size() <= 0) {
 				application->setSource("");
 			} else {
+				if (sourceIndex >= sources.size()) sourceIndex = 0;
 				application->setSourceIndex(sourceIndex);
 			}
 		}

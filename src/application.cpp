@@ -11,7 +11,6 @@
 #include "version.h"
 
 // TODO: test with unicode file names
-// TODO: when deleting don't change file index
 // TODO: reveal in folder plugin
 // TODO: Fix - large images cannot be open
 // TODO: don't hardcode shortcuts in plugins
