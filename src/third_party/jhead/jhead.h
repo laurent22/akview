@@ -1,3 +1,6 @@
+#ifndef JHEAD_H
+#define JHEAD_H
+
 //--------------------------------------------------------------------------
 // Include file for jhead program.
 //
@@ -222,7 +225,7 @@ int ReplaceThumbnail(const char * ThumbFileName);
 int SaveThumbnail(char * ThumbFileName);
 int RemoveSectionType(int SectionType);
 int RemoveUnknownSections(void);
-void WriteJpegFile(const char * FileName);
+int WriteJpegFile(const char * FileName);
 Section_t * FindSection(int SectionType);
 Section_t * CreateSection(int SectionType, unsigned char * Data, int size);
 void ResetJpgfile(void);
@@ -267,3 +270,5 @@ extern int ShowTags;
 #define M_IPTC  0xED          // IPTC marker
 
 }
+
+#endif // JHEAD_H

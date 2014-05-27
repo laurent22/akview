@@ -52,7 +52,7 @@ void ErrFatal(const char * msg)
 {
     fprintf(stderr,"\nError : %s\n", msg);
     if (CurrentFile) fprintf(stderr,"in file '%s'\n",CurrentFile);
-    exit(EXIT_FAILURE);
+	// exit(EXIT_FAILURE);
 } 
 
 //--------------------------------------------------------------------------

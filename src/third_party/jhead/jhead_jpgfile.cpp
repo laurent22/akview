@@ -554,19 +554,21 @@ void DiscardAllButExif(void)
 //--------------------------------------------------------------------------
 // Write image data back to disk.
 //--------------------------------------------------------------------------
-void WriteJpegFile(const char * FileName)
+int WriteJpegFile(const char * FileName)
 {
     FILE * outfile;
     int a;
 
     if (!HaveAll){
         ErrFatal("Can't write back - didn't read all");
+		return 0;
     }
 
     outfile = fopen(FileName,"wb");
     if (outfile == NULL){
         ErrFatal("Could not open file for write");
-    }
+		return 0;
+	}
 
     // Initial static jpeg marker.
     fputc(0xff,outfile);
@@ -626,6 +628,8 @@ void WriteJpegFile(const char * FileName)
     fwrite(Sections[a].Data, Sections[a].Size, 1, outfile);
        
     fclose(outfile);
+
+	return 1;
 }
 
 
