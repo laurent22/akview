@@ -27,7 +27,7 @@ ApplicationWindow {
 		anchors.left: parent.left
 		anchors.top: parent.top
 		anchors.bottom: parent.bottom
-		cache: true
+		cache: false
 		focus: true
 		smooth: true
 		sourceSize.width: parent.width

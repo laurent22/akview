@@ -251,6 +251,11 @@ void Application::reloadSource() const {
 	qmlImage()->setProperty("source", currentSource);
 }
 
+void Application::exifClearOrientation(const QString &filePath) {
+	JheadHandler handler(filePath);
+	handler.clearOrientation();
+}
+
 Settings *Application::settings() const {
 	if (settings_) return settings_;
 	settings_ = new Settings();

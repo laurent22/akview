@@ -58,6 +58,7 @@ public slots:
 	QStringList sources() const;
 	void refreshSources();
 	void reloadSource() const;
+	void exifClearOrientation(const QString& filePath);
 
 	Settings* settings() const;
 

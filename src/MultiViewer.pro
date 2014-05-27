@@ -9,14 +9,15 @@ SOURCES += main.cpp \
     paths.cpp \
     stringutil.cpp \
 	version.cpp \
-    third_party/jhead/jhead_paths.cpp \
-    third_party/jhead/jhead_makernote.cpp \
-    third_party/jhead/jhead_jpgqguess.cpp \
-    third_party/jhead/jhead_jpgfile.cpp \
-    third_party/jhead/jhead_jhead.cpp \
-    third_party/jhead/jhead_iptc.cpp \
+	jheadhandler.cpp \
+    third_party/jhead/jhead_exif.cpp \
     third_party/jhead/jhead_gpsinfo.cpp \
-    third_party/jhead/jhead_exif.cpp
+    third_party/jhead/jhead_iptc.cpp \
+    third_party/jhead/jhead_jhead.cpp \
+    third_party/jhead/jhead_jpgfile.cpp \
+    third_party/jhead/jhead_jpgqguess.cpp \
+    third_party/jhead/jhead_makernote.cpp \
+    third_party/jhead/jhead_paths.cpp
 
 RESOURCES += qml.qrc
 
@@ -35,4 +36,5 @@ HEADERS += \
     stringutil.h \
     version.h \
 	simpletypes.h \
-    third_party/jhead/jhead.h
+    third_party/jhead/jhead.h \
+    jheadhandler.h

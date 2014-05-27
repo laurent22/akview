@@ -32,7 +32,7 @@ void myMessageHandler(QtMsgType type, const QMessageLogContext &, const QString 
 
 int main(int argc, char *argv[]) {
 	mv::Application app(argc, argv);
-	qInstallMessageHandler(myMessageHandler);
+	//qInstallMessageHandler(myMessageHandler);
 	app.initialize();
 	return app.exec();
 }

@@ -1,4 +1,7 @@
+#include <memory>
+
 #include <QDebug>
+#include <QFileInfo>
 #include <QHash>
 #include <QByteArray>
 
@@ -13,6 +16,10 @@ void FreeImageErrorHandler(FREE_IMAGE_FORMAT fif, const char *message) {
 
 void MvJpegToolsPlugin::onAction(const QString &action) {
 	if (action != "jpeg_tools") return;
+
+	QString sourcePath = application->source();
+	QString extension = QFileInfo(sourcePath).suffix().toLower();
+	if (extension != "jpg" && extension != "jpeg") return;
 
 	QHash<QString, QVariant> settings = application->settings()->value("plugins/jpegtools/dialogsettings").toHash();
 
@@ -35,9 +42,11 @@ void MvJpegToolsPlugin::onAction(const QString &action) {
 		if (r == 180) op = FIJPEG_OP_ROTATE_180;
 		if (r == 270) op = FIJPEG_OP_ROTATE_270;
 		if (op != FIJPEG_OP_NONE) {
-			QString sourcePath = application->source();
 			bool ok = FreeImage_JPEGTransform(sourcePath.toStdString().c_str(), sourcePath.toStdString().c_str(), op, 0);
-			if (ok) application->reloadSource();
+			if (ok) {
+				application->exifClearOrientation(sourcePath);
+				application->reloadSource();
+			}
 		}
 	}
 }
