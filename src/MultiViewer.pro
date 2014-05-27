@@ -8,12 +8,17 @@ SOURCES += main.cpp \
     settings.cpp \
     paths.cpp \
     stringutil.cpp \
-    version.cpp
+	version.cpp \
+    third_party/jhead/jhead_paths.cpp \
+    third_party/jhead/jhead_makernote.cpp \
+    third_party/jhead/jhead_jpgqguess.cpp \
+    third_party/jhead/jhead_jpgfile.cpp \
+    third_party/jhead/jhead_jhead.cpp \
+    third_party/jhead/jhead_iptc.cpp \
+    third_party/jhead/jhead_gpsinfo.cpp \
+    third_party/jhead/jhead_exif.cpp
 
 RESOURCES += qml.qrc
-
-# Additional import path used to resolve QML modules in Qt Creator's code model
-QML_IMPORT_PATH =
 
 # Default rules for deployment.
 include(deployment.pri)
@@ -29,4 +34,5 @@ HEADERS += \
     paths.h \
     stringutil.h \
     version.h \
-    simpletypes.h
+	simpletypes.h \
+    third_party/jhead/jhead.h
