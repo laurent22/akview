@@ -30,6 +30,8 @@ ApplicationWindow {
 		cache: true
 		focus: true
 		smooth: true
+		sourceSize.width: parent.width
+		sourceSize.height: parent.height
 		Keys.onPressed: {
 			mainWindow.keypressed(event.key, event.text, event.modifiers)
 		}
