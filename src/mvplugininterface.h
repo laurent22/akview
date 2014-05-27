@@ -2,7 +2,6 @@
 #define MVPLUGININTERFACE_H
 
 #include "iapplication.h"
-#include "pluginevents.h"
 #include <QString>
 
 namespace mv {
