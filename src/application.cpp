@@ -21,6 +21,7 @@ namespace mv {
 
 Application::Application(int &argc, char **argv, int applicationFlags) : QApplication(argc, argv, applicationFlags) {
 	settings_ = NULL;
+	preferencesDialog_ = NULL;
 
 	Application::setOrganizationName(VER_COMPANYNAME_STR);
 	Application::setOrganizationDomain(VER_DOMAIN_STR);
@@ -75,6 +76,29 @@ void Application::setWindowTitle(const QString &title) {
 	prefix = "** DEBUG ** ";
 #endif // MV_DEBUG
 	qmlApplicationWindow()->setProperty("title", prefix + title + " (" + version::number() + ")");
+}
+
+void Application::showPreferencesDialog() {
+	if (!preferencesDialog_) {
+		preferencesDialog_ = new PreferencesDialog(NULL);
+		preferencesDialog_->setModal(true);
+	}
+	preferencesDialog_->exec();
+}
+
+PluginManager *Application::pluginManager() const {
+	return pluginManager_;
+}
+
+ActionVector Application::actions() const {
+	ActionVector output;
+	PluginVector plugins = pluginManager()->plugins();
+	for (int i = 0; i < plugins.size(); i++) {
+		Plugin* plugin = plugins[i];
+		ActionVector pluginActions = plugin->actions();
+		output.insert(output.end(), pluginActions.begin(), pluginActions.end());
+	}
+	return output;
 }
 
 bool Application::event(QEvent *event) {
@@ -169,7 +193,7 @@ void Application::mainWindow_actionTriggered(const QString &name) {
 	}
 
 	if (name == "preferences") {
-
+		showPreferencesDialog();
 		return;
 	}
 }

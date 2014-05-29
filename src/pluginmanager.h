@@ -3,6 +3,7 @@
 
 #include <QAction>
 #include <QJsonObject>
+#include <QListWidgetItem>
 
 #include "mvplugininterface.h"
 #include "pluginevents.h"
@@ -10,11 +11,11 @@
 
 namespace mv {
 
-class PluginAction: QAction {
+class Action: public QAction {
 
 public:
 
-	PluginAction(const QJsonObject& jsonObject);
+	Action(const QJsonObject& jsonObject);
 	bool supports(const KeypressedEvent& event) const;
 	QString name() const;
 
@@ -25,7 +26,21 @@ private:
 
 };
 
-typedef std::vector<PluginAction*> PluginActionVector;
+typedef std::vector<Action*> ActionVector;
+
+class ActionListWidgetItem: public QListWidgetItem {
+
+public:
+
+	ActionListWidgetItem(Action* action);
+	Action* action() const;
+	void updateText();
+
+private:
+
+	Action* action_;
+
+};
 
 class Plugin {
 
@@ -40,10 +55,10 @@ public:
 	QString version() const;
 	QString compatibilityMinVersion() const;
 	QString compatibilityMaxVersion() const;
-	PluginActionVector actions() const;
+	ActionVector actions() const;
 	bool supports(const KeypressedEvent& event) const;
 	bool interfaceLoaded() const;
-	PluginAction *findAction(const KeypressedEvent &event) const;
+	Action *findAction(const KeypressedEvent &event) const;
 
 private:
 
@@ -53,7 +68,7 @@ private:
 	IApplication* application_;
 	QString pluginFilePath_;
 	QJsonObject metadata_;
-	PluginActionVector actions_;
+	ActionVector actions_;
 
 };
 
@@ -66,7 +81,7 @@ public:
 	PluginManager(IApplication* application);
 	bool loadPlugin(const QString& filePath);
 	void loadPlugins(const QString& folderPath);
-
+	PluginVector plugins() const;
 	void onKeypressed(const KeypressedEvent& event);
 
 private:

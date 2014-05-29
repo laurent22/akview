@@ -44,10 +44,14 @@ void PluginManager::loadPlugins(const QString &folderPath) {
 	}
 }
 
+PluginVector PluginManager::plugins() const {
+	return plugins_;
+}
+
 void PluginManager::onKeypressed(const KeypressedEvent &event) {
 	for (unsigned int i = 0; i < plugins_.size(); i++) {
 		Plugin* plugin = plugins_[i];
-		PluginAction* action = plugin->findAction(event);
+		Action* action = plugin->findAction(event);
 		if (!action) continue;
 
 		if (!plugin->interfaceLoaded()) {
@@ -105,7 +109,7 @@ bool Plugin::loadMetadata() {
 	QJsonArray actionObjects = metadata_.value("actions").toArray();
 	for (int i = 0; i < actionObjects.size(); i++) {
 		QJsonObject o = actionObjects[i].toObject();
-		PluginAction* action = new PluginAction(o);
+		Action* action = new Action(o);
 		actions_.push_back(action);
 	}
 
@@ -168,14 +172,18 @@ QString Plugin::compatibilityMaxVersion() const {
 	return metadata_.value("compatibility_max_version").toString();
 }
 
+ActionVector Plugin::actions() const {
+	return actions_;
+}
+
 bool Plugin::supports(const KeypressedEvent &event) const {
-	PluginAction* a = findAction(event);
+	Action* a = findAction(event);
 	return a ? true : false;
 }
 
-PluginAction* Plugin::findAction(const KeypressedEvent &event) const {
+Action* Plugin::findAction(const KeypressedEvent &event) const {
 	for (unsigned int i = 0; i < actions_.size(); i++) {
-		PluginAction* a = actions_[i];
+		Action* a = actions_[i];
 		if (a->supports(event)) return a;
 	}
 	return NULL;
@@ -189,7 +197,7 @@ MvPluginInterface* Plugin::interface() const {
 	return interface_;
 }
 
-PluginAction::PluginAction(const QJsonObject &jsonObject): QAction(NULL) {
+Action::Action(const QJsonObject &jsonObject): QAction(NULL) {
 	jsonObject_ = jsonObject;
 
 	name_ = jsonObject_.value("name").toString();
@@ -207,7 +215,7 @@ PluginAction::PluginAction(const QJsonObject &jsonObject): QAction(NULL) {
 	setShortcuts(shortcuts);
 }
 
-bool PluginAction::supports(const KeypressedEvent &event) const {
+bool Action::supports(const KeypressedEvent &event) const {
 	QKeySequence keySequence(event.modifiers + event.keyCode);
 	for (unsigned int i = 0; i < shortcuts().size(); i++) {
 		const QKeySequence& ks = shortcuts()[i];
@@ -216,8 +224,21 @@ bool PluginAction::supports(const KeypressedEvent &event) const {
 	return false;
 }
 
-QString PluginAction::name() const {
+QString Action::name() const {
 	return name_;
+}
+
+ActionListWidgetItem::ActionListWidgetItem(Action *action) {
+	action_ = action;
+	updateText();
+}
+
+Action *ActionListWidgetItem::action() const {
+	return action_;
+}
+
+void ActionListWidgetItem::updateText() {
+	setText(action_->text() + " (" + action_->shortcut().toString() + ")");
 }
 
 }

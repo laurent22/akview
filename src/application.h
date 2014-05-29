@@ -7,6 +7,7 @@
 #include <QUrl>
 
 #include "pluginmanager.h"
+#include "preferencesdialog.h"
 
 namespace mv {
 
@@ -20,6 +21,9 @@ public:
 	static Application* instance();
 	void initialize();
 	void setWindowTitle(const QString& title);
+	void showPreferencesDialog();
+	PluginManager* pluginManager() const;
+	ActionVector actions() const;
 
 protected:
 
@@ -41,6 +45,7 @@ private:
 	mutable int sourceIndex_;
 	mutable QString sourceDir_;
 	mutable Settings* settings_;
+	PreferencesDialog* preferencesDialog_;
 
 public slots:
 
