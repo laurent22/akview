@@ -1,7 +1,5 @@
 <RCC>
     <qresource prefix="/">
         <file>main.qml</file>
-        <file>preferences.qml</file>
-        <file>ShortcutEditor.qml</file>
     </qresource>
 </RCC>
