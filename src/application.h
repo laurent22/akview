@@ -31,7 +31,6 @@ protected:
 	QObject* qmlRootObject() const;
 	QObject* qmlImage() const;
 	QObject* qmlApplicationWindow() const;
-	QObject *qmlModelLayer() const;
 
 private:
 
@@ -46,6 +45,7 @@ private:
 public slots:
 
 	void mainWindow_keypressed(int key, const QString& text, int modifiers);
+	void mainWindow_actionTriggered(const QString& name);
 
 	QString source() const;
 	void setSource(const QString& source);
@@ -59,6 +59,7 @@ public slots:
 	void refreshSources();
 	void reloadSource() const;
 	void exifClearOrientation(const QString& filePath);
+	bool runAppleScript(const QString& script);
 
 	Settings* settings() const;
 

@@ -2,6 +2,8 @@
 #include <QDebug>
 #include <QFileDialog>
 #include <QFileOpenEvent>
+#include <QMessageBox>
+#include <QProcess>
 #include <QUrl>
 
 #include "application.h"
@@ -10,9 +12,10 @@
 #include "settings.h"
 #include "version.h"
 
-// TODO: test with unicode file names
-// TODO: reveal in folder plugin
-// TODO: Fix - large images cannot be open
+// TODO: add version info to About box
+// TODO: JpegTools: put focus on select radiobutton
+// TODO: UI to change shortcuts
+// TODO: Exif properties plugin Ctrl + I
 
 namespace mv {
 
@@ -58,6 +61,7 @@ void Application::initialize() {
 	pluginManager_->loadPlugins(paths.pluginFolder());
 
 	QObject::connect(this->qmlRootObject(), SIGNAL(keypressed(int, const QString&, int)), this, SLOT(mainWindow_keypressed(int, const QString&, int)));
+	QObject::connect(this->qmlRootObject(), SIGNAL(actionTriggered(const QString&)), this, SLOT(mainWindow_actionTriggered(const QString&)));
 
 	QStringList filePaths = args.positionalArguments();
 	if (filePaths.size() > 0) setSource(filePaths[0]);
@@ -115,10 +119,6 @@ QObject* Application::qmlApplicationWindow() const {
 	return qmlRootObject();
 }
 
-QObject *Application::qmlModelLayer() const {
-	return qmlRootObject()->findChild<QObject*>("modalLayer");
-}
-
 void Application::mainWindow_keypressed(int key, const QString& text, int modifiers) {
 	KeypressedEvent event;
 	event.keyCode = key;
@@ -160,6 +160,18 @@ void Application::mainWindow_keypressed(int key, const QString& text, int modifi
 
 	// Keyboard events that are not handled by the application are sent to the plugins
 	pluginManager_->onKeypressed(event);
+}
+
+void Application::mainWindow_actionTriggered(const QString &name) {
+	if (name == "about") {
+		QMessageBox::about(NULL, tr("About %1").arg(APPLICATION_TITLE), tr("%1 %2").arg(APPLICATION_TITLE).arg(version::number()));
+		return;
+	}
+
+	if (name == "preferences") {
+
+		return;
+	}
 }
 
 void Application::onMediaSourceChange() {
@@ -254,6 +266,29 @@ void Application::reloadSource() const {
 void Application::exifClearOrientation(const QString &filePath) {
 	JheadHandler handler(filePath);
 	handler.clearOrientation();
+}
+
+bool Application::runAppleScript(const QString &script) {
+	QStringList scriptArgs;
+	scriptArgs << QLatin1String("-e") << script;
+	int exitCode = QProcess::execute(QLatin1String("/usr/bin/osascript"), scriptArgs);
+
+	if (exitCode == -2) {
+		qWarning() << "runAppleScript: the process could not be started:" << script;
+		return false;
+	}
+
+	if (exitCode == -1) {
+		qWarning() << "runAppleScript: the process crashed:" << script;
+		return false;
+	}
+
+	if (exitCode > 0) {
+		qWarning() << "runAppleScript: the process exited with error code " << exitCode;
+		return false;
+	}
+
+	return true;
 }
 
 Settings *Application::settings() const {

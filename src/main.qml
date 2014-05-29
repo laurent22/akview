@@ -10,6 +10,20 @@ ApplicationWindow {
 	height: 480
 
 	signal keypressed(int key, string text, int modifiers)
+	signal actionTriggered(string name)
+
+	menuBar: MenuBar {
+		Menu {
+			MenuItem {
+				text: "About"
+				onTriggered: mainWindow.actionTriggered("about")
+			}
+			MenuItem {
+				text: "Preferences"
+				onTriggered: mainWindow.actionTriggered("preferences")
+			}
+		}
+	}
 
 	Rectangle {
 		anchors.right: parent.right
@@ -32,9 +46,7 @@ ApplicationWindow {
 		smooth: true
 		sourceSize.width: parent.width
 		sourceSize.height: parent.height
-		Keys.onPressed: {
-			mainWindow.keypressed(event.key, event.text, event.modifiers)
-		}
+		Keys.onPressed: mainWindow.keypressed(event.key, event.text, event.modifiers)
 	}
 
 }

@@ -6,7 +6,7 @@
 		{
 			"name": "jpeg_tools",
 			"description": "JPEG tools",
-			"shortcuts": ["Ctrl + J"]
+			"shortcuts": ["Ctrl + Shift + J"]
 		}
 	]
 }

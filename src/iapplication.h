@@ -20,6 +20,7 @@ public slots:
 	virtual Settings* settings() const = 0;
 	virtual void reloadSource() const = 0;
 	virtual void exifClearOrientation(const QString& filePath) = 0;
+	virtual bool runAppleScript(const QString& script) = 0;
 
 };
 

@@ -17,7 +17,8 @@ SOURCES += main.cpp \
     third_party/jhead/jhead_jpgfile.cpp \
     third_party/jhead/jhead_jpgqguess.cpp \
     third_party/jhead/jhead_makernote.cpp \
-    third_party/jhead/jhead_paths.cpp
+    third_party/jhead/jhead_paths.cpp \
+    preferencesdialog.cpp
 
 RESOURCES += qml.qrc
 
@@ -37,4 +38,10 @@ HEADERS += \
     version.h \
 	simpletypes.h \
     third_party/jhead/jhead.h \
-    jheadhandler.h
+    jheadhandler.h \
+    preferencesdialog.h
+
+FORMS += \
+    preferencesdialog.ui
+
+OTHER_FILES +=

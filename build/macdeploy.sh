@@ -4,8 +4,8 @@ SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 
 FREEIMAGE_LIB_PATH=/usr/local/lib/libfreeimage.dylib
 QT5_LIB_BASE_PATH=/usr/local/opt/qt5/lib
-MACDEPLOYQT_PATH=/usr/local/Cellar/qt5/5.2.1/bin/macdeployqt
-APP_RELEASE_DIR=$SCRIPT_DIR/../build-MultiViewer-Qt_5_2_1-Release
+MACDEPLOYQT_PATH=/usr/local/Cellar/qt5/5.3.0/bin/macdeployqt
+APP_RELEASE_DIR=$SCRIPT_DIR/../build-MultiViewer-Qt_5_3_0-Release
 
 function updateLibPath {
 	if [[ -n "$(otool -L $1 | grep $2)" ]]; then
