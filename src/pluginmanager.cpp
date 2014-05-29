@@ -168,19 +168,6 @@ QString Plugin::compatibilityMaxVersion() const {
 	return metadata_.value("compatibility_max_version").toString();
 }
 
-QString Plugin::toString() const {
-	QString s;
-	s += "Description: " + description() + "\n";
-	s += "Version: " + version() + "\n";
-	s += QString("Interface: %1\n").arg(interface_ ? "loaded" : "not loaded");
-	s += "Actions:\n";
-	for (unsigned int i = 0; i < actions_.size(); i++) {
-		s += actions_[i]->toString();
-	}
-	s += "\n";
-	return s;
-}
-
 bool Plugin::supports(const KeypressedEvent &event) const {
 	PluginAction* a = findAction(event);
 	return a ? true : false;
@@ -202,51 +189,35 @@ MvPluginInterface* Plugin::interface() const {
 	return interface_;
 }
 
-PluginAction::PluginAction(const QJsonObject &jsonObject) {
+PluginAction::PluginAction(const QJsonObject &jsonObject): QAction(NULL) {
 	jsonObject_ = jsonObject;
+
+	name_ = jsonObject_.value("name").toString();
+	setText(jsonObject_.value("description").toString());
+
 	QJsonArray array = jsonObject.value("shortcuts").toArray();
+	QList<QKeySequence> shortcuts;
 	for (int i = 0; i < array.size(); i++) {
 		QString s = array[i].toString();
 		s = s.replace(" ", "");
 		s = s.trimmed();
 		QKeySequence ks(s);
-		shortcuts_.push_back(ks);
+		shortcuts.push_back(ks);
 	}
-}
-
-QString PluginAction::name() const {
-	return jsonObject_.value("name").toString();
-}
-
-QString PluginAction::description() const {
-	return jsonObject_.value("description").toString();
-}
-
-QKeySequenceVector PluginAction::shortcuts() const {
-	return shortcuts_;
-}
-
-QString PluginAction::toString() const {
-	QString s;
-	s += "Name: " + name() + "\n";
-	s += "Description: " + description() + "\n";
-	s += "Shorcuts: ";
-	QString temp;
-	for (unsigned int i = 0; i < shortcuts_.size(); i++) {
-		if (temp != "") temp += "; ";
-		temp += shortcuts_[i].toString();
-	}
-	s += temp + "\n";
-	return s;
+	setShortcuts(shortcuts);
 }
 
 bool PluginAction::supports(const KeypressedEvent &event) const {
 	QKeySequence keySequence(event.modifiers + event.keyCode);
-	for (unsigned int i = 0; i < shortcuts_.size(); i++) {
-		const QKeySequence& ks = shortcuts_[i];
+	for (unsigned int i = 0; i < shortcuts().size(); i++) {
+		const QKeySequence& ks = shortcuts()[i];
 		if (ks.matches(keySequence)) return true;
 	}
 	return false;
+}
+
+QString PluginAction::name() const {
+	return name_;
 }
 
 }

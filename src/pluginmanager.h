@@ -1,6 +1,7 @@
 #ifndef PLUGINMANAGER_H
 #define PLUGINMANAGER_H
 
+#include <QAction>
 #include <QJsonObject>
 
 #include "mvplugininterface.h"
@@ -9,21 +10,18 @@
 
 namespace mv {
 
-class PluginAction {
+class PluginAction: QAction {
 
 public:
 
 	PluginAction(const QJsonObject& jsonObject);
-	QString name() const;
-	QString description() const;
-	QKeySequenceVector shortcuts() const;
-	QString toString() const;
 	bool supports(const KeypressedEvent& event) const;
+	QString name() const;
 
 private:
 
 	QJsonObject jsonObject_;
-	QKeySequenceVector shortcuts_;
+	QString name_;
 
 };
 
@@ -43,7 +41,6 @@ public:
 	QString compatibilityMinVersion() const;
 	QString compatibilityMaxVersion() const;
 	PluginActionVector actions() const;
-	QString toString() const;
 	bool supports(const KeypressedEvent& event) const;
 	bool interfaceLoaded() const;
 	PluginAction *findAction(const KeypressedEvent &event) const;

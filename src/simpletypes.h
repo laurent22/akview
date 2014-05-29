@@ -5,6 +5,5 @@
 #include <QKeySequence>
 
 typedef std::vector<int> IntVector;
-typedef std::vector<QKeySequence> QKeySequenceVector;
 
 #endif // SIMPLETYPES_H
