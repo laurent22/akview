@@ -75,7 +75,7 @@ void Application::setWindowTitle(const QString &title) {
 #ifdef MV_DEBUG
 	prefix = "** DEBUG ** ";
 #endif // MV_DEBUG
-	qmlApplicationWindow()->setProperty("title", prefix + title + " (" + version::number() + ")");
+	qmlApplicationWindow()->setProperty("title", prefix + title);
 }
 
 void Application::showPreferencesDialog() {
