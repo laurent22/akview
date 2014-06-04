@@ -12,8 +12,6 @@
 #include "settings.h"
 #include "version.h"
 
-// TODO: add version info to About box
-// TODO: JpegTools: put focus on select radiobutton
 // TODO: UI to change shortcuts
 // TODO: Exif properties plugin Ctrl + I
 

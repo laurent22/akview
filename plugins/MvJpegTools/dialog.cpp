@@ -24,10 +24,13 @@ QHash<QString, QVariant> Dialog::settings() const {
 void Dialog::loadSettings(const QHash<QString, QVariant>& settings) {
 	if (settings.contains("losslessRotation")) {
 		int r = settings.value("losslessRotation").toInt();
-		if (r == 0) ui->losslessRotation0rb->setChecked(true);
-		if (r == 90) ui->losslessRotation90rb->setChecked(true);
-		if (r == 180) ui->losslessRotation180rb->setChecked(true);
-		if (r == 270) ui->losslessRotation270rb->setChecked(true);
+		QRadioButton* rb = NULL;
+		if (r == 0) rb = ui->losslessRotation0rb;
+		if (r == 90) rb = ui->losslessRotation90rb;
+		if (r == 180) rb = ui->losslessRotation180rb;
+		if (r == 270) rb = ui->losslessRotation270rb;
+		rb->setChecked(true);
+		rb->setFocus();
 	} else {
 		ui->losslessRotation0rb->setChecked(true);
 	}
