@@ -1,0 +1,3 @@
+- UI to change shortcuts
+- Check what happens when running with *.jpg
+- Exif properties plugin Ctrl + I

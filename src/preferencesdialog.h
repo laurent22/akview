@@ -23,7 +23,8 @@ public:
 
 private:
 
-	void refreshCurrentTab();
+	void rebuildCurrentTab();
+	void refreshShortcutControls();
 	mv::Action* selectedShortcutAction() const;
 	mv::ActionListWidgetItem *selectedShortcutItem() const;
 	QWidgetBoolMap openedTabs_;
@@ -39,6 +40,8 @@ public slots:
 	void shortcutListWidget_currentItemChanged(QListWidgetItem* current, QListWidgetItem* previous);
 	void shortcutKeySequenceEdit_editingFinished();
 	void buttonBox_accepted();
+	void shortcutResetButton_clicked(bool);
+	void shortcutClearButton_clicked(bool);
 
 };
 

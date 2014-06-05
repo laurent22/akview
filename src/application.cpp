@@ -12,9 +12,6 @@
 #include "settings.h"
 #include "version.h"
 
-// TODO: UI to change shortcuts
-// TODO: Exif properties plugin Ctrl + I
-
 namespace mv {
 
 Application::Application(int &argc, char **argv, int applicationFlags) : QApplication(argc, argv, applicationFlags) {
@@ -115,6 +112,7 @@ QString Application::shortcutAction(const QKeySequence& shortcut) const {
 	Settings settings;
 	settings.beginGroup("shortcuts");
 	QStringList keys = settings.childKeys();
+	QStringList noopActions;
 
 	for (int i = 0; i < keys.size(); i++) {
 		QString key = keys[i];
@@ -122,17 +120,23 @@ QString Application::shortcutAction(const QKeySequence& shortcut) const {
 		QKeySequence kv(value);
 		if (value == shortcut.toString()) {
 			return key;
+		} else if (value == "") {
+			noopActions << key;
+		}
+	}
+
+	ActionVector actions = this->actions();
+	for (unsigned int i = 0; i < actions.size(); i++) {
+		Action* a = actions[i];
+		if (a->supports(shortcut)) {
+			// Now also check if the shortcut has been overridden by a blank shortcut (which means
+			// this action cannot be started via a shortcut)
+			if (noopActions.contains(a->name())) return "";
+			return a->name();
 		}
 	}
 
 	settings.endGroup();
-
-	ActionVector actions = this->actions();
-	Action* action = NULL;
-	for (unsigned int i = 0; i < actions.size(); i++) {
-		Action* a = actions[i];
-		if (a->supports(shortcut)) return a->name();
-	}
 
 	return "";
 }

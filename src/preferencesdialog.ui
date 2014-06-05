@@ -28,7 +28,7 @@
         <widget class="QListWidget" name="shortcutListWidget"/>
        </item>
        <item>
-        <layout class="QHBoxLayout" name="horizontalLayout">
+        <layout class="QHBoxLayout" name="shortcutControlsLayout">
          <item>
           <widget class="QLabel" name="shortcutKeySequenceLabel">
            <property name="text">
@@ -40,9 +40,9 @@
           <widget class="QKeySequenceEdit" name="shortcutKeySequenceEdit"/>
          </item>
          <item>
-          <widget class="QPushButton" name="shortcutDeleteButton">
+          <widget class="QPushButton" name="shortcutClearButton">
            <property name="text">
-            <string>X</string>
+            <string>Clear</string>
            </property>
           </widget>
          </item>

@@ -249,7 +249,7 @@ bool Action::supports(const KeypressedEvent &event) const {
 }
 
 bool Action::supports(const QKeySequence &keySequence) const {
-	for (unsigned int i = 0; i < shortcuts().size(); i++) {
+	for (int i = 0; i < shortcuts().size(); i++) {
 		const QKeySequence& ks = shortcuts()[i];
 		if (ks.matches(keySequence)) return true;
 	}
@@ -275,13 +275,12 @@ void ActionListWidgetItem::setShortcut(const QKeySequence& ks) {
 }
 
 QKeySequence ActionListWidgetItem::shortcut() const {
-	if (shortcut_.isEmpty()) return action()->shortcut();
-	return shortcut_;
+	if (shortcutIsOverridden()) return shortcut_;
+	return action()->shortcut();
 }
 
 void ActionListWidgetItem::setShortcutIsOverridden(bool v) {
 	shortcutIsOverridden_ = v;
-	qDebug() << "Setting to " << shortcutIsOverridden_;
 }
 
 bool ActionListWidgetItem::shortcutIsOverridden() const {
@@ -292,9 +291,9 @@ void ActionListWidgetItem::updateDisplay() {
 	QFont font(this->font());
 	font.setBold(shortcutIsOverridden());
 	setFont(font);
-	setText(shortcut().toString() + " - " + action()->text());
-
-	qDebug() << text() << shortcutIsOverridden();
+	QString shortcutString = shortcut().toString();
+	if (shortcutString == "") shortcutString = QObject::tr("(None)");
+	setText(shortcutString + " - " + action()->text());
 }
 
 }

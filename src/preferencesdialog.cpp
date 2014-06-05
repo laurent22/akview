@@ -10,10 +10,12 @@
 PreferencesDialog::PreferencesDialog(QWidget *parent) : QDialog(parent), ui(new Ui::PreferencesDialog) {
 	ui->setupUi(this);
 
-	QObject::connect(ui->tabWidget, SIGNAL(currentChanged(int)), this, SLOT(tabWidget_currentChanged(int)));
-	QObject::connect(ui->shortcutListWidget, SIGNAL(currentItemChanged(QListWidgetItem*,QListWidgetItem*)), this, SLOT(shortcutListWidget_currentItemChanged(QListWidgetItem*,QListWidgetItem*)));
-	QObject::connect(ui->shortcutKeySequenceEdit, SIGNAL(editingFinished()), this, SLOT(shortcutKeySequenceEdit_editingFinished()));
-	QObject::connect(ui->buttonBox, SIGNAL(accepted()), this, SLOT(buttonBox_accepted()));
+	connect(ui->tabWidget, SIGNAL(currentChanged(int)), this, SLOT(tabWidget_currentChanged(int)));
+	connect(ui->shortcutListWidget, SIGNAL(currentItemChanged(QListWidgetItem*,QListWidgetItem*)), this, SLOT(shortcutListWidget_currentItemChanged(QListWidgetItem*,QListWidgetItem*)));
+	connect(ui->shortcutKeySequenceEdit, SIGNAL(editingFinished()), this, SLOT(shortcutKeySequenceEdit_editingFinished()));
+	connect(ui->buttonBox, SIGNAL(accepted()), this, SLOT(buttonBox_accepted()));
+	connect(ui->shortcutResetButton, SIGNAL(clicked(bool)), this, SLOT(shortcutResetButton_clicked(bool)));
+	connect(ui->shortcutClearButton, SIGNAL(clicked(bool)), this, SLOT(shortcutClearButton_clicked(bool)));
 }
 
 PreferencesDialog::~PreferencesDialog() {
@@ -21,7 +23,31 @@ PreferencesDialog::~PreferencesDialog() {
 	// TODO: delete ActionListWidgetItems
 }
 
-void PreferencesDialog::refreshCurrentTab() {
+void PreferencesDialog::shortcutResetButton_clicked(bool) {
+	mv::ActionListWidgetItem* item = selectedShortcutItem();
+	if (!item) return;
+
+	QKeySequence shortcut;
+	item->setShortcut(shortcut);
+	item->setShortcutIsOverridden(false);
+	item->updateDisplay();
+
+	refreshShortcutControls();
+}
+
+void PreferencesDialog::shortcutClearButton_clicked(bool) {
+	mv::ActionListWidgetItem* item = selectedShortcutItem();
+	if (!item) return;
+
+	QKeySequence shortcut;
+	item->setShortcut(shortcut);
+	item->setShortcutIsOverridden(true);
+	item->updateDisplay();
+	
+	refreshShortcutControls();
+}
+
+void PreferencesDialog::rebuildCurrentTab() {
 	QWidget* currentWidget = ui->tabWidget->currentWidget();
 	openedTabs_[currentWidget] = true;
 
@@ -38,6 +64,8 @@ void PreferencesDialog::refreshCurrentTab() {
 			item->updateDisplay();
 			ui->shortcutListWidget->addItem(item);
 		}
+
+		refreshShortcutControls();
 	} else if (currentWidget == ui->generalTab) {
 
 	}
@@ -56,11 +84,11 @@ mv::ActionListWidgetItem *PreferencesDialog::selectedShortcutItem() const {
 
 void PreferencesDialog::showEvent(QShowEvent *event) {
 	if (event->spontaneous()) return;
-	refreshCurrentTab();
+	rebuildCurrentTab();
 }
 
 void PreferencesDialog::tabWidget_currentChanged(int) {
-	refreshCurrentTab();
+	rebuildCurrentTab();
 }
 
 void PreferencesDialog::shortcutListWidget_currentItemChanged(QListWidgetItem *current, QListWidgetItem *previous) {
@@ -68,7 +96,8 @@ void PreferencesDialog::shortcutListWidget_currentItemChanged(QListWidgetItem *c
 	Q_UNUSED(previous);
 	mv::ActionListWidgetItem* item = selectedShortcutItem();
 	if (!item) return;
-	ui->shortcutKeySequenceEdit->setKeySequence(item->shortcut());
+	
+	refreshShortcutControls();
 }
 
 void PreferencesDialog::shortcutKeySequenceEdit_editingFinished() {
@@ -78,6 +107,8 @@ void PreferencesDialog::shortcutKeySequenceEdit_editingFinished() {
 	item->setShortcutIsOverridden(true);
 	item->setShortcut(ui->shortcutKeySequenceEdit->keySequence());
 	item->updateDisplay();
+
+	refreshShortcutControls();
 }
 
 void PreferencesDialog::buttonBox_accepted() {
@@ -95,4 +126,19 @@ void PreferencesDialog::buttonBox_accepted() {
 		}
 		settings.endGroup();
 	}
+}
+
+void PreferencesDialog::refreshShortcutControls() {
+	mv::ActionListWidgetItem* item = selectedShortcutItem();
+	bool itemSelected = item ? true : false;
+	ui->shortcutKeySequenceLabel->setEnabled(itemSelected);
+	ui->shortcutKeySequenceEdit->setEnabled(itemSelected);
+	ui->shortcutClearButton->setEnabled(itemSelected);
+	ui->shortcutResetButton->setEnabled(itemSelected);
+
+	if (!itemSelected) return;
+
+	ui->shortcutKeySequenceEdit->setKeySequence(item->shortcut());
+	ui->shortcutClearButton->setEnabled(!item->shortcut().isEmpty());
+	ui->shortcutResetButton->setEnabled(item->shortcutIsOverridden());
 }
