@@ -43,7 +43,6 @@ fn_runAction() {
 	if [ "$ACTION" == "debug" ]; then
 		$QMAKE $PROJECT_FILE -r -spec macx-clang CONFIG+=x86_64 CONFIG+=debug CONFIG+=declarative_debug CONFIG+=qml_debug
 	elif [ "$ACTION" == "release" ]; then
-		$SCRIPT_DIR/version/CreateVersionInfo
 		$QMAKE $PROJECT_FILE -r -spec macx-clang CONFIG+=x86_64
 	fi
 
@@ -62,6 +61,9 @@ fn_runAction $ACTION $SCRIPT_DIR/../plugins/build-MvReveal-$ACTION $SCRIPT_DIR/.
 $SCRIPT_DIR/../plugins/copyplugins.sh
 
 # Then build the application
+if [ "$ACTION" == "release" ]; then
+	$SCRIPT_DIR/version/CreateVersionInfo
+fi
 fn_runAction $ACTION $SCRIPT_DIR/../build-$ACTION ../src/MultiViewer.pro
 
 if [ "$LAUNCH_AFTER_BUILD" == "1" ]; then
