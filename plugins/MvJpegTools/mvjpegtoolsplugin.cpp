@@ -3,6 +3,7 @@
 #include <QDebug>
 #include <QFileInfo>
 #include <QHash>
+#include <QMessageBox>
 #include <QByteArray>
 
 #include <FreeImage.h>
@@ -19,7 +20,10 @@ void MvJpegToolsPlugin::onAction(const QString &action) {
 
 	QString sourcePath = application->source();
 	QString extension = QFileInfo(sourcePath).suffix().toLower();
-	if (extension != "jpg" && extension != "jpeg") return;
+	if (extension != "jpg" && extension != "jpeg") {
+		QMessageBox::information(NULL, tr("Information"), tr("This is not a JPEG file."));
+		return;
+	}
 
 	QHash<QString, QVariant> settings = application->settings()->value("plugins/jpegtools/dialogsettings").toHash();
 
