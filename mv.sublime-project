@@ -1,0 +1,27 @@
+{
+	"folders":
+	[
+		{
+			"path": "."
+		}
+	],
+	"build_systems":
+	[
+		{
+			"name": "Run Debug",
+			"cmd": ["/Users/laurent/Docs/PROGS/C++/mv/build/build.sh", "debug", "1"]
+		},
+		{
+			"name": "Run Release",
+			"cmd": ["/Users/laurent/Docs/PROGS/C++/mv/build/build.sh", "release", "1"]
+		},
+		{
+			"name": "Clean Debug",
+			"cmd": ["/Users/laurent/Docs/PROGS/C++/mv/build/build.sh", "clean-debug"]
+		},
+		{
+			"name": "Clean Release",
+			"cmd": ["/Users/laurent/Docs/PROGS/C++/mv/build/build.sh", "clean-release"]
+		}
+	]
+}
