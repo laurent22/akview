@@ -265,7 +265,7 @@ ActionListWidgetItem::ActionListWidgetItem(Action *action) {
 	action_ = action;
 	updateDisplay();
 }
-
+	
 Action *ActionListWidgetItem::action() const {
 	return action_;
 }

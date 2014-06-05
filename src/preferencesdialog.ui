@@ -17,8 +17,13 @@
    <item>
     <widget class="QTabWidget" name="tabWidget">
      <property name="currentIndex">
-      <number>0</number>
+      <number>1</number>
      </property>
+     <widget class="QWidget" name="generalTab">
+      <attribute name="title">
+       <string>General</string>
+      </attribute>
+     </widget>
      <widget class="QWidget" name="shortcutsTab">
       <attribute name="title">
        <string>Shortcuts</string>
@@ -56,16 +61,6 @@
         </layout>
        </item>
       </layout>
-     </widget>
-     <widget class="QWidget" name="generalTab">
-      <attribute name="title">
-       <string>General</string>
-      </attribute>
-     </widget>
-     <widget class="QWidget" name="tab_2">
-      <attribute name="title">
-       <string>Tab 2</string>
-      </attribute>
      </widget>
     </widget>
    </item>
