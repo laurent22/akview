@@ -17,6 +17,7 @@ public:
 
 	Action(const QJsonObject& jsonObject);
 	bool supports(const KeypressedEvent& event) const;
+	bool supports(const QKeySequence &keySequence) const;
 	QString name() const;
 
 private:
@@ -64,7 +65,8 @@ public:
 	ActionVector actions() const;
 	bool supports(const KeypressedEvent& event) const;
 	bool interfaceLoaded() const;
-	Action *findAction(const KeypressedEvent &event) const;
+	Action *findAction(const KeypressedEvent& event) const;
+	Action *findAction(const QString& name) const;
 
 private:
 
@@ -89,6 +91,7 @@ public:
 	void loadPlugins(const QString& folderPath);
 	PluginVector plugins() const;
 	void onKeypressed(const KeypressedEvent& event);
+	void onAction(const QString& actionName);
 
 private:
 

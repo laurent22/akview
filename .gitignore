@@ -5,3 +5,4 @@ plugins/debug
 plugins/release
 build/version/CreateVersionInfo
 *.sublime-workspace
+jhead

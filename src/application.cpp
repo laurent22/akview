@@ -111,6 +111,32 @@ bool Application::actionShortcutIsOverridden(const QString& actionName) const {
 	return !v.isNull();
 }
 
+QString Application::shortcutAction(const QKeySequence& shortcut) const {
+	Settings settings;
+	settings.beginGroup("shortcuts");
+	QStringList keys = settings.childKeys();
+
+	for (int i = 0; i < keys.size(); i++) {
+		QString key = keys[i];
+		QString value = settings.value(key).toString();
+		QKeySequence kv(value);
+		if (value == shortcut.toString()) {
+			return key;
+		}
+	}
+
+	settings.endGroup();
+
+	ActionVector actions = this->actions();
+	Action* action = NULL;
+	for (unsigned int i = 0; i < actions.size(); i++) {
+		Action* a = actions[i];
+		if (a->supports(shortcut)) return a->name();
+	}
+
+	return "";
+}
+
 QKeySequence Application::actionShortcut(const QString &actionName) const {
 	ActionVector actions = this->actions();
 	Action* action = NULL;
@@ -216,8 +242,9 @@ void Application::mainWindow_keypressed(int key, const QString& text, int modifi
 		return;
 	}
 
-	// Keyboard events that are not handled by the application are sent to the plugins
-	pluginManager_->onKeypressed(event);
+	QKeySequence ks(modifiers + key);
+	QString action = shortcutAction(ks);
+	if (action != "") pluginManager_->onAction(action);
 }
 
 void Application::mainWindow_actionTriggered(const QString &name) {

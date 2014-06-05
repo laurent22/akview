@@ -48,6 +48,26 @@ PluginVector PluginManager::plugins() const {
 	return plugins_;
 }
 
+void PluginManager::onAction(const QString& actionName) {
+	for (unsigned int i = 0; i < plugins_.size(); i++) {
+		Plugin* plugin = plugins_[i];
+		Action* action = plugin->findAction(actionName);
+		if (!action) continue;
+
+		if (!plugin->interfaceLoaded()) {
+			bool ok = plugin->loadInterface();
+			if (!ok) {
+				qWarning() << "could not load plugin interface of" << plugin->description() << ":" << plugin->errorMessage();
+				continue;
+			}
+		}
+
+		plugin->interface()->onAction(action->name());
+		qDebug() << "Action" << actionName << "has been processed by plugin" << plugin->description();
+		return;
+	}
+}
+
 void PluginManager::onKeypressed(const KeypressedEvent &event) {
 	for (unsigned int i = 0; i < plugins_.size(); i++) {
 		Plugin* plugin = plugins_[i];
@@ -189,6 +209,14 @@ Action* Plugin::findAction(const KeypressedEvent &event) const {
 	return NULL;
 }
 
+Action* Plugin::findAction(const QString& name) const {
+	for (unsigned int i = 0; i < actions_.size(); i++) {
+		Action* a = actions_[i];
+		if (a->name() == name) return a;
+	}
+	return NULL;
+}
+
 bool Plugin::interfaceLoaded() const {
 	return interface_ ? true : false;
 }
@@ -217,6 +245,10 @@ Action::Action(const QJsonObject &jsonObject): QAction(NULL) {
 
 bool Action::supports(const KeypressedEvent &event) const {
 	QKeySequence keySequence(event.modifiers + event.keyCode);
+	return supports(keySequence);
+}
+
+bool Action::supports(const QKeySequence &keySequence) const {
 	for (unsigned int i = 0; i < shortcuts().size(); i++) {
 		const QKeySequence& ks = shortcuts()[i];
 		if (ks.matches(keySequence)) return true;

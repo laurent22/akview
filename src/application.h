@@ -26,6 +26,7 @@ public:
 	ActionVector actions() const;
 	bool actionShortcutIsOverridden(const QString& actionName) const;
 	QKeySequence actionShortcut(const QString& actionName) const;
+	QString shortcutAction(const QKeySequence& shortcut) const;
 
 protected:
 
