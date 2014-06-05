@@ -37,7 +37,7 @@ protected:
 public slots:
 
 	void tabWidget_currentChanged(int);
-	void shortcutListWidget_currentItemChanged(QListWidgetItem* current, QListWidgetItem* previous);
+	void shortcutListWidget_currentItemChanged(QListWidgetItem*, QListWidgetItem*);
 	void shortcutKeySequenceEdit_editingFinished();
 	void buttonBox_accepted();
 	void shortcutResetButton_clicked(bool);

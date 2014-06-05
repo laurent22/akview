@@ -91,9 +91,7 @@ void PreferencesDialog::tabWidget_currentChanged(int) {
 	rebuildCurrentTab();
 }
 
-void PreferencesDialog::shortcutListWidget_currentItemChanged(QListWidgetItem *current, QListWidgetItem *previous) {
-	Q_UNUSED(current);
-	Q_UNUSED(previous);
+void PreferencesDialog::shortcutListWidget_currentItemChanged(QListWidgetItem*, QListWidgetItem*) {
 	mv::ActionListWidgetItem* item = selectedShortcutItem();
 	if (!item) return;
 	
