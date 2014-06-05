@@ -229,16 +229,40 @@ QString Action::name() const {
 }
 
 ActionListWidgetItem::ActionListWidgetItem(Action *action) {
+	shortcutIsOverridden_ = false;
 	action_ = action;
-	updateText();
+	updateDisplay();
 }
 
 Action *ActionListWidgetItem::action() const {
 	return action_;
 }
 
-void ActionListWidgetItem::updateText() {
-	setText(action_->text() + " (" + action_->shortcut().toString() + ")");
+void ActionListWidgetItem::setShortcut(const QKeySequence& ks) {
+	shortcut_ = ks;
+}
+
+QKeySequence ActionListWidgetItem::shortcut() const {
+	if (shortcut_.isEmpty()) return action()->shortcut();
+	return shortcut_;
+}
+
+void ActionListWidgetItem::setShortcutIsOverridden(bool v) {
+	shortcutIsOverridden_ = v;
+	qDebug() << "Setting to " << shortcutIsOverridden_;
+}
+
+bool ActionListWidgetItem::shortcutIsOverridden() const {
+	return shortcutIsOverridden_;
+}
+
+void ActionListWidgetItem::updateDisplay() {
+	QFont font(this->font());
+	font.setBold(shortcutIsOverridden());
+	setFont(font);
+	setText(shortcut().toString() + " - " + action()->text());
+
+	qDebug() << text() << shortcutIsOverridden();
 }
 
 }

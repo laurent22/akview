@@ -70,9 +70,15 @@ void Application::initialize() {
 
 void Application::setWindowTitle(const QString &title) {
 	QString prefix;
+
 #ifdef MV_DEBUG
 	prefix = "** DEBUG ** ";
 #endif // MV_DEBUG
+
+#ifdef QT_DEBUG
+	prefix = "** DEBUG ** ";
+#endif // QT_DEBUG
+
 	qmlApplicationWindow()->setProperty("title", prefix + title);
 }
 
@@ -91,11 +97,41 @@ PluginManager *Application::pluginManager() const {
 ActionVector Application::actions() const {
 	ActionVector output;
 	PluginVector plugins = pluginManager()->plugins();
-	for (int i = 0; i < plugins.size(); i++) {
+	for (unsigned int i = 0; i < plugins.size(); i++) {
 		Plugin* plugin = plugins[i];
 		ActionVector pluginActions = plugin->actions();
 		output.insert(output.end(), pluginActions.begin(), pluginActions.end());
 	}
+	return output;
+}
+
+bool Application::actionShortcutIsOverridden(const QString& actionName) const {
+	Settings settings;
+	QVariant v = settings.value("shortcuts/" + actionName);
+	return !v.isNull();
+}
+
+QKeySequence Application::actionShortcut(const QString &actionName) const {
+	ActionVector actions = this->actions();
+	Action* action = NULL;
+	for (unsigned int i = 0; i < actions.size(); i++) {
+		Action* a = actions[i];
+		if (a->name() == actionName) {
+			action = a;
+			break;
+		}
+	}
+
+	if (!action) {
+		QKeySequence output;
+		return output;
+	}
+
+	Settings settings;
+	QVariant v = settings.value("shortcuts/" + actionName);
+	if (v.isNull()) return action->shortcut();
+
+	QKeySequence output(v.toString());
 	return output;
 }
 

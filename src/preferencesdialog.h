@@ -6,6 +6,7 @@
 #include <QShowEvent>
 
 #include "pluginmanager.h"
+#include "simpletypes.h"
 
 namespace Ui {
 class PreferencesDialog;
@@ -25,7 +26,7 @@ private:
 	void refreshCurrentTab();
 	mv::Action* selectedShortcutAction() const;
 	mv::ActionListWidgetItem *selectedShortcutItem() const;
-
+	QWidgetBoolMap openedTabs_;
 	Ui::PreferencesDialog *ui;
 
 protected:
@@ -37,6 +38,7 @@ public slots:
 	void tabWidget_currentChanged(int);
 	void shortcutListWidget_currentItemChanged(QListWidgetItem* current, QListWidgetItem* previous);
 	void shortcutKeySequenceEdit_editingFinished();
+	void buttonBox_accepted();
 
 };
 

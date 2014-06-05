@@ -2,8 +2,10 @@
 #include "ui_preferencesdialog.h"
 
 #include "application.h"
+#include "settings.h"
 
 #include <QDebug>
+#include <QKeySequence>
 
 PreferencesDialog::PreferencesDialog(QWidget *parent) : QDialog(parent), ui(new Ui::PreferencesDialog) {
 	ui->setupUi(this);
@@ -11,22 +13,32 @@ PreferencesDialog::PreferencesDialog(QWidget *parent) : QDialog(parent), ui(new 
 	QObject::connect(ui->tabWidget, SIGNAL(currentChanged(int)), this, SLOT(tabWidget_currentChanged(int)));
 	QObject::connect(ui->shortcutListWidget, SIGNAL(currentItemChanged(QListWidgetItem*,QListWidgetItem*)), this, SLOT(shortcutListWidget_currentItemChanged(QListWidgetItem*,QListWidgetItem*)));
 	QObject::connect(ui->shortcutKeySequenceEdit, SIGNAL(editingFinished()), this, SLOT(shortcutKeySequenceEdit_editingFinished()));
+	QObject::connect(ui->buttonBox, SIGNAL(accepted()), this, SLOT(buttonBox_accepted()));
 }
 
 PreferencesDialog::~PreferencesDialog() {
 	delete ui;
+	// TODO: delete ActionListWidgetItems
 }
 
 void PreferencesDialog::refreshCurrentTab() {
-	if (ui->tabWidget->currentWidget() == ui->shortcutsTab) {
+	QWidget* currentWidget = ui->tabWidget->currentWidget();
+	openedTabs_[currentWidget] = true;
+
+	if (currentWidget == ui->shortcutsTab) {
 		ui->shortcutListWidget->clear();
 
 		mv::ActionVector actions = mv::Application::instance()->actions();
 		for (unsigned i = 0; i < actions.size(); i++) {
-			mv::ActionListWidgetItem* item = new mv::ActionListWidgetItem(actions[i]);
+			mv::Action* action = actions[i];
+			mv::ActionListWidgetItem* item = new mv::ActionListWidgetItem(action);
+			QKeySequence ks = mv::Application::instance()->actionShortcut(action->name());
+			item->setShortcutIsOverridden(mv::Application::instance()->actionShortcutIsOverridden(action->name()));
+			item->setShortcut(ks);
+			item->updateDisplay();
 			ui->shortcutListWidget->addItem(item);
 		}
-	} else if (ui->tabWidget->currentWidget() == ui->generalTab) {
+	} else if (currentWidget == ui->generalTab) {
 
 	}
 }
@@ -52,18 +64,35 @@ void PreferencesDialog::tabWidget_currentChanged(int) {
 }
 
 void PreferencesDialog::shortcutListWidget_currentItemChanged(QListWidgetItem *current, QListWidgetItem *previous) {
-	mv::Action* action = selectedShortcutAction();
-	ui->shortcutKeySequenceEdit->setKeySequence(action->shortcut());
+	Q_UNUSED(current);
+	Q_UNUSED(previous);
+	mv::ActionListWidgetItem* item = selectedShortcutItem();
+	if (!item) return;
+	ui->shortcutKeySequenceEdit->setKeySequence(item->shortcut());
 }
 
 void PreferencesDialog::shortcutKeySequenceEdit_editingFinished() {
-	mv::Action* action = selectedShortcutAction();
-	action->setShortcut(ui->shortcutKeySequenceEdit->keySequence());
-//	ui->shortcutListWidget->update();
-
 	mv::ActionListWidgetItem* item = selectedShortcutItem();
-	item->updateText();
-//	QString t = item->text();
-//	item->setText(t + "-");
-//	//item->setText(t);
+	if (!item) return;
+	
+	item->setShortcutIsOverridden(true);
+	item->setShortcut(ui->shortcutKeySequenceEdit->keySequence());
+	item->updateDisplay();
+}
+
+void PreferencesDialog::buttonBox_accepted() {
+	mv::Settings settings;
+
+	if (openedTabs_.find(ui->shortcutsTab) != openedTabs_.end()) {
+		settings.beginGroup("shortcuts");
+		for (int i = 0; i < ui->shortcutListWidget->count(); i++) {
+			mv::ActionListWidgetItem* item = dynamic_cast<mv::ActionListWidgetItem*>(ui->shortcutListWidget->item(i));
+			if (!item->shortcutIsOverridden()) {
+				settings.remove(item->action()->name());
+			} else {
+				settings.setValue(item->action()->name(), item->shortcut().toString());
+			}
+		}
+		settings.endGroup();
+	}
 }
