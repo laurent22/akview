@@ -67,5 +67,5 @@ fi
 fn_runAction $ACTION $SCRIPT_DIR/../build-$ACTION ../src/MultiViewer.pro
 
 if [ "$LAUNCH_AFTER_BUILD" == "1" ]; then
-	open -a $BUILD_DIR/MultiViewer.app ~/Desktop/P1110391.JPG
+	open -a $BUILD_DIR/MultiViewer.app ~/Desktop/test/DSC_1.jpg
 fi

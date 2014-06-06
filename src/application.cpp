@@ -286,6 +286,17 @@ QStringList Application::supportedFileExtensions() const {
 	return output;
 }
 
+void Application::playLoopAnimation() {
+	QObject* loopAnimation = qmlRootObject()->findChild<QObject*>("loopImageShowAnimation");
+	if (loopAnimation) QMetaObject::invokeMethod(loopAnimation, "start");
+	QObject* rotateAnimation = qmlRootObject()->findChild<QObject*>("loopImageRotateAnimation");
+	if (rotateAnimation) {
+		QObject* loopImage = qmlRootObject()->findChild<QObject*>("loopImage");
+		loopImage->setProperty("rotation", 0);
+		QMetaObject::invokeMethod(rotateAnimation, "start");
+	}
+}
+
 void Application::setSourceIndex(int index) {
 	QStringList sources = this->sources();
 	if (!sources.size()) return;
@@ -300,7 +311,10 @@ void Application::nextSource() {
 	int index = sourceIndex();
 	QStringList sources = this->sources();
 	index++;
-	if (index >= sources.size()) index = 0;
+	if (index >= sources.size()) {
+		index = 0;
+		playLoopAnimation();
+	}
 	setSourceIndex(index);
 }
 
@@ -308,7 +322,10 @@ void Application::previousSource() {
 	int index = sourceIndex();
 	QStringList sources = this->sources();
 	index--;
-	if (index < 0) index = sources.size() - 1;
+	if (index < 0) {
+		index = sources.size() - 1;
+		playLoopAnimation();
+	}
 	setSourceIndex(index);
 }
 

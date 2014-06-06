@@ -1,3 +1,2 @@
-- UI to change shortcuts
-- Check what happens when running with *.jpg
+- Indication when going back to first image
 - Exif properties plugin Ctrl + I

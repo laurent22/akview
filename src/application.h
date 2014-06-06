@@ -49,6 +49,7 @@ private:
 	mutable QString sourceDir_;
 	mutable Settings* settings_;
 	PreferencesDialog* preferencesDialog_;
+	void playLoopAnimation();
 
 public slots:
 

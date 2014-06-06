@@ -49,4 +49,26 @@ ApplicationWindow {
 		Keys.onPressed: mainWindow.keypressed(event.key, event.text, event.modifiers)
 	}
 
+	Image {
+		id: loopImage
+		objectName: "loopImage"
+		source: "qrc:///loop.png"
+		width: 68
+		height: 52
+		anchors.right: parent.right
+		anchors.rightMargin: 10
+		anchors.top: parent.top
+		anchors.topMargin: 10
+		opacity: 0
+		SequentialAnimation {
+			objectName: "loopImageShowAnimation"
+			NumberAnimation { target: loopImage; property: "opacity"; to: 1; duration: 300 }
+			NumberAnimation { target: loopImage; property: "opacity"; to: 0; duration: 1000 }
+		}
+		SequentialAnimation {
+			objectName: "loopImageRotateAnimation"
+			NumberAnimation { target: loopImage; property: "rotation"; to: 360; duration: 400 }
+		}
+	}
+
 }
