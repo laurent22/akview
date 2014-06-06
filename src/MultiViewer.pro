@@ -11,6 +11,7 @@ HEADERS += \
 	jheadhandler.h \
 	mvplugininterface.h \
 	paths.h \
+	plugin.h \
 	pluginevents.h \
 	pluginmanager.h \
 	preferencesdialog.h \
@@ -26,6 +27,7 @@ SOURCES += main.cpp \
 	application.cpp \
 	jheadhandler.cpp \
 	paths.cpp \
+	plugin.cpp \
 	pluginmanager.cpp \
 	preferencesdialog.cpp \
 	settings.cpp \
