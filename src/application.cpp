@@ -287,12 +287,21 @@ QStringList Application::supportedFileExtensions() const {
 }
 
 void Application::playLoopAnimation() {
+	QObject* loopImage = qmlRootObject()->findChild<QObject*>("loopImage");
+	if (!loopImage) return;
+
+	loopImage->setProperty("rotation", 0);
+	loopImage->setProperty("opacity", 0);
+
 	QObject* loopAnimation = qmlRootObject()->findChild<QObject*>("loopImageShowAnimation");
-	if (loopAnimation) QMetaObject::invokeMethod(loopAnimation, "start");
+	if (loopAnimation) {
+		QMetaObject::invokeMethod(loopAnimation, "stop");
+		QMetaObject::invokeMethod(loopAnimation, "start");
+	}
+
 	QObject* rotateAnimation = qmlRootObject()->findChild<QObject*>("loopImageRotateAnimation");
 	if (rotateAnimation) {
-		QObject* loopImage = qmlRootObject()->findChild<QObject*>("loopImage");
-		loopImage->setProperty("rotation", 0);
+		QMetaObject::invokeMethod(rotateAnimation, "stop");
 		QMetaObject::invokeMethod(rotateAnimation, "start");
 	}
 }

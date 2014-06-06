@@ -1,2 +1,1 @@
-- Indication when going back to first image
 - Exif properties plugin Ctrl + I
