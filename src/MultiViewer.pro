@@ -4,6 +4,7 @@ QT += qml quick widgets
 
 HEADERS += \
 	action.h \
+	actionlistitemwidget.h \
 	application.h \
 	constants.h \
 	iapplication.h \
@@ -21,6 +22,7 @@ HEADERS += \
 	
 SOURCES += main.cpp \
 	action.cpp \
+	actionlistitemwidget.cpp \
 	application.cpp \
 	jheadhandler.cpp \
 	paths.cpp \
