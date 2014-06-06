@@ -1,33 +1,15 @@
 #ifndef PLUGINMANAGER_H
 #define PLUGINMANAGER_H
 
-#include <QAction>
 #include <QJsonObject>
 #include <QListWidgetItem>
 
+#include "action.h"
 #include "mvplugininterface.h"
 #include "pluginevents.h"
 #include "simpletypes.h"
 
 namespace mv {
-
-class Action: public QAction {
-
-public:
-
-	Action(const QJsonObject& jsonObject);
-	bool supports(const KeypressedEvent& event) const;
-	bool supports(const QKeySequence &keySequence) const;
-	QString name() const;
-
-private:
-
-	QJsonObject jsonObject_;
-	QString name_;
-
-};
-
-typedef std::vector<Action*> ActionVector;
 
 class ActionListWidgetItem: public QListWidgetItem {
 

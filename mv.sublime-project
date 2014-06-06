@@ -9,11 +9,15 @@
 	[
 		{
 			"name": "Run Debug",
-			"cmd": ["/Users/laurent/Docs/PROGS/C++/mv/build/build.sh", "debug", "1"]
+			"working_dir": "/Users/laurent/Docs/PROGS/C++/mv",
+			"cmd": ["/Users/laurent/Docs/PROGS/C++/mv/build/build.sh", "debug", "1"],
+			"file_regex": "^../([^:]+):([^:]+):([^:]+):\\serror:\\s(.*)$"
 		},
 		{
 			"name": "Run Release",
-			"cmd": ["/Users/laurent/Docs/PROGS/C++/mv/build/build.sh", "release", "1"]
+			"working_dir": "/Users/laurent/Docs/PROGS/C++/mv",
+			"cmd": ["/Users/laurent/Docs/PROGS/C++/mv/build/build.sh", "release", "1"],
+			"file_regex": "^../([^:]+):([^:]+):([^:]+):\\serror:\\s(.*)$"
 		},
 		{
 			"name": "Clean Debug",
