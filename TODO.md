@@ -1,4 +1,3 @@
-- Split plugin-related classes
 - Make built-in shortcuts editable
 - See if KeypressedEvent is still needed
 - Menu bar

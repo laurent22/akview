@@ -64,24 +64,4 @@ void PluginManager::onAction(const QString& actionName) {
 	}
 }
 
-void PluginManager::onKeypressed(const KeypressedEvent &event) {
-	for (unsigned int i = 0; i < plugins_.size(); i++) {
-		Plugin* plugin = plugins_[i];
-		Action* action = plugin->findAction(event);
-		if (!action) continue;
-
-		if (!plugin->interfaceLoaded()) {
-			bool ok = plugin->loadInterface();
-			if (!ok) {
-				qWarning() << "could not load plugin interface of" << plugin->description() << ":" << plugin->errorMessage();
-				continue;
-			}
-		}
-
-		plugin->interface()->onAction(action->name());
-		qDebug() << "Keypress event has been processed by plugin" << plugin->description();
-		return;
-	}
-}
-
 }

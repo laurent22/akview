@@ -20,11 +20,6 @@ Action::Action(const QJsonObject &jsonObject): QAction(NULL) {
 	setShortcuts(shortcuts);
 }
 
-bool Action::supports(const KeypressedEvent &event) const {
-	QKeySequence keySequence(event.modifiers + event.keyCode);
-	return supports(keySequence);
-}
-
 bool Action::supports(const QKeySequence &keySequence) const {
 	for (int i = 0; i < shortcuts().size(); i++) {
 		const QKeySequence& ks = shortcuts()[i];

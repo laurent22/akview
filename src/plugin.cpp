@@ -117,19 +117,6 @@ ActionVector Plugin::actions() const {
 	return actions_;
 }
 
-bool Plugin::supports(const KeypressedEvent &event) const {
-	Action* a = findAction(event);
-	return a ? true : false;
-}
-
-Action* Plugin::findAction(const KeypressedEvent &event) const {
-	for (unsigned int i = 0; i < actions_.size(); i++) {
-		Action* a = actions_[i];
-		if (a->supports(event)) return a;
-	}
-	return NULL;
-}
-
 Action* Plugin::findAction(const QString& name) const {
 	for (unsigned int i = 0; i < actions_.size(); i++) {
 		Action* a = actions_[i];

@@ -14,7 +14,6 @@ public:
 	bool loadPlugin(const QString& filePath);
 	void loadPlugins(const QString& folderPath);
 	PluginVector plugins() const;
-	void onKeypressed(const KeypressedEvent& event);
 	void onAction(const QString& actionName);
 
 private:

@@ -208,12 +208,7 @@ QObject* Application::qmlApplicationWindow() const {
 }
 
 void Application::mainWindow_keypressed(int key, const QString& text, int modifiers) {
-	KeypressedEvent event;
-	event.keyCode = key;
-	event.text = text;
-	event.modifiers = modifiers;
-
-	if (event.keyCode == Qt::Key_O && event.modifiers == Qt::ControlModifier) {
+	if (key == Qt::Key_O && modifiers == Qt::ControlModifier) {
 		QString filter;
 		QStringList extensions = supportedFileExtensions();
 		for (int i = 0; i < extensions.size(); i++) {
@@ -231,17 +226,17 @@ void Application::mainWindow_keypressed(int key, const QString& text, int modifi
 		return;
 	}
 
-	if (event.keyCode == Qt::Key_W && event.modifiers == Qt::ControlModifier) {
+	if (key == Qt::Key_W && modifiers == Qt::ControlModifier) {
 		quit();
 		return;
 	}
 
-	if (event.keyCode == Qt::Key_Left) {
+	if (key == Qt::Key_Left) {
 		previousSource();
 		return;
 	}
 
-	if (event.keyCode == Qt::Key_Right) {
+	if (key == Qt::Key_Right) {
 		nextSource();
 		return;
 	}

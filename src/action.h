@@ -14,7 +14,6 @@ class Action: public QAction {
 public:
 
 	Action(const QJsonObject& jsonObject);
-	bool supports(const KeypressedEvent& event) const;
 	bool supports(const QKeySequence &keySequence) const;
 	QString name() const;
 

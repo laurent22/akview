@@ -21,9 +21,7 @@ public:
 	QString compatibilityMinVersion() const;
 	QString compatibilityMaxVersion() const;
 	ActionVector actions() const;
-	bool supports(const KeypressedEvent& event) const;
 	bool interfaceLoaded() const;
-	Action *findAction(const KeypressedEvent& event) const;
 	Action *findAction(const QString& name) const;
 
 private:
