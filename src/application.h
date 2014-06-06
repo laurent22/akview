@@ -3,8 +3,6 @@
 
 #include <QApplication>
 #include <QQmlApplicationEngine>
-#include <QDebug>
-#include <QUrl>
 
 #include "pluginmanager.h"
 #include "preferencesdialog.h"
