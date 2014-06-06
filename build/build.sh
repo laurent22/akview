@@ -13,7 +13,7 @@ fn_usage() {
 
 fn_exitOnError() {
 	ERROR_CODE=$1
-	if [ "$ERROR_CODE" != "0" ]; then
+	if [ "$ERROR_CODE" != "0" ] && [ "$ERROR_CODE" != "" ]; then
 		echo "Ended with error code $ERROR_CODE"
 		exit $ERROR_CODE
 	fi
@@ -24,18 +24,7 @@ fn_runAction() {
 	BUILD_DIR=$2
 	PROJECT_FILE=$3
 
-	if [ "$ACTION" == "clean-debug" ]; then
-		rm -rf $SCRIPT_DIR/../build-debug
-		exit $?
-	elif [ "$ACTION" == "clean-release" ]; then
-		rm -rf $SCRIPT_DIR/../build-release
-		exit $?
-	fi
-
-	if [ "$ACTION" != "debug" ] && [ "$ACTION" != "release" ]; then
-		fn_usage
-		exit 1
-	fi
+	echo "Doing action: $ACTION"
 
 	mkdir -p "$BUILD_DIR"
 	cd "$BUILD_DIR"
@@ -52,6 +41,25 @@ fn_runAction() {
 
 	fn_exitOnError $?
 }
+
+if [ "$ACTION" == "clean-debug" ]; then
+	rm -rf $SCRIPT_DIR/../build-debug
+	rm -rf $SCRIPT_DIR/../plugins/build-MvDeleteFile-debug
+	rm -rf $SCRIPT_DIR/../plugins/build-MvJpegTools-debug
+	rm -rf $SCRIPT_DIR/../plugins/build-MvReveal-debug
+	exit
+elif [ "$ACTION" == "clean-release" ]; then
+	rm -rf $SCRIPT_DIR/../build-release
+	rm -rf $SCRIPT_DIR/../plugins/build-MvDeleteFile-release
+	rm -rf $SCRIPT_DIR/../plugins/build-MvJpegTools-release
+	rm -rf $SCRIPT_DIR/../plugins/build-MvReveal-release
+	exit
+fi
+
+if [ "$ACTION" != "debug" ] && [ "$ACTION" != "release" ]; then
+	fn_usage
+	exit 1
+fi
 
 # First, build all the plugins
 fn_runAction $ACTION $SCRIPT_DIR/../plugins/build-MvDeleteFile-$ACTION $SCRIPT_DIR/../plugins/MvDeleteFile/MvDeleteFilePlugin.pro
