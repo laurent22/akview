@@ -202,14 +202,26 @@ QKeySequence Application::actionShortcut(const QString &actionName) const {
 bool Application::event(QEvent *event) {
 	switch (event->type()) {
 
-		case QEvent::FileOpen:
+		case QEvent::FileOpen: {
 
-			setSource(static_cast<QFileOpenEvent *>(event)->file());
+			QString filePath = static_cast<QFileOpenEvent*>(event)->file();
+
+			if (QFileInfo(filePath).isDir()) {
+				QStringList sources = this->sources(filePath);
+				if (!sources.size()) return true;
+				setSource(sources[0]);
+			} else {
+				setSource(filePath);
+			}
 			return true;
 
-		default:
+		}
+
+		default: {
 
 			return QApplication::event(event);
+
+		}
 
 	}
 }
@@ -243,7 +255,7 @@ QObject* Application::qmlApplicationWindow() const {
 
 void Application::mainWindow_keypressed(int key, const QString& text, int modifiers) {
 	Q_UNUSED(text);
-	
+
 	QKeySequence ks(modifiers + key);
 	QString actionName = shortcutAction(ks);
 
@@ -445,13 +457,23 @@ Settings *Application::settings() const {
 }
 
 QStringList Application::sources() const {
+	return sources(source());
+}
+
+QStringList Application::sources(const QString& filePath) const {
 	if (sources_.length()) return sources_;
 
 	QStringList supportedFileExtensions = this->supportedFileExtensions();
 	sourceIndex_ = -1;
-	QString source = this->source();
 
-	QDir dir = QFileInfo(source).dir();
+	QFileInfo fileInfo(filePath);
+	QDir dir;
+	if (fileInfo.isDir()) {
+		dir.setPath(filePath);
+	} else {
+		dir = fileInfo.dir();
+	}
+
 	sourceDir_ = dir.absolutePath();
 	QFileInfoList files = dir.entryInfoList(QDir::Files, QDir::LocaleAware);
 	for (int i = 0; i < files.size(); i++) {
