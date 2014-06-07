@@ -1,4 +1,4 @@
 - Allow opening folder - opens the first file in the folder
-- Make built-in shortcuts editable
+- Make Ctrl+W only close window
 - Menu bar
 - Exif properties plugin Ctrl + I

@@ -64,8 +64,8 @@ void Application::initialize() {
 
 	addAction("open_file", "Open a file...", QKeySequence(Qt::CTRL + Qt::Key_O));
 	addAction("close_window", "Close window", QKeySequence(Qt::CTRL + Qt::Key_W));
-	addAction("next", "Next", QKeySequence(Qt::Key_Right));
-	addAction("left", "Left", QKeySequence(Qt::Key_Left));
+	addAction("next", "Next", QKeySequence(Qt::Key_Right), QKeySequence("Num+Right"));
+	addAction("previous", "previous", QKeySequence(Qt::Key_Left), QKeySequence("Num+Left"));
 
 	win->setProperty("visible", true);
 }
@@ -152,7 +152,7 @@ QString Application::shortcutAction(const QKeySequence& shortcut) const {
 		QString key = keys[i];
 		QString value = settings.value(key).toString();
 		QKeySequence kv(value);
-		if (value == shortcut.toString()) {
+		if (kv.matches(shortcut) == QKeySequence::ExactMatch) {
 			return key;
 		} else if (value == "") {
 			noopActions << key;
@@ -243,8 +243,11 @@ QObject* Application::qmlApplicationWindow() const {
 
 void Application::mainWindow_keypressed(int key, const QString& text, int modifiers) {
 	Q_UNUSED(text);
+	
+	QKeySequence ks(modifiers + key);
+	QString actionName = shortcutAction(ks);
 
-	if (key == Qt::Key_O && modifiers == Qt::ControlModifier) {
+	if (actionName == "open_file") {
 		QString filter;
 		QStringList extensions = supportedFileExtensions();
 		for (int i = 0; i < extensions.size(); i++) {
@@ -262,24 +265,22 @@ void Application::mainWindow_keypressed(int key, const QString& text, int modifi
 		return;
 	}
 
-	if (key == Qt::Key_W && modifiers == Qt::ControlModifier) {
+	if (actionName == "close_window") {
 		quit();
 		return;
 	}
 
-	if (key == Qt::Key_Left) {
+	if (actionName == "previous") {
 		previousSource();
 		return;
 	}
 
-	if (key == Qt::Key_Right) {
+	if (actionName == "next") {
 		nextSource();
 		return;
 	}
 
-	QKeySequence ks(modifiers + key);
-	QString action = shortcutAction(ks);
-	if (action != "") pluginManager_->onAction(action);
+	if (actionName != "") pluginManager_->onAction(actionName);
 }
 
 void Application::mainWindow_actionTriggered(const QString &name) {

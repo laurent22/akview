@@ -27,7 +27,7 @@ Action::Action(const QJsonObject &jsonObject): QAction(NULL) {
 bool Action::supports(const QKeySequence &keySequence) const {
 	for (int i = 0; i < shortcuts().size(); i++) {
 		const QKeySequence& ks = shortcuts()[i];
-		if (ks.matches(keySequence)) return true;
+		if (ks.matches(keySequence) == QKeySequence::ExactMatch) return true;
 	}
 	return false;
 }
