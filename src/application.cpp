@@ -62,7 +62,37 @@ void Application::initialize() {
 	QStringList filePaths = args.positionalArguments();
 	if (filePaths.size() > 0) setSource(filePaths[0]);
 
+	addAction("open_file", "Open a file...", QKeySequence(Qt::CTRL + Qt::Key_O));
+	addAction("close_window", "Close window", QKeySequence(Qt::CTRL + Qt::Key_W));
+	addAction("next", "Next", QKeySequence(Qt::Key_Right));
+	addAction("left", "Left", QKeySequence(Qt::Key_Left));
+
 	win->setProperty("visible", true);
+}
+
+Action* Application::addAction(const QString& name, const QString& text, const QKeySequence& shortcut) {
+	Action* action = new Action();
+	action->setName(name);
+	action->setText(text);
+	action->setShortcut(shortcut);
+
+	actions_.push_back(action);
+
+	return action;
+}
+
+Action* Application::addAction(const QString& name, const QString& text, const QKeySequence& shortcut1, const QKeySequence& shortcut2) {
+	QList<QKeySequence> shortcuts;
+	shortcuts << shortcut1 << shortcut2;
+
+	Action* action = new Action();
+	action->setName(name);
+	action->setText(text);
+	action->setShortcuts(shortcuts);
+
+	actions_.push_back(action);
+
+	return action;
 }
 
 void Application::setWindowTitle(const QString &title) {
@@ -93,12 +123,16 @@ PluginManager *Application::pluginManager() const {
 
 ActionVector Application::actions() const {
 	ActionVector output;
+
+	output.insert(output.end(), actions_.begin(), actions_.end());
+
 	PluginVector plugins = pluginManager()->plugins();
 	for (unsigned int i = 0; i < plugins.size(); i++) {
 		Plugin* plugin = plugins[i];
 		ActionVector pluginActions = plugin->actions();
 		output.insert(output.end(), pluginActions.begin(), pluginActions.end());
 	}
+
 	return output;
 }
 
@@ -208,6 +242,8 @@ QObject* Application::qmlApplicationWindow() const {
 }
 
 void Application::mainWindow_keypressed(int key, const QString& text, int modifiers) {
+	Q_UNUSED(text);
+
 	if (key == Qt::Key_O && modifiers == Qt::ControlModifier) {
 		QString filter;
 		QStringList extensions = supportedFileExtensions();

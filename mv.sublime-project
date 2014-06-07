@@ -11,13 +11,13 @@
 			"name": "Run Debug",
 			"working_dir": "/Users/laurent/Docs/PROGS/C++/mv",
 			"cmd": ["/Users/laurent/Docs/PROGS/C++/mv/build/build.sh", "debug", "1"],
-			"file_regex": "^../([^:]+):([^:]+):([^:]+):\\serror:\\s(.*)$"
+			"file_regex": "^../([^:]+):([^:]+):([^:]+):\\s[a-z]+:\\s(.*)$"
 		},
 		{
 			"name": "Run Release",
 			"working_dir": "/Users/laurent/Docs/PROGS/C++/mv",
 			"cmd": ["/Users/laurent/Docs/PROGS/C++/mv/build/build.sh", "release", "1"],
-			"file_regex": "^../([^:]+):([^:]+):([^:]+):\\serror:\\s(.*)$"
+			"file_regex": "^../([^:]+):([^:]+):([^:]+):\\s[a-z]+:\\s(.*)$"
 		},
 		{
 			"name": "Clean Debug",

@@ -1,4 +1,4 @@
+- Allow opening folder - opens the first file in the folder
 - Make built-in shortcuts editable
-- See if KeypressedEvent is still needed
 - Menu bar
 - Exif properties plugin Ctrl + I

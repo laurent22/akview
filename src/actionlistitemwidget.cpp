@@ -35,7 +35,7 @@ void ActionListWidgetItem::updateDisplay() {
 	setFont(font);
 	QString shortcutString = shortcut().toString();
 	if (shortcutString == "") shortcutString = QObject::tr("(None)");
-	setText(shortcutString + " - " + action()->text());
+	setText(action()->text() + " - " + shortcutString);
 }
 
 }

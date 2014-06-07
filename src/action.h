@@ -13,8 +13,10 @@ class Action: public QAction {
 
 public:
 
+	Action();
 	Action(const QJsonObject& jsonObject);
 	bool supports(const QKeySequence &keySequence) const;
+	void setName(const QString& v);
 	QString name() const;
 
 private:

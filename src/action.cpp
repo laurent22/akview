@@ -2,6 +2,10 @@
 
 namespace mv {
 
+Action::Action(): QAction(NULL) {
+
+}
+
 Action::Action(const QJsonObject &jsonObject): QAction(NULL) {
 	jsonObject_ = jsonObject;
 
@@ -26,6 +30,10 @@ bool Action::supports(const QKeySequence &keySequence) const {
 		if (ks.matches(keySequence)) return true;
 	}
 	return false;
+}
+
+void Action::setName(const QString& v) {
+	name_ = v;
 }
 
 QString Action::name() const {
