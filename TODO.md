@@ -1,3 +1,3 @@
-- Make Ctrl+W only close window
 - Menu bar
 - Exif properties plugin Ctrl + I
+- Make Ctrl+W only close window

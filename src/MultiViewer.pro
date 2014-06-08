@@ -19,7 +19,8 @@ HEADERS += \
 	simpletypes.h \
 	stringutil.h \
 	third_party/jhead/jhead.h \
-	version.h
+	version.h \
+    mainwindow.h
 	
 SOURCES += main.cpp \
 	action.cpp \
@@ -40,9 +41,11 @@ SOURCES += main.cpp \
 	third_party/jhead/jhead_jpgqguess.cpp \
 	third_party/jhead/jhead_makernote.cpp \
 	third_party/jhead/jhead_paths.cpp \
-	version.cpp
+	version.cpp \
+    mainwindow.cpp
 
 RESOURCES += qml.qrc
 
 FORMS += \
-	preferencesdialog.ui
+	preferencesdialog.ui \
+    mainwindow.ui
