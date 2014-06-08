@@ -62,15 +62,15 @@ void Application::initialize() {
 	QStringList filePaths = args.positionalArguments();
 	if (filePaths.size() > 0) setSource(filePaths[0]);
 
-	addAction("open_file", "Open a file...", QKeySequence(Qt::CTRL + Qt::Key_O));
-	addAction("close_window", "Close window", QKeySequence(Qt::CTRL + Qt::Key_W));
-	addAction("next", "Next", QKeySequence(Qt::Key_Right), QKeySequence("Num+Right"));
-	addAction("previous", "previous", QKeySequence(Qt::Key_Left), QKeySequence("Num+Left"));
+	addAction("open_file", "Open a file...", QStringList() << "file", QKeySequence(Qt::CTRL + Qt::Key_O));
+	addAction("close_window", "Close window", QStringList() << "file", QKeySequence(Qt::CTRL + Qt::Key_W));
+	addAction("next", "Next", QStringList() << "view", QKeySequence(Qt::Key_Right), QKeySequence("Num+Right"));
+	addAction("previous", "previous", QStringList() << "view", QKeySequence(Qt::Key_Left), QKeySequence("Num+Left"));
 
 	win->setProperty("visible", true);
 }
 
-Action* Application::addAction(const QString& name, const QString& text, const QKeySequence& shortcut) {
+Action* Application::addAction(const QString& name, const QString& text, const QStringList& menu, const QKeySequence& shortcut) {
 	Action* action = new Action();
 	action->setName(name);
 	action->setText(text);
@@ -81,7 +81,7 @@ Action* Application::addAction(const QString& name, const QString& text, const Q
 	return action;
 }
 
-Action* Application::addAction(const QString& name, const QString& text, const QKeySequence& shortcut1, const QKeySequence& shortcut2) {
+Action* Application::addAction(const QString& name, const QString& text, const QStringList& menu, const QKeySequence& shortcut1, const QKeySequence& shortcut2) {
 	QList<QKeySequence> shortcuts;
 	shortcuts << shortcut1 << shortcut2;
 

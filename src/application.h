@@ -49,8 +49,8 @@ private:
 	mutable QString sourceDir_;
 	mutable Settings* settings_;
 	PreferencesDialog* preferencesDialog_;
-	Action* addAction(const QString& name, const QString& text, const QKeySequence& shortcut);
-	Action* addAction(const QString& name, const QString& text, const QKeySequence& shortcut1, const QKeySequence& shortcut2);
+	Action* addAction(const QString& name, const QString& text, const QStringList& menu, const QKeySequence& shortcut);
+	Action* addAction(const QString& name, const QString& text, const QStringList& menu, const QKeySequence& shortcut1, const QKeySequence& shortcut2);
 	void playLoopAnimation();
 
 public slots:

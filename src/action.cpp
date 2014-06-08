@@ -40,4 +40,12 @@ QString Action::name() const {
 	return name_;
 }
 
+QStringList Action::menu() const {
+	return menu_;
+}
+
+void Action::setMenu(const QStringList& menu) {
+	menu_ = menu;
+}
+
 }
