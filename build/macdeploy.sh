@@ -22,7 +22,7 @@ if [[ ! -d MultiViewer.app ]]; then
 fi
 
 echo "Running macdeployqt..."
-$MACDEPLOYQT_PATH MultiViewer.app -qmldir=$SCRIPT_DIR/../src
+$MACDEPLOYQT_PATH MultiViewer.app
 
 echo "Copying own plugins..."
 mkdir -p MultiViewer.app/Contents/PlugIns/multiviewer

@@ -4,8 +4,9 @@
 #include <math.h>
 
 #include <QDebug>
-#include <QGraphicsScene>
-#include <QGridLayout>
+
+XGraphicsView::XGraphicsView(QGraphicsScene* scene, QWidget* parent) : QGraphicsView(scene, parent) {}
+void XGraphicsView::scrollContentsBy(int, int) { /* Override scrollContentsBy to disable scrolling */ }
 
 MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWindow) {
 	updateDisplayTimer_ = NULL;
@@ -16,11 +17,12 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
 	scene_ = new QGraphicsScene(this);
 	scene_->setBackgroundBrush(QBrush(Qt::black));
 
-	view_ = new QGraphicsView(scene_, this);
+	view_ = new XGraphicsView(scene_, this);
+	view_->setEnabled(false);
 	view_->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
 	view_->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
 
-	pixmap_ = new QPixmap("/Users/laurent/Desktop/test/DSC_1.jpg");
+	pixmap_ = new QPixmap();
 	pixmapItem_ = new QGraphicsPixmapItem();
 	pixmapItem_->setTransformationMode(Qt::SmoothTransformation);
 
@@ -64,22 +66,52 @@ void MainWindow::resizeEvent(QResizeEvent*) {
 	updateDisplayTimer()->start();
 }
 
-void MainWindow::updateDisplay(int renderingType) {
+void MainWindow::keyPressEvent(QKeyEvent* event) {
+	emit keypressed(event);
+}
+
+void MainWindow::setSource(const QString& v) {
+	if (source_ == v) return;
+	source_ = v;
+
+	pixmap_->load(source_);
+
+	updateDisplay(QuickRendering);
+
+	updateDisplayTimer()->stop();
+	updateDisplayTimer()->start();
+}
+
+void MainWindow::reloadSource() {
+	QString s = source();
+	source_ = "";
+	setSource(s);
+}
+
+QString MainWindow::source() const {
+	return source_;
+}
+
+void MainWindow::updateDisplay(int renderingType) {	
 	QSize winSize = ui->centralwidget->size();
 
-	QString updateTag = QString("%1_%2_%3").arg(winSize.width()).arg(winSize.height()).arg(renderingType);
+	QString updateTag = QString("%1_%2_%3_%4").arg(winSize.width()).arg(winSize.height()).arg(renderingType).arg(source_);
 	if (lastUpdateTag_ == updateTag) return;
-
 	lastUpdateTag_ = updateTag;
 	
 	if (winSize.width() <= 0 || winSize.height() <= 0) return;
 	
-	QPixmap scaledPixmap = pixmap_->scaled(winSize.width(), winSize.height(), Qt::KeepAspectRatio, renderingType == QuickRendering ? Qt::FastTransformation : Qt::SmoothTransformation);
-	pixmapItem_->setPixmap(scaledPixmap);
-	pixmapItem_->setPos(
-		floor((winSize.width() - scaledPixmap.size().width()) / 2),
-		floor((winSize.height() - scaledPixmap.size().height()) / 2)
-	);
+	if (pixmap_->isNull()) {
+		pixmapItem_->setPixmap(*pixmap_);
+	} else {
+		QPixmap scaledPixmap = pixmap_->scaled(winSize.width(), winSize.height(), Qt::KeepAspectRatio, renderingType == QuickRendering ? Qt::FastTransformation : Qt::SmoothTransformation);
+		pixmapItem_->setPixmap(scaledPixmap);
+	
+		pixmapItem_->setPos(
+			floor((winSize.width() - scaledPixmap.size().width()) / 2),
+			floor((winSize.height() - scaledPixmap.size().height()) / 2)
+		);
+	}
 
 	scene_->setSceneRect(QRect(0, 0, winSize.width(), winSize.height()));
 }

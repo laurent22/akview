@@ -32,7 +32,7 @@ fn_runAction() {
 	cd "$BUILD_DIR"
 
 	if [ "$ACTION" == "debug" ]; then
-		$QMAKE $PROJECT_FILE -r -spec macx-clang CONFIG+=x86_64 CONFIG+=debug CONFIG+=declarative_debug CONFIG+=qml_debug
+		$QMAKE $PROJECT_FILE -r -spec macx-clang CONFIG+=x86_64 CONFIG+=debug
 	elif [ "$ACTION" == "release" ]; then
 		$QMAKE $PROJECT_FILE -r -spec macx-clang CONFIG+=x86_64
 	fi
@@ -77,5 +77,5 @@ fi
 fn_runAction $ACTION $ROOT_DIR/build-$ACTION $ROOT_DIR/src/MultiViewer.pro
 
 if [ "$LAUNCH_AFTER_BUILD" == "1" ]; then
-	open -a $BUILD_DIR/MultiViewer.app ~/Desktop/test/DSC_1.jpg
+	open -a $BUILD_DIR/MultiViewer.app ~/Desktop/test/DSC_01.jpg
 fi

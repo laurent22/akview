@@ -32,32 +32,18 @@ void Application::initialize() {
 	args.addPositionalArgument("file", tr("File to open."));
 	args.process(*this);
 
-	engine_ = new QQmlApplicationEngine();
-	engine_->load(QUrl(QStringLiteral("qrc:///main.qml")));
+	mainWindow_ = new MainWindow();
+	mainWindow_->show();
 
 	setWindowTitle(APPLICATION_TITLE);
-
-	QObject* win = qmlApplicationWindow();
-	Settings settings;
-	QVariant v;
-	settings.beginGroup("applicationWindow");
-	v = settings.value("width");
-	if (!v.isNull()) win->setProperty("width", v);
-	v = settings.value("height");
-	if (!v.isNull()) win->setProperty("height", v);
-	v = settings.value("x");
-	if (!v.isNull()) win->setProperty("x", v);
-	v = settings.value("y");
-	if (!v.isNull()) win->setProperty("y", v);
-	settings.endGroup();
+	loadWindowGeometry();
 
 	Paths paths;
 
 	pluginManager_ = new PluginManager(dynamic_cast<IApplication*>(this));
 	pluginManager_->loadPlugins(paths.pluginFolder());
 
-	QObject::connect(this->qmlRootObject(), SIGNAL(keypressed(int, const QString&, int)), this, SLOT(mainWindow_keypressed(int, const QString&, int)));
-	QObject::connect(this->qmlRootObject(), SIGNAL(actionTriggered(const QString&)), this, SLOT(mainWindow_actionTriggered(const QString&)));
+	connect(mainWindow_, SIGNAL(keypressed(QKeyEvent*)), this, SLOT(mainWindow_keypressed(QKeyEvent*)));
 
 	QStringList filePaths = args.positionalArguments();
 	if (filePaths.size() > 0) setSource(filePaths[0]);
@@ -66,11 +52,11 @@ void Application::initialize() {
 	addAction("close_window", "Close window", QStringList() << "file", QKeySequence(Qt::CTRL + Qt::Key_W));
 	addAction("next", "Next", QStringList() << "view", QKeySequence(Qt::Key_Right), QKeySequence("Num+Right"));
 	addAction("previous", "previous", QStringList() << "view", QKeySequence(Qt::Key_Left), QKeySequence("Num+Left"));
-
-	win->setProperty("visible", true);
 }
 
 Action* Application::addAction(const QString& name, const QString& text, const QStringList& menu, const QKeySequence& shortcut) {
+	Q_UNUSED(menu);
+
 	Action* action = new Action();
 	action->setName(name);
 	action->setText(text);
@@ -82,6 +68,8 @@ Action* Application::addAction(const QString& name, const QString& text, const Q
 }
 
 Action* Application::addAction(const QString& name, const QString& text, const QStringList& menu, const QKeySequence& shortcut1, const QKeySequence& shortcut2) {
+	Q_UNUSED(menu);
+
 	QList<QKeySequence> shortcuts;
 	shortcuts << shortcut1 << shortcut2;
 
@@ -106,7 +94,7 @@ void Application::setWindowTitle(const QString &title) {
 	prefix = "** DEBUG ** ";
 #endif // QT_DEBUG
 
-	qmlApplicationWindow()->setProperty("title", prefix + title);
+	mainWindow_->setWindowTitle(prefix + title);
 }
 
 void Application::showPreferencesDialog() {
@@ -241,22 +229,8 @@ void Application::setSource(const QString &source) {
 	onMediaSourceChange();
 }
 
-QObject* Application::qmlRootObject() const {
-	return engine_->rootObjects().first();
-}
-
-QObject* Application::qmlImage() const {
-	return qmlRootObject()->findChild<QObject*>("image");
-}
-
-QObject* Application::qmlApplicationWindow() const {
-	return qmlRootObject();
-}
-
-void Application::mainWindow_keypressed(int key, const QString& text, int modifiers) {
-	Q_UNUSED(text);
-
-	QKeySequence ks(modifiers + key);
+void Application::mainWindow_keypressed(QKeyEvent* event) {
+	QKeySequence ks(event->modifiers() + event->key());
 	QString actionName = shortcutAction(ks);
 
 	if (actionName == "open_file") {
@@ -295,6 +269,48 @@ void Application::mainWindow_keypressed(int key, const QString& text, int modifi
 	if (actionName != "") pluginManager_->onAction(actionName);
 }
 
+// void Application::mainWindow_keypressed(int key, const QString& text, int modifiers) {
+// 	Q_UNUSED(text);
+
+// 	QKeySequence ks(modifiers + key);
+// 	QString actionName = shortcutAction(ks);
+
+// 	if (actionName == "open_file") {
+// 		QString filter;
+// 		QStringList extensions = supportedFileExtensions();
+// 		for (int i = 0; i < extensions.size(); i++) {
+// 			QString e = extensions[i];
+// 			if (filter != "") filter += " ";
+// 			filter += "*." + e;
+// 		}
+// 		Settings settings;
+// 		QString lastDir = settings.value("lastOpenFileDirectory").toString();
+// 		QString filePath = QFileDialog::getOpenFileName(NULL, tr("Open File"), lastDir, tr("Supported Files (%1)").arg(filter));
+// 		if (filePath != "") {
+// 			setSource(filePath);
+// 			settings.setValue("lastOpenFileDirectory", QVariant(QFileInfo(filePath).absolutePath()));
+// 		}
+// 		return;
+// 	}
+
+// 	if (actionName == "close_window") {
+// 		quit();
+// 		return;
+// 	}
+
+// 	if (actionName == "previous") {
+// 		previousSource();
+// 		return;
+// 	}
+
+// 	if (actionName == "next") {
+// 		nextSource();
+// 		return;
+// 	}
+
+// 	if (actionName != "") pluginManager_->onAction(actionName);
+// }
+
 void Application::mainWindow_actionTriggered(const QString &name) {
 	if (name == "about") {
 		QMessageBox::about(NULL, tr("About %1").arg(APPLICATION_TITLE), tr("%1 %2").arg(APPLICATION_TITLE).arg(version::number()));
@@ -308,20 +324,46 @@ void Application::mainWindow_actionTriggered(const QString &name) {
 }
 
 void Application::onMediaSourceChange() {
-	qmlImage()->setProperty("source", source_ == "" ? QUrl("") : QUrl("file://" + source_));
+	mainWindow_->setSource(source_);
 	setWindowTitle(QFileInfo(source_).fileName());
 }
 
-void Application::onExit() {
-	QObject* win = qmlApplicationWindow();
-	Settings settings;
+void Application::saveWindowGeometry() {
+	if (!mainWindow_) return;
 
+	Settings settings;
 	settings.beginGroup("applicationWindow");
-	settings.setValue("width", win->property("width"));
-	settings.setValue("height", win->property("height"));
-	settings.setValue("x", win->property("x"));
-	settings.setValue("y", win->property("y"));
+	settings.setValue("width", mainWindow_->size().width());
+	settings.setValue("height", mainWindow_->size().height());
+	settings.setValue("x", mainWindow_->x());
+	settings.setValue("y", mainWindow_->y());
 	settings.endGroup();
+}
+
+void Application::loadWindowGeometry() {
+	Settings settings;
+	QVariant v;
+	int windowX = 0;
+	int windowY = 0;
+	int windowWidth = 800;
+	int windowHeight = 600;
+	settings.beginGroup("applicationWindow");
+	v = settings.value("width");
+	if (!v.isNull()) windowWidth = v.toInt();
+	v = settings.value("height");
+	if (!v.isNull()) windowHeight = v.toInt();
+	v = settings.value("x");
+	if (!v.isNull()) windowX = v.toInt();
+	v = settings.value("y");
+	if (!v.isNull()) windowY = v.toInt();
+	settings.endGroup();
+
+	mainWindow_->move(windowX, windowY);
+	mainWindow_->resize(windowWidth, windowHeight);
+}
+
+void Application::onExit() {
+	saveWindowGeometry();
 }
 
 QStringList Application::supportedFileExtensions() const {
@@ -331,23 +373,25 @@ QStringList Application::supportedFileExtensions() const {
 }
 
 void Application::playLoopAnimation() {
-	QObject* loopImage = qmlRootObject()->findChild<QObject*>("loopImage");
-	if (!loopImage) return;
+	return;
 
-	loopImage->setProperty("rotation", 0);
-	loopImage->setProperty("opacity", 0);
+	// QObject* loopImage = qmlRootObject()->findChild<QObject*>("loopImage");
+	// if (!loopImage) return;
 
-	QObject* loopAnimation = qmlRootObject()->findChild<QObject*>("loopImageShowAnimation");
-	if (loopAnimation) {
-		QMetaObject::invokeMethod(loopAnimation, "stop");
-		QMetaObject::invokeMethod(loopAnimation, "start");
-	}
+	// loopImage->setProperty("rotation", 0);
+	// loopImage->setProperty("opacity", 0);
 
-	QObject* rotateAnimation = qmlRootObject()->findChild<QObject*>("loopImageRotateAnimation");
-	if (rotateAnimation) {
-		QMetaObject::invokeMethod(rotateAnimation, "stop");
-		QMetaObject::invokeMethod(rotateAnimation, "start");
-	}
+	// QObject* loopAnimation = qmlRootObject()->findChild<QObject*>("loopImageShowAnimation");
+	// if (loopAnimation) {
+	// 	QMetaObject::invokeMethod(loopAnimation, "stop");
+	// 	QMetaObject::invokeMethod(loopAnimation, "start");
+	// }
+
+	// QObject* rotateAnimation = qmlRootObject()->findChild<QObject*>("loopImageRotateAnimation");
+	// if (rotateAnimation) {
+	// 	QMetaObject::invokeMethod(rotateAnimation, "stop");
+	// 	QMetaObject::invokeMethod(rotateAnimation, "start");
+	// }
 }
 
 void Application::setSourceIndex(int index) {
@@ -417,9 +461,7 @@ void Application::refreshSources() {
 }
 
 void Application::reloadSource() const {
-	QString currentSource = qmlImage()->property("source").toString();
-	qmlImage()->setProperty("source", "");
-	qmlImage()->setProperty("source", currentSource);
+	mainWindow_->reloadSource();
 }
 
 void Application::exifClearOrientation(const QString &filePath) {

@@ -2,9 +2,10 @@
 #define APPLICATION_H
 
 #include <QApplication>
-#include <QQmlApplicationEngine>
+#include <QKeyEvent>
 
 #include "action.h"
+#include "mainwindow.h"
 #include "pluginmanager.h"
 #include "preferencesdialog.h"
 
@@ -30,18 +31,13 @@ public:
 protected:
 
 	bool event(QEvent* event);
-
 	void onMediaSourceChange();
 	void onExit();
 
-	QObject* qmlRootObject() const;
-	QObject* qmlImage() const;
-	QObject* qmlApplicationWindow() const;
-
 private:
 
+	MainWindow* mainWindow_;
 	QString source_;
-	QQmlApplicationEngine* engine_;
 	PluginManager* pluginManager_;
 	ActionVector actions_;
 	mutable QStringList sources_;
@@ -52,10 +48,12 @@ private:
 	Action* addAction(const QString& name, const QString& text, const QStringList& menu, const QKeySequence& shortcut);
 	Action* addAction(const QString& name, const QString& text, const QStringList& menu, const QKeySequence& shortcut1, const QKeySequence& shortcut2);
 	void playLoopAnimation();
+	void saveWindowGeometry();
+	void loadWindowGeometry();
 
 public slots:
 
-	void mainWindow_keypressed(int key, const QString& text, int modifiers);
+	void mainWindow_keypressed(QKeyEvent* event);
 	void mainWindow_actionTriggered(const QString& name);
 
 	QString source() const;

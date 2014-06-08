@@ -1,6 +1,6 @@
 TEMPLATE = app
 
-QT += qml quick widgets
+QT += widgets
 
 HEADERS += \
 	action.h \

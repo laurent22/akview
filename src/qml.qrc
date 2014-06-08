@@ -1,6 +1,5 @@
 <RCC>
-    <qresource prefix="/">
-        <file>main.qml</file>
-        <file>loop.png</file>
-    </qresource>
+	<qresource prefix="/">
+		<file>loop.png</file>
+	</qresource>
 </RCC>

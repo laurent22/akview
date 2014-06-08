@@ -8,7 +8,20 @@
 #include <QShowEvent>
 #include <QTimer>
 
+class XGraphicsView: public QGraphicsView {
+
+public:
+
+	XGraphicsView(QGraphicsScene * scene, QWidget * parent = 0);
+
+protected:
+
+	void scrollContentsBy(int, int);
+
+};
+
 namespace Ui {
+
 class MainWindow;
 }
 
@@ -24,11 +37,15 @@ public:
 	explicit MainWindow(QWidget *parent = 0);
 	~MainWindow();
 	void updateDisplay(int renderingType);
+	void setSource(const QString& v);
+	QString source() const;
+	void reloadSource();
 
 protected:
 
 	void resizeEvent(QResizeEvent*);
 	void showEvent(QShowEvent* event);
+	void keyPressEvent(QKeyEvent* event);
 
 private:
 
@@ -41,10 +58,15 @@ private:
 	QString lastUpdateTag_;
 	QPixmap* pixmap_;
 	mutable QTimer* updateDisplayTimer_;
+	QString source_;
 
 public slots:
 
 	void updateDisplayTimer_timeout();
+
+signals:
+
+	void keypressed(QKeyEvent* event);
 
 };
 
