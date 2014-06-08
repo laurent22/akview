@@ -5,8 +5,9 @@
 	"actions": [
 		{
 			"name": "reveal",
-			"description": "Reveal current file in file browser",
-			"shortcuts": ["Ctrl + Shift + R"]
+			"text": "Reveal in file browser",
+			"shortcuts": ["Ctrl + Shift + R"],
+			"menu": "View"
 		}
 	]
 }

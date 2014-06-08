@@ -5,8 +5,9 @@
 	"actions": [
 		{
 			"name": "jpeg_tools",
-			"description": "JPEG tools",
-			"shortcuts": ["Ctrl + Shift + J"]
+			"text": "JPEG tools",
+			"shortcuts": ["Ctrl + Shift + J"],
+			"menu": "Tools"
 		}
 	]
 }

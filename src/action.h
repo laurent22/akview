@@ -18,14 +18,14 @@ public:
 	bool supports(const QKeySequence &keySequence) const;
 	void setName(const QString& v);
 	QString name() const;
-	QStringList menu() const;
-	void setMenu(const QStringList& menu);
+	QString menu() const;
+	void setMenu(const QString& menu);
 
 private:
 
 	QJsonObject jsonObject_;
 	QString name_;
-	QStringList menu_;
+	QString menu_;
 
 };
 

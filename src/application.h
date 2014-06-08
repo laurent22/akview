@@ -8,6 +8,7 @@
 #include "mainwindow.h"
 #include "pluginmanager.h"
 #include "preferencesdialog.h"
+#include "simpletypes.h"
 
 namespace mv {
 
@@ -27,6 +28,7 @@ public:
 	bool actionShortcutIsOverridden(const QString& actionName) const;
 	QKeySequence actionShortcut(const QString& actionName) const;
 	QString shortcutAction(const QKeySequence& shortcut) const;
+	void execAction(const QString& actionName);
 
 protected:
 
@@ -44,17 +46,20 @@ private:
 	mutable int sourceIndex_;
 	mutable QString sourceDir_;
 	mutable Settings* settings_;
+	QStringQMenuMap menus_;
 	PreferencesDialog* preferencesDialog_;
-	Action* addAction(const QString& name, const QString& text, const QStringList& menu, const QKeySequence& shortcut);
-	Action* addAction(const QString& name, const QString& text, const QStringList& menu, const QKeySequence& shortcut1, const QKeySequence& shortcut2);
+	QMenuBar* menuBar_;
+	Action* addAction(const QString& name, const QString& text, const QString& menu, const QKeySequence& shortcut = QKeySequence());
+	Action* addAction(const QString& name, const QString& text, const QString& menu, const QKeySequence& shortcut1, const QKeySequence& shortcut2);
 	void playLoopAnimation();
 	void saveWindowGeometry();
 	void loadWindowGeometry();
+	void buildMenu();
 
 public slots:
 
 	void mainWindow_keypressed(QKeyEvent* event);
-	void mainWindow_actionTriggered(const QString& name);
+	void mainWindow_actionTriggered();
 
 	QString source() const;
 	void setSource(const QString& source);

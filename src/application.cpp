@@ -12,11 +12,14 @@
 #include "settings.h"
 #include "version.h"
 
+#include <QMenuBar>
+
 namespace mv {
 
 Application::Application(int &argc, char **argv, int applicationFlags) : QApplication(argc, argv, applicationFlags) {
 	settings_ = NULL;
 	preferencesDialog_ = NULL;
+	menuBar_ = NULL;
 
 	Application::setOrganizationName(VER_COMPANYNAME_STR);
 	Application::setOrganizationDomain(VER_DOMAIN_STR);
@@ -48,37 +51,76 @@ void Application::initialize() {
 	QStringList filePaths = args.positionalArguments();
 	if (filePaths.size() > 0) setSource(filePaths[0]);
 
-	addAction("open_file", "Open a file...", QStringList() << "file", QKeySequence(Qt::CTRL + Qt::Key_O));
-	addAction("close_window", "Close window", QStringList() << "file", QKeySequence(Qt::CTRL + Qt::Key_W));
-	addAction("next", "Next", QStringList() << "view", QKeySequence(Qt::Key_Right), QKeySequence("Num+Right"));
-	addAction("previous", "previous", QStringList() << "view", QKeySequence(Qt::Key_Left), QKeySequence("Num+Left"));
+	buildMenu();
 }
 
-Action* Application::addAction(const QString& name, const QString& text, const QStringList& menu, const QKeySequence& shortcut) {
-	Q_UNUSED(menu);
+void Application::buildMenu() {
+	QMenu* fileMenu = new QMenu(tr("File"));
+	QMenu* viewMenu = new QMenu(tr("View"));
+	QMenu* toolsMenu = new QMenu(tr("Tools"));
+	QMenu* helpMenu = new QMenu(tr("Help"));
 
+	menus_["File"] = fileMenu;
+	menus_["View"] = viewMenu;
+	menus_["Tools"] = toolsMenu;
+	menus_["Help"] = helpMenu;
+
+	addAction("open_file", tr("Open a file..."), "File", QKeySequence(Qt::CTRL + Qt::Key_O));
+	addAction("close_window", tr("Close window"), "File", QKeySequence(Qt::CTRL + Qt::Key_W));
+	addAction("next", tr("Next"), "View", QKeySequence(Qt::Key_Right), QKeySequence("Num+Right"));
+	addAction("previous", tr("Previous"), "View", QKeySequence(Qt::Key_Left), QKeySequence("Num+Left"));
+	addAction("about", tr("About"), "Help");
+	addAction("preferences", tr("Preferences"), "Tools");
+
+	PluginVector plugins = pluginManager()->plugins();
+	for (unsigned int i = 0; i < plugins.size(); i++) {
+		Plugin* plugin = plugins[i];
+		for (unsigned int j = 0; j < plugin->actions().size(); j++) {
+			Action* action = plugin->actions()[j];
+			if (action->menu() == "") continue;
+			if (action->shortcuts().size() > 1) {
+				addAction(action->name(), action->text(), action->menu(), action->shortcuts()[0], action->shortcuts()[1]);
+			} else {
+				addAction(action->name(), action->text(), action->menu(), action->shortcut());
+			}
+		}
+	}	
+
+	menuBar_ = new QMenuBar(mainWindow_);
+
+	for(QStringQMenuMap::const_iterator i = menus_.begin(); i != menus_.end(); ++i) {
+		menuBar_->addMenu(i->second);
+	}
+}
+
+Action* Application::addAction(const QString& name, const QString& text, const QString& menu, const QKeySequence& shortcut) {
+	return addAction(name, text, menu, shortcut, QKeySequence());
+}
+
+Action* Application::addAction(const QString& name, const QString& text, const QString& menu, const QKeySequence& shortcut1, const QKeySequence& shortcut2) {
 	Action* action = new Action();
 	action->setName(name);
 	action->setText(text);
-	action->setShortcut(shortcut);
+
+	if (!shortcut1.isEmpty() && !shortcut2.isEmpty()) {
+		QList<QKeySequence> shortcuts;
+		shortcuts << shortcut1 << shortcut2;
+		action->setShortcuts(shortcuts);
+	} else if (!shortcut1.isEmpty()) {
+		action->setShortcut(shortcut1);
+	}
+
+	connect(action, SIGNAL(triggered()), this, SLOT(mainWindow_actionTriggered()));
 
 	actions_.push_back(action);
 
-	return action;
-}
-
-Action* Application::addAction(const QString& name, const QString& text, const QStringList& menu, const QKeySequence& shortcut1, const QKeySequence& shortcut2) {
-	Q_UNUSED(menu);
-
-	QList<QKeySequence> shortcuts;
-	shortcuts << shortcut1 << shortcut2;
-
-	Action* action = new Action();
-	action->setName(name);
-	action->setText(text);
-	action->setShortcuts(shortcuts);
-
-	actions_.push_back(action);
+	if (menus_.find(menu) != menus_.end()) {
+		menus_[menu]->addAction(action);
+	} else {
+		QMenu* menuObject = new QMenu(menu);
+		menuObject->addAction(action);
+		menus_[menu] = menuObject;
+	}
 
 	return action;
 }
@@ -229,9 +271,8 @@ void Application::setSource(const QString &source) {
 	onMediaSourceChange();
 }
 
-void Application::mainWindow_keypressed(QKeyEvent* event) {
-	QKeySequence ks(event->modifiers() + event->key());
-	QString actionName = shortcutAction(ks);
+void Application::execAction(const QString& actionName) {
+	if (actionName == "") return;
 
 	if (actionName == "open_file") {
 		QString filter;
@@ -266,52 +307,19 @@ void Application::mainWindow_keypressed(QKeyEvent* event) {
 		return;
 	}
 
-	if (actionName != "") pluginManager_->onAction(actionName);
+	pluginManager_->onAction(actionName);
 }
 
-// void Application::mainWindow_keypressed(int key, const QString& text, int modifiers) {
-// 	Q_UNUSED(text);
+void Application::mainWindow_keypressed(QKeyEvent* event) {
+	QKeySequence ks(event->modifiers() + event->key());
+	QString actionName = shortcutAction(ks);
+	execAction(actionName);	
+}
 
-// 	QKeySequence ks(modifiers + key);
-// 	QString actionName = shortcutAction(ks);
+void Application::mainWindow_actionTriggered() {
+	Action* action = dynamic_cast<Action*>(sender());
+	QString name = action->name();
 
-// 	if (actionName == "open_file") {
-// 		QString filter;
-// 		QStringList extensions = supportedFileExtensions();
-// 		for (int i = 0; i < extensions.size(); i++) {
-// 			QString e = extensions[i];
-// 			if (filter != "") filter += " ";
-// 			filter += "*." + e;
-// 		}
-// 		Settings settings;
-// 		QString lastDir = settings.value("lastOpenFileDirectory").toString();
-// 		QString filePath = QFileDialog::getOpenFileName(NULL, tr("Open File"), lastDir, tr("Supported Files (%1)").arg(filter));
-// 		if (filePath != "") {
-// 			setSource(filePath);
-// 			settings.setValue("lastOpenFileDirectory", QVariant(QFileInfo(filePath).absolutePath()));
-// 		}
-// 		return;
-// 	}
-
-// 	if (actionName == "close_window") {
-// 		quit();
-// 		return;
-// 	}
-
-// 	if (actionName == "previous") {
-// 		previousSource();
-// 		return;
-// 	}
-
-// 	if (actionName == "next") {
-// 		nextSource();
-// 		return;
-// 	}
-
-// 	if (actionName != "") pluginManager_->onAction(actionName);
-// }
-
-void Application::mainWindow_actionTriggered(const QString &name) {
 	if (name == "about") {
 		QMessageBox::about(NULL, tr("About %1").arg(APPLICATION_TITLE), tr("%1 %2").arg(APPLICATION_TITLE).arg(version::number()));
 		return;
@@ -321,6 +329,8 @@ void Application::mainWindow_actionTriggered(const QString &name) {
 		showPreferencesDialog();
 		return;
 	}
+
+	execAction(name);
 }
 
 void Application::onMediaSourceChange() {

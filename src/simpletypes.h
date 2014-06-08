@@ -8,5 +8,6 @@
 
 typedef std::vector<int> IntVector;
 typedef std::map<QWidget*, bool> QWidgetBoolMap;
+typedef std::map<QString, QMenu*> QStringQMenuMap;
 
 #endif // SIMPLETYPES_H

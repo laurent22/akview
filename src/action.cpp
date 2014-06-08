@@ -10,7 +10,8 @@ Action::Action(const QJsonObject &jsonObject): QAction(NULL) {
 	jsonObject_ = jsonObject;
 
 	name_ = jsonObject_.value("name").toString();
-	setText(jsonObject_.value("description").toString());
+	setText(jsonObject_.value("text").toString());
+	menu_ = jsonObject_.value("menu").toString();
 
 	QJsonArray array = jsonObject.value("shortcuts").toArray();
 	QList<QKeySequence> shortcuts;
@@ -40,11 +41,11 @@ QString Action::name() const {
 	return name_;
 }
 
-QStringList Action::menu() const {
+QString Action::menu() const {
 	return menu_;
 }
 
-void Action::setMenu(const QStringList& menu) {
+void Action::setMenu(const QString& menu) {
 	menu_ = menu;
 }
 

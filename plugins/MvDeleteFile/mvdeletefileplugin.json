@@ -5,8 +5,9 @@
 	"actions": [
 		{
 			"name": "delete",
-			"description": "Move current file to trash",
-			"shortcuts": ["Ctrl + Backspace", "Delete"]
+			"text": "Trash file",
+			"shortcuts": ["Ctrl + Backspace", "Delete"],
+			"menu": "File"
 		}
 	]
 }

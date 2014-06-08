@@ -45,7 +45,7 @@ QTimer* MainWindow::updateDisplayTimer() const {
 
 	updateDisplayTimer_ = new QTimer();
 	updateDisplayTimer_->setSingleShot(true);
-	updateDisplayTimer_->setInterval(1000);
+	updateDisplayTimer_->setInterval(300);
 	connect(updateDisplayTimer_, SIGNAL(timeout()), this, SLOT(updateDisplayTimer_timeout()));
 	return updateDisplayTimer_;
 }
@@ -76,10 +76,7 @@ void MainWindow::setSource(const QString& v) {
 
 	pixmap_->load(source_);
 
-	updateDisplay(QuickRendering);
-
-	updateDisplayTimer()->stop();
-	updateDisplayTimer()->start();
+	updateDisplay(FullRendering);
 }
 
 void MainWindow::reloadSource() {
@@ -92,7 +89,7 @@ QString MainWindow::source() const {
 	return source_;
 }
 
-void MainWindow::updateDisplay(int renderingType) {	
+void MainWindow::updateDisplay(int renderingType) {
 	QSize winSize = ui->centralwidget->size();
 
 	QString updateTag = QString("%1_%2_%3_%4").arg(winSize.width()).arg(winSize.height()).arg(renderingType).arg(source_);
