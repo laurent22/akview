@@ -11,6 +11,8 @@ void XGraphicsView::scrollContentsBy(int, int) { /* Override scrollContentsBy to
 MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWindow) {
 	updateDisplayTimer_ = NULL;
 	lastUpdateTag_ = "";
+	loopPixmapItem_ = NULL;
+	hideLoopItemTimer_ = NULL;
 
 	ui->setupUi(this);
 
@@ -40,12 +42,31 @@ MainWindow::~MainWindow() {
 	delete ui;
 }
 
+void MainWindow::doLoopAnimation() {
+	if (!loopPixmapItem_) {
+		loopPixmapItem_ = new QGraphicsPixmapItem(QPixmap(":/loop.png"));
+		hideLoopItemTimer_ = new QTimer();
+		hideLoopItemTimer_->setInterval(1000);
+		hideLoopItemTimer_->setSingleShot(true);
+		connect(hideLoopItemTimer_, SIGNAL(timeout()), this, SLOT(hideLoopItemTimer_timeout()));
+	}
+
+	scene_->addItem(loopPixmapItem_);
+	loopPixmapItem_->setPos(10, 10);
+	hideLoopItemTimer_->stop();
+	hideLoopItemTimer_->start();
+}
+
+void MainWindow::hideLoopItemTimer_timeout() {
+	scene_->removeItem(loopPixmapItem_);
+}
+
 QTimer* MainWindow::updateDisplayTimer() const {
 	if (updateDisplayTimer_) return updateDisplayTimer_;
 
 	updateDisplayTimer_ = new QTimer();
 	updateDisplayTimer_->setSingleShot(true);
-	updateDisplayTimer_->setInterval(300);
+	updateDisplayTimer_->setInterval(600);
 	connect(updateDisplayTimer_, SIGNAL(timeout()), this, SLOT(updateDisplayTimer_timeout()));
 	return updateDisplayTimer_;
 }

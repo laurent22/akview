@@ -114,12 +114,14 @@ Action* Application::addAction(const QString& name, const QString& text, const Q
 
 	actions_.push_back(action);
 
-	if (menus_.find(menu) != menus_.end()) {
-		menus_[menu]->addAction(action);
-	} else {
-		QMenu* menuObject = new QMenu(menu);
-		menuObject->addAction(action);
-		menus_[menu] = menuObject;
+	if (menu != "") {
+		if (menus_.find(menu) != menus_.end()) {
+			menus_[menu]->addAction(action);
+		} else {
+			QMenu* menuObject = new QMenu(menu);
+			menuObject->addAction(action);
+			menus_[menu] = menuObject;
+		}
 	}
 
 	return action;
@@ -383,25 +385,7 @@ QStringList Application::supportedFileExtensions() const {
 }
 
 void Application::playLoopAnimation() {
-	return;
-
-	// QObject* loopImage = qmlRootObject()->findChild<QObject*>("loopImage");
-	// if (!loopImage) return;
-
-	// loopImage->setProperty("rotation", 0);
-	// loopImage->setProperty("opacity", 0);
-
-	// QObject* loopAnimation = qmlRootObject()->findChild<QObject*>("loopImageShowAnimation");
-	// if (loopAnimation) {
-	// 	QMetaObject::invokeMethod(loopAnimation, "stop");
-	// 	QMetaObject::invokeMethod(loopAnimation, "start");
-	// }
-
-	// QObject* rotateAnimation = qmlRootObject()->findChild<QObject*>("loopImageRotateAnimation");
-	// if (rotateAnimation) {
-	// 	QMetaObject::invokeMethod(rotateAnimation, "stop");
-	// 	QMetaObject::invokeMethod(rotateAnimation, "start");
-	// }
+	mainWindow_->doLoopAnimation();
 }
 
 void Application::setSourceIndex(int index) {

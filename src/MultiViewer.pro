@@ -44,7 +44,7 @@ SOURCES += main.cpp \
 	version.cpp \
     mainwindow.cpp
 
-RESOURCES += qml.qrc
+RESOURCES += resources.qrc
 
 FORMS += \
 	preferencesdialog.ui \

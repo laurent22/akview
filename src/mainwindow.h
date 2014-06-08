@@ -40,6 +40,7 @@ public:
 	void setSource(const QString& v);
 	QString source() const;
 	void reloadSource();
+	void doLoopAnimation();
 
 protected:
 
@@ -59,10 +60,13 @@ private:
 	QPixmap* pixmap_;
 	mutable QTimer* updateDisplayTimer_;
 	QString source_;
+	QGraphicsPixmapItem* loopPixmapItem_;
+	QTimer* hideLoopItemTimer_;
 
 public slots:
 
 	void updateDisplayTimer_timeout();
+	void hideLoopItemTimer_timeout();
 
 signals:
 
