@@ -101,6 +101,7 @@ void MainWindow::setSource(const QString& v) {
 }
 
 void MainWindow::reloadSource() {
+	lastUpdateTag_ = "";
 	QString s = source();
 	source_ = "";
 	setSource(s);
