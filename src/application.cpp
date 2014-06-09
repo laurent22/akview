@@ -309,6 +309,16 @@ void Application::execAction(const QString& actionName) {
 		return;
 	}
 
+	if (actionName == "about") {
+		QMessageBox::about(NULL, tr("About %1").arg(APPLICATION_TITLE), tr("%1 %2").arg(APPLICATION_TITLE).arg(version::number()));
+		return;
+	}
+
+	if (actionName == "preferences") {
+		showPreferencesDialog();
+		return;
+	}
+
 	pluginManager_->onAction(actionName);
 }
 
@@ -321,17 +331,6 @@ void Application::mainWindow_keypressed(QKeyEvent* event) {
 void Application::mainWindow_actionTriggered() {
 	Action* action = dynamic_cast<Action*>(sender());
 	QString name = action->name();
-
-	if (name == "about") {
-		QMessageBox::about(NULL, tr("About %1").arg(APPLICATION_TITLE), tr("%1 %2").arg(APPLICATION_TITLE).arg(version::number()));
-		return;
-	}
-
-	if (name == "preferences") {
-		showPreferencesDialog();
-		return;
-	}
-
 	execAction(name);
 }
 

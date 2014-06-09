@@ -16,6 +16,7 @@ bool PluginManager::loadPlugin(const QString& filePath) {
 	bool ok = plugin->loadMetadata();
 	if (!ok) {
 		qWarning() << "could not load plugin" << filePath << ":" << plugin->errorMessage();
+		delete plugin; plugin = NULL;
 		return false;
 	}
 

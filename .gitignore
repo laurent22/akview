@@ -6,3 +6,4 @@ plugins/release
 build/version/CreateVersionInfo
 *.sublime-workspace
 jhead
+TODO.md
