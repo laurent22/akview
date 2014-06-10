@@ -8,6 +8,7 @@
 
 #include "application.h"
 #include "constants.h"
+#include "exif.h"
 #include "paths.h"
 #include "settings.h"
 #include "version.h"
@@ -335,6 +336,8 @@ void Application::mainWindow_actionTriggered() {
 }
 
 void Application::onMediaSourceChange() {
+	Exif exif(source_);
+	mainWindow_->setRotation(360 - exif.rotation());
 	mainWindow_->setSource(source_);
 	setWindowTitle(QFileInfo(source_).fileName());
 }

@@ -9,10 +9,13 @@ XGraphicsView::XGraphicsView(QGraphicsScene* scene, QWidget* parent) : QGraphics
 void XGraphicsView::scrollContentsBy(int, int) { /* Override scrollContentsBy to disable scrolling */ }
 
 MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWindow) {
+	ready_ = false;
 	updateDisplayTimer_ = NULL;
 	lastUpdateTag_ = "";
 	loopPixmapItem_ = NULL;
 	hideLoopItemTimer_ = NULL;
+	rotation_ = 0;
+	invalidated_ = true;
 
 	ui->setupUi(this);
 
@@ -20,6 +23,7 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
 	scene_->setBackgroundBrush(QBrush(Qt::black));
 
 	view_ = new XGraphicsView(scene_, this);
+
 	view_->setEnabled(false);
 	view_->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
 	view_->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
@@ -34,7 +38,8 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
 
 	view_->show();
 
-	updateDisplay(FullRendering);
+	ready_ = true;
+	invalidate();
 }
 
 MainWindow::~MainWindow() {
@@ -59,6 +64,11 @@ void MainWindow::doLoopAnimation() {
 
 void MainWindow::hideLoopItemTimer_timeout() {
 	scene_->removeItem(loopPixmapItem_);
+}
+
+void MainWindow::invalidate() {
+	invalidated_ = true;
+	update();
 }
 
 QTimer* MainWindow::updateDisplayTimer() const {
@@ -97,7 +107,7 @@ void MainWindow::setSource(const QString& v) {
 
 	pixmap_->load(source_);
 
-	updateDisplay(FullRendering);
+	invalidate();
 }
 
 void MainWindow::reloadSource() {
@@ -111,7 +121,30 @@ QString MainWindow::source() const {
 	return source_;
 }
 
+void MainWindow::setRotation(int v) {
+	if (rotation_ == v) return;
+	rotation_ = v;
+	invalidate();
+}
+
+int MainWindow::rotation() const {
+	return rotation_;
+}
+
+void MainWindow::paintEvent(QPaintEvent* event) {
+	if (invalidated_) {
+		invalidated_ = false;
+		updateDisplay(FullRendering);
+	}
+
+	QMainWindow::paintEvent(event);
+}
+
 void MainWindow::updateDisplay(int renderingType) {
+	if (!ready_) return;
+
+	invalidated_ = false;
+
 	QSize winSize = ui->centralwidget->size();
 
 	QString updateTag = QString("%1_%2_%3_%4").arg(winSize.width()).arg(winSize.height()).arg(renderingType).arg(source_);
@@ -123,9 +156,12 @@ void MainWindow::updateDisplay(int renderingType) {
 	if (pixmap_->isNull()) {
 		pixmapItem_->setPixmap(*pixmap_);
 	} else {
-		QPixmap scaledPixmap = pixmap_->scaled(winSize.width(), winSize.height(), Qt::KeepAspectRatio, renderingType == QuickRendering ? Qt::FastTransformation : Qt::SmoothTransformation);
+		bool rotated = rotation_ != 0 && rotation_ != 360;
+
+		QPixmap scaledPixmap = pixmap_->scaled(rotated ? winSize.height() : winSize.width(), rotated ? winSize.width() : winSize.height(), Qt::KeepAspectRatio, renderingType == QuickRendering ? Qt::FastTransformation : Qt::SmoothTransformation);
 		pixmapItem_->setPixmap(scaledPixmap);
-	
+		pixmapItem_->setTransformOriginPoint(QPointF((double)scaledPixmap.width() / 2.0, (double)scaledPixmap.height() / 2.0));
+		pixmapItem_->setRotation(rotation_);
 		pixmapItem_->setPos(
 			floor((winSize.width() - scaledPixmap.size().width()) / 2),
 			floor((winSize.height() - scaledPixmap.size().height()) / 2)

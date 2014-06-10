@@ -41,12 +41,16 @@ public:
 	QString source() const;
 	void reloadSource();
 	void doLoopAnimation();
+	void setRotation(int v);
+	int rotation() const;
+	void invalidate();
 
 protected:
 
 	void resizeEvent(QResizeEvent*);
 	void showEvent(QShowEvent* event);
 	void keyPressEvent(QKeyEvent* event);
+	void paintEvent(QPaintEvent* event);
 
 private:
 
@@ -62,6 +66,9 @@ private:
 	QString source_;
 	QGraphicsPixmapItem* loopPixmapItem_;
 	QTimer* hideLoopItemTimer_;
+	int rotation_;
+	bool invalidated_;
+	bool ready_;
 
 public slots:
 

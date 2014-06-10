@@ -7,6 +7,7 @@ HEADERS += \
 	actionlistitemwidget.h \
 	application.h \
 	constants.h \
+	exif.h \
 	iapplication.h \
 	jheadhandler.h \
 	mvplugininterface.h \
@@ -26,6 +27,7 @@ SOURCES += main.cpp \
 	action.cpp \
 	actionlistitemwidget.cpp \
 	application.cpp \
+	exif.cpp \
 	jheadhandler.cpp \
 	paths.cpp \
 	plugin.cpp \
@@ -45,6 +47,9 @@ SOURCES += main.cpp \
     mainwindow.cpp
 
 RESOURCES += resources.qrc
+
+INCLUDEPATH += "/usr/local/Cellar/freeimage/3.15.4/include"
+LIBS += /usr/local/Cellar/freeimage/3.15.4/lib/libfreeimage.dylib
 
 FORMS += \
 	preferencesdialog.ui \
