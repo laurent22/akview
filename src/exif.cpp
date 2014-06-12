@@ -44,6 +44,8 @@ int Exif::orientation() const {
 	FITAG *tag = NULL;
 	FreeImage_GetMetadata(FIMD_EXIF_MAIN, dib_, "Orientation", &tag);
 	short* v = (short*)FreeImage_GetTagValue(tag);
+	if (!v) return 1;
+	
 	return *v;
 }
 
