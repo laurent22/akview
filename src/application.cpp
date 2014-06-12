@@ -273,7 +273,7 @@ QString Application::source() const {
 void Application::setSource(const QString &source) {
 	if (source == source_) return;
 	source_ = source;
-	onMediaSourceChange();
+	onSourceChange();
 }
 
 void Application::execAction(const QString& actionName) {
@@ -347,7 +347,8 @@ void Application::mainWindow_actionTriggered() {
 	execAction(name);
 }
 
-void Application::onMediaSourceChange() {
+void Application::onSourceChange() {
+	mainWindow_->resetZoom();
 	Exif exif(source_);
 	mainWindow_->setRotation(360 - exif.rotation());
 	mainWindow_->setSource(source_);

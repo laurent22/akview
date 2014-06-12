@@ -33,7 +33,7 @@ public:
 protected:
 
 	bool event(QEvent* event);
-	void onMediaSourceChange();
+	void onSourceChange();
 	void onExit();
 
 private:

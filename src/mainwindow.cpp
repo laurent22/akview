@@ -178,6 +178,10 @@ void MainWindow::setZoomIndex(int v) {
 	invalidate();
 }
 
+void MainWindow::resetZoom() {
+	setZoomIndex(noZoomIndex_);
+}
+
 void MainWindow::zoomIn() {
 	setZoomIndex(zoomIndex_ + 1);	
 }

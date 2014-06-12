@@ -48,6 +48,7 @@ public:
 	void invalidate();
 	void zoomIn();
 	void zoomOut();
+	void resetZoom();
 	float zoom() const;
 	void setAutoFit(bool v);
 	bool autoFit() const;
