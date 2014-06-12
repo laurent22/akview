@@ -70,6 +70,8 @@ void Application::buildMenu() {
 	addAction("close_window", tr("Close window"), "File", QKeySequence(Qt::CTRL + Qt::Key_W));
 	addAction("next", tr("Next"), "View", QKeySequence(Qt::Key_Right), QKeySequence("Num+Right"));
 	addAction("previous", tr("Previous"), "View", QKeySequence(Qt::Key_Left), QKeySequence("Num+Left"));
+	addAction("zoom_in", tr("Zoom In"), "View", QKeySequence(Qt::Key_Plus));
+	addAction("zoom_out", tr("Zoom Out"), "View", QKeySequence(Qt::Key_Minus));
 	addAction("about", tr("About"), "Help");
 	addAction("preferences", tr("Preferences"), "Tools");
 
@@ -307,6 +309,16 @@ void Application::execAction(const QString& actionName) {
 
 	if (actionName == "next") {
 		nextSource();
+		return;
+	}
+
+	if (actionName == "zoom_in") {
+		mainWindow_->zoomIn();
+		return;
+	}
+
+	if (actionName == "zoom_out") {
+		mainWindow_->zoomOut();
 		return;
 	}
 

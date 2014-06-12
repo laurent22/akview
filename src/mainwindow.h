@@ -8,6 +8,8 @@
 #include <QShowEvent>
 #include <QTimer>
 
+#include "simpletypes.h"
+
 class XGraphicsView: public QGraphicsView {
 
 public:
@@ -16,7 +18,7 @@ public:
 
 protected:
 
-	void scrollContentsBy(int, int);
+	void scrollContentsBy(int x, int y);
 
 };
 
@@ -44,6 +46,11 @@ public:
 	void setRotation(int v);
 	int rotation() const;
 	void invalidate();
+	void zoomIn();
+	void zoomOut();
+	float zoom() const;
+	void setAutoFit(bool v);
+	bool autoFit() const;
 
 protected:
 
@@ -55,6 +62,7 @@ protected:
 private:
 
 	QTimer* updateDisplayTimer() const;
+	void setZoomIndex(int v);
 	
 	Ui::MainWindow *ui;
 	QGraphicsPixmapItem* pixmapItem_;
@@ -69,6 +77,10 @@ private:
 	int rotation_;
 	bool invalidated_;
 	bool ready_;
+	bool autoFit_;
+	FloatVector possibleZoomValues_;
+	int zoomIndex_;
+	int noZoomIndex_;
 
 public slots:
 

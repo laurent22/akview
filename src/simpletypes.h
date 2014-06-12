@@ -9,5 +9,6 @@
 typedef std::vector<int> IntVector;
 typedef std::map<QWidget*, bool> QWidgetBoolMap;
 typedef std::map<QString, QMenu*> QStringQMenuMap;
+typedef std::vector<float> FloatVector;
 
 #endif // SIMPLETYPES_H

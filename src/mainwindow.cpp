@@ -6,7 +6,7 @@
 #include <QDebug>
 
 XGraphicsView::XGraphicsView(QGraphicsScene* scene, QWidget* parent) : QGraphicsView(scene, parent) {}
-void XGraphicsView::scrollContentsBy(int, int) { /* Override scrollContentsBy to disable scrolling */ }
+void XGraphicsView::scrollContentsBy(int x, int y) { QGraphicsView::scrollContentsBy(x, y); /* Override scrollContentsBy to disable scrolling */ }
 
 MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWindow) {
 	ready_ = false;
@@ -16,6 +16,25 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
 	hideLoopItemTimer_ = NULL;
 	rotation_ = 0;
 	invalidated_ = true;
+	autoFit_ = true;
+
+	possibleZoomValues_.push_back(1.0/128.0);
+	possibleZoomValues_.push_back(1.0/64.0);
+	possibleZoomValues_.push_back(1.0/32.0);
+	possibleZoomValues_.push_back(1.0/16.0);
+	possibleZoomValues_.push_back(1.0/8.0);
+	possibleZoomValues_.push_back(1.0/4.0);
+	possibleZoomValues_.push_back(1.0/2.0);
+	possibleZoomValues_.push_back(1.0);
+	possibleZoomValues_.push_back(2.0);
+	possibleZoomValues_.push_back(4.0);
+	possibleZoomValues_.push_back(8.0);
+	possibleZoomValues_.push_back(16.0);
+	possibleZoomValues_.push_back(32.0);
+	possibleZoomValues_.push_back(64.0);
+	possibleZoomValues_.push_back(128.0);
+	zoomIndex_ = possibleZoomValues_.size() / 2;
+	noZoomIndex_ = zoomIndex_;
 
 	ui->setupUi(this);
 
@@ -30,7 +49,6 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
 
 	pixmap_ = new QPixmap();
 	pixmapItem_ = new QGraphicsPixmapItem();
-	pixmapItem_->setTransformationMode(Qt::SmoothTransformation);
 
 	scene_->addItem(pixmapItem_);
 
@@ -131,6 +149,49 @@ int MainWindow::rotation() const {
 	return rotation_;
 }
 
+void MainWindow::setAutoFit(bool v) {
+	if (autoFit_ == v) return;
+	autoFit_ = v;
+	
+	view_->setEnabled(!autoFit_);
+
+	if (autoFit_) {
+		view_->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+		view_->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+	} else {
+		view_->setHorizontalScrollBarPolicy(Qt::ScrollBarAsNeeded);
+		view_->setVerticalScrollBarPolicy(Qt::ScrollBarAsNeeded);
+	}
+
+	if (autoFit_) zoomIndex_ = noZoomIndex_;
+}
+
+bool MainWindow::autoFit() const {
+	return autoFit_;
+}
+
+void MainWindow::setZoomIndex(int v) {
+	if (v >= (int)possibleZoomValues_.size()) v = (int)possibleZoomValues_.size() - 1;
+	if (v < 0) v = 0;
+	if (v == zoomIndex_) return;
+
+	zoomIndex_ = v;
+	setAutoFit(zoomIndex_ == noZoomIndex_);
+	invalidate();
+}
+
+void MainWindow::zoomIn() {
+	setZoomIndex(zoomIndex_ + 1);	
+}
+
+void MainWindow::zoomOut() {
+	setZoomIndex(zoomIndex_ - 1);
+}
+
+float MainWindow::zoom() const {
+	return possibleZoomValues_[zoomIndex_];
+}
+
 void MainWindow::paintEvent(QPaintEvent* event) {
 	if (invalidated_) {
 		invalidated_ = false;
@@ -147,7 +208,7 @@ void MainWindow::updateDisplay(int renderingType) {
 
 	QSize winSize = ui->centralwidget->size();
 
-	QString updateTag = QString("%1_%2_%3_%4").arg(winSize.width()).arg(winSize.height()).arg(renderingType).arg(source_);
+	QString updateTag = QString("%1_%2_%3_%4_%5_%6").arg(winSize.width()).arg(winSize.height()).arg(renderingType).arg(autoFit_).arg(zoom()).arg(source_);
 	if (lastUpdateTag_ == updateTag) return;
 	lastUpdateTag_ = updateTag;
 	
@@ -158,15 +219,36 @@ void MainWindow::updateDisplay(int renderingType) {
 	} else {
 		bool rotated = rotation_ != 0 && rotation_ != 360;
 
-		QPixmap scaledPixmap = pixmap_->scaled(rotated ? winSize.height() : winSize.width(), rotated ? winSize.width() : winSize.height(), Qt::KeepAspectRatio, renderingType == QuickRendering ? Qt::FastTransformation : Qt::SmoothTransformation);
-		pixmapItem_->setPixmap(scaledPixmap);
-		pixmapItem_->setTransformOriginPoint(QPointF((double)scaledPixmap.width() / 2.0, (double)scaledPixmap.height() / 2.0));
+		// Calculate scale factor so that the picture fits within the view
+		int pixmapWidth = rotated ? pixmap_->height() : pixmap_->width();
+		int pixmapHeight = rotated ? pixmap_->width() : pixmap_->height();
+
+		float rw = (float)winSize.width() / (float)pixmapWidth;
+		float rh = (float)winSize.height() / (float)pixmapHeight;
+
+		float zoom = rw < rh ? rw : rh;
+
+		// If we're not trying to fit the photo within the view, we apply the user supplied zoom
+		if (!autoFit_) zoom = zoom * this->zoom();
+		
+		// If autoFit, we use a nicely scaled pixmap. If not, scaling is done
+		// via QGraphicsItem (no smoothing).
+		QPixmap drawnPixmap = autoFit_ ? pixmap_->scaled(zoom * (float)pixmapWidth, zoom * (float)pixmapHeight, Qt::KeepAspectRatio, renderingType == QuickRendering ? Qt::FastTransformation : Qt::SmoothTransformation) : *pixmap_;
+
+		pixmapItem_->setPixmap(drawnPixmap);
+		pixmapItem_->setScale(autoFit_ ? 1 : zoom);
+		pixmapItem_->setTransformOriginPoint(QPointF((double)drawnPixmap.width() / 2.0, (double)drawnPixmap.height() / 2.0));
 		pixmapItem_->setRotation(rotation_);
 		pixmapItem_->setPos(
-			floor((winSize.width() - scaledPixmap.size().width()) / 2),
-			floor((winSize.height() - scaledPixmap.size().height()) / 2)
+			floor((winSize.width() - drawnPixmap.size().width()) / 2),
+			floor((winSize.height() - drawnPixmap.size().height()) / 2)
 		);
-	}
 
-	scene_->setSceneRect(QRect(0, 0, winSize.width(), winSize.height()));
+		if (autoFit_) {
+			scene_->setSceneRect(QRect(0, 0, winSize.width(), winSize.height()));
+		} else {
+			QRectF rect(0, 0, drawnPixmap.width(), drawnPixmap.height());
+			scene_->setSceneRect(pixmapItem_->mapRectToScene(rect));
+		}
+	}
 }
