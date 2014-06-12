@@ -68,7 +68,6 @@ private:
 	QGraphicsPixmapItem* pixmapItem_;
 	QGraphicsScene* scene_;
 	QGraphicsView* view_;
-	QString lastUpdateTag_;
 	QPixmap* pixmap_;
 	mutable QTimer* updateDisplayTimer_;
 	QString source_;

@@ -11,7 +11,6 @@ void XGraphicsView::scrollContentsBy(int x, int y) { QGraphicsView::scrollConten
 MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWindow) {
 	ready_ = false;
 	updateDisplayTimer_ = NULL;
-	lastUpdateTag_ = "";
 	loopPixmapItem_ = NULL;
 	hideLoopItemTimer_ = NULL;
 	rotation_ = 0;
@@ -129,7 +128,6 @@ void MainWindow::setSource(const QString& v) {
 }
 
 void MainWindow::reloadSource() {
-	lastUpdateTag_ = "";
 	QString s = source();
 	source_ = "";
 	setSource(s);
@@ -207,10 +205,6 @@ void MainWindow::updateDisplay(int renderingType) {
 	invalidated_ = false;
 
 	QSize winSize = ui->centralwidget->size();
-
-	QString updateTag = QString("%1_%2_%3_%4_%5_%6").arg(winSize.width()).arg(winSize.height()).arg(renderingType).arg(autoFit_).arg(zoom()).arg(source_);
-	if (lastUpdateTag_ == updateTag) return;
-	lastUpdateTag_ = updateTag;
 	
 	if (winSize.width() <= 0 || winSize.height() <= 0) return;
 	
