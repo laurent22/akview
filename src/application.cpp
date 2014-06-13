@@ -37,7 +37,6 @@ void Application::initialize() {
 	args.process(*this);
 
 	mainWindow_ = new MainWindow();
-	mainWindow_->show();
 
 	setWindowTitle(APPLICATION_TITLE);
 	loadWindowGeometry();
@@ -53,6 +52,8 @@ void Application::initialize() {
 	if (filePaths.size() > 0) setSource(filePaths[0]);
 
 	buildMenu();
+
+	mainWindow_->show();
 }
 
 void Application::buildMenu() {
