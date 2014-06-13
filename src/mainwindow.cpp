@@ -13,9 +13,11 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
 	updateDisplayTimer_ = NULL;
 	loopPixmapItem_ = NULL;
 	hideLoopItemTimer_ = NULL;
+	loopPixmap_ = NULL;
 	rotation_ = 0;
 	invalidated_ = true;
 	autoFit_ = true;
+	loopAnimationPlaying_ = false;
 
 	possibleZoomValues_.push_back(1.0/128.0);
 	possibleZoomValues_.push_back(1.0/64.0);
@@ -66,21 +68,29 @@ MainWindow::~MainWindow() {
 
 void MainWindow::doLoopAnimation() {
 	if (!loopPixmapItem_) {
-		loopPixmapItem_ = new QGraphicsPixmapItem(QPixmap(":/loop.png"));
+		loopPixmap_ = new QPixmap(":/loop.png");
+		loopPixmapItem_ = new QGraphicsPixmapItem(*loopPixmap_);
+		loopPixmapItem_->setVisible(false);
+		scene_->addItem(loopPixmapItem_);
+
 		hideLoopItemTimer_ = new QTimer();
 		hideLoopItemTimer_->setInterval(1000);
 		hideLoopItemTimer_->setSingleShot(true);
 		connect(hideLoopItemTimer_, SIGNAL(timeout()), this, SLOT(hideLoopItemTimer_timeout()));
 	}
 
-	scene_->addItem(loopPixmapItem_);
-	loopPixmapItem_->setPos(10, 10);
+	QSize winSize = ui->centralwidget->size();
+
+	loopPixmapItem_->setPos((winSize.width() - loopPixmap_->width()) / 2, (winSize.height() - loopPixmap_->height()) / 2);
 	hideLoopItemTimer_->stop();
 	hideLoopItemTimer_->start();
+	loopAnimationPlaying_ = true;
+	invalidate();
 }
 
 void MainWindow::hideLoopItemTimer_timeout() {
-	scene_->removeItem(loopPixmapItem_);
+	loopAnimationPlaying_ = false;
+	invalidate();
 }
 
 void MainWindow::invalidate() {
@@ -249,4 +259,6 @@ void MainWindow::updateDisplay(int renderingType) {
 			scene_->setSceneRect(pixmapItem_->mapRectToScene(rect));
 		}
 	}
+
+	if (loopPixmapItem_) loopPixmapItem_->setVisible(loopAnimationPlaying_);
 }

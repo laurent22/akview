@@ -73,7 +73,9 @@ private:
 	mutable QTimer* updateDisplayTimer_;
 	QString source_;
 	QGraphicsPixmapItem* loopPixmapItem_;
+	QPixmap* loopPixmap_;
 	QTimer* hideLoopItemTimer_;
+	bool loopAnimationPlaying_;
 	int rotation_;
 	bool invalidated_;
 	bool ready_;
