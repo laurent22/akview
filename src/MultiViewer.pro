@@ -17,6 +17,7 @@ HEADERS += \
 	pluginmanager.h \
 	preferencesdialog.h \
 	settings.h \
+	simplefunctions.h \
 	simpletypes.h \
 	stringutil.h \
 	third_party/jhead/jhead.h \

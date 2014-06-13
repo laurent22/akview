@@ -2,6 +2,7 @@
 #include <QDebug>
 #include <QFileDialog>
 #include <QFileOpenEvent>
+#include <QMenuBar>
 #include <QMessageBox>
 #include <QProcess>
 #include <QUrl>
@@ -11,9 +12,8 @@
 #include "exif.h"
 #include "paths.h"
 #include "settings.h"
+#include "simplefunctions.h"
 #include "version.h"
-
-#include <QMenuBar>
 
 namespace mv {
 
@@ -52,6 +52,9 @@ void Application::initialize() {
 	if (filePaths.size() > 0) setSource(filePaths[0]);
 
 	buildMenu();
+
+	mainWindow_->setStatusItem("counter", "#-/-");
+	mainWindow_->setStatusItem("zoom", "Zoom: 100%");
 
 	mainWindow_->show();
 }
@@ -142,9 +145,7 @@ void Application::setWindowTitle(const QString &title) {
 	prefix = "** DEBUG ** ";
 #endif // QT_DEBUG
 
-	QString counter = QString("(%1/%2)").arg(sourceIndex() + 1).arg(sources().size());
-
-	mainWindow_->setWindowTitle(prefix + title + " " + counter);
+	mainWindow_->setWindowTitle(prefix + title);
 }
 
 void Application::showPreferencesDialog() {
@@ -316,12 +317,16 @@ void Application::execAction(const QString& actionName) {
 	}
 
 	if (actionName == "zoom_in") {
+		int previous = mainWindow_->zoomIndex();
 		mainWindow_->zoomIn();
+		if (previous != mainWindow_->zoomIndex()) onZoomChange();
 		return;
 	}
 
 	if (actionName == "zoom_out") {
+		int previous = mainWindow_->zoomIndex();
 		mainWindow_->zoomOut();
+		if (previous != mainWindow_->zoomIndex()) onZoomChange();
 		return;
 	}
 
@@ -350,12 +355,18 @@ void Application::mainWindow_actionTriggered() {
 	execAction(name);
 }
 
+void Application::onZoomChange() {
+	mainWindow_->setStatusItem("zoom", QString("Zoom: %1%").arg(round(mainWindow_->zoom() * 100.0)));
+}
+
 void Application::onSourceChange() {
 	mainWindow_->resetZoom();
 	Exif exif(source_);
 	mainWindow_->setRotation(360 - exif.rotation());
 	mainWindow_->setSource(source_);
 	setWindowTitle(QFileInfo(source_).fileName());
+	QString counter = QString("#%1/%2").arg(sourceIndex() + 1).arg(sources().size());
+	mainWindow_->setStatusItem("counter", counter);
 }
 
 void Application::saveWindowGeometry() {

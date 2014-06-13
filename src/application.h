@@ -34,6 +34,7 @@ protected:
 
 	bool event(QEvent* event);
 	void onSourceChange();
+	void onZoomChange();
 	void onExit();
 
 private:

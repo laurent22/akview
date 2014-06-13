@@ -1,11 +1,11 @@
 #ifndef VERSION_H
 #define VERSION_H
 
-#define VER_FILEVERSION             1,0,321
-#define VER_FILEVERSION_STR         "1.0.321\0"
+#define VER_FILEVERSION             1,0,323
+#define VER_FILEVERSION_STR         "1.0.323\0"
 
-#define VER_PRODUCTVERSION          1,0,321
-#define VER_PRODUCTVERSION_STR      "1.0.321\0"
+#define VER_PRODUCTVERSION          1,0,323
+#define VER_PRODUCTVERSION_STR      "1.0.323\0"
 
 #define VER_COMPANYNAME_STR         "MV Project"
 #define VER_FILEDESCRIPTION_STR     "MultiViewer"

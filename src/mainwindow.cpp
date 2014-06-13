@@ -66,6 +66,20 @@ MainWindow::~MainWindow() {
 	delete ui;
 }
 
+void MainWindow::setStatusItem(const QString& name, const QString& value) {
+	QLabel* label = NULL;
+
+	if (statusLabels_.find(name) == statusLabels_.end()) {
+		label = new QLabel(this);
+		statusBar()->insertPermanentWidget(0, label);	
+		statusLabels_[name] = label;	
+	} else {
+		label = statusLabels_[name];
+	}
+	
+	label->setText(value);
+}
+
 void MainWindow::doLoopAnimation() {
 	if (!loopPixmapItem_) {
 		loopPixmap_ = new QPixmap(":/loop.png");
@@ -176,6 +190,10 @@ void MainWindow::setAutoFit(bool v) {
 
 bool MainWindow::autoFit() const {
 	return autoFit_;
+}
+
+int MainWindow::zoomIndex() const {
+	return zoomIndex_;
 }
 
 void MainWindow::setZoomIndex(int v) {

@@ -53,6 +53,8 @@ public:
 	void setAutoFit(bool v);
 	bool autoFit() const;
 	float fitZoom() const;
+	void setStatusItem(const QString& name, const QString& value);
+	int zoomIndex() const;
 
 protected:
 
@@ -85,6 +87,7 @@ private:
 	int zoomIndex_;
 	int noZoomIndex_;
 	float beforeScaleFitZoom_;
+	QStringQLabelMap statusLabels_;
 
 public slots:
 
