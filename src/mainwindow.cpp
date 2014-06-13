@@ -185,6 +185,7 @@ void MainWindow::setZoomIndex(int v) {
 
 	zoomIndex_ = v;
 	setAutoFit(zoomIndex_ == noZoomIndex_);
+	if (zoomIndex_ != noZoomIndex_) beforeScaleFitZoom_ = fitZoom();
 	invalidate();
 }
 
@@ -213,6 +214,19 @@ void MainWindow::paintEvent(QPaintEvent* event) {
 	QMainWindow::paintEvent(event);
 }
 
+float MainWindow::fitZoom() const {
+	bool rotated = rotation_ != 0 && rotation_ != 360;
+	QSize winSize = ui->centralwidget->size();
+
+	int pixmapWidth = rotated ? pixmap_->height() : pixmap_->width();
+	int pixmapHeight = rotated ? pixmap_->width() : pixmap_->height();
+
+	float rw = (float)winSize.width() / (float)pixmapWidth;
+	float rh = (float)winSize.height() / (float)pixmapHeight;
+
+	return rw < rh ? rw : rh;
+}
+
 void MainWindow::updateDisplay(int renderingType) {
 	if (!ready_) return;
 
@@ -231,10 +245,9 @@ void MainWindow::updateDisplay(int renderingType) {
 		int pixmapWidth = rotated ? pixmap_->height() : pixmap_->width();
 		int pixmapHeight = rotated ? pixmap_->width() : pixmap_->height();
 
-		float rw = (float)winSize.width() / (float)pixmapWidth;
-		float rh = (float)winSize.height() / (float)pixmapHeight;
-
-		float zoom = rw < rh ? rw : rh;
+		// If not autofit, we use the zoom level as it was before zooming
+		// so that if the window is resized the zoom remains constant.
+		float zoom = autoFit_ ? fitZoom() : beforeScaleFitZoom_;
 
 		// If we're not trying to fit the photo within the view, we apply the user supplied zoom
 		if (!autoFit_) zoom = zoom * this->zoom();

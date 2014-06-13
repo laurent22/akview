@@ -52,6 +52,7 @@ public:
 	float zoom() const;
 	void setAutoFit(bool v);
 	bool autoFit() const;
+	float fitZoom() const;
 
 protected:
 
@@ -83,6 +84,7 @@ private:
 	FloatVector possibleZoomValues_;
 	int zoomIndex_;
 	int noZoomIndex_;
+	float beforeScaleFitZoom_;
 
 public slots:
 
