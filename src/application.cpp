@@ -142,7 +142,9 @@ void Application::setWindowTitle(const QString &title) {
 	prefix = "** DEBUG ** ";
 #endif // QT_DEBUG
 
-	mainWindow_->setWindowTitle(prefix + title);
+	QString counter = QString("(%1/%2)").arg(sourceIndex() + 1).arg(sources().size());
+
+	mainWindow_->setWindowTitle(prefix + title + " " + counter);
 }
 
 void Application::showPreferencesDialog() {
