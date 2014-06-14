@@ -38,7 +38,10 @@ void Application::initialize() {
 
 	mainWindow_ = new MainWindow();
 
+	#ifdef Q_OS_MAC
 	setQuitOnLastWindowClosed(false);
+	#endif
+	
 	setWindowTitle(APPLICATION_TITLE);
 	loadWindowGeometry();
 
@@ -72,7 +75,9 @@ void Application::setupActions() {
 	menus_["Help"] = helpMenu;
 
 	createAction("open_file", tr("Open a file..."), "File", QKeySequence(Qt::CTRL + Qt::Key_O));
+	#ifdef Q_OS_MAC
 	createAction("close_window", tr("Close window"), "File", QKeySequence(Qt::CTRL + Qt::Key_W));
+	#endif
 	createAction("next", tr("Next"), "View", QKeySequence(Qt::Key_Right), QKeySequence("Num+Right"));
 	createAction("previous", tr("Previous"), "View", QKeySequence(Qt::Key_Left), QKeySequence("Num+Left"));
 	createAction("zoom_in", tr("Zoom In"), "View", QKeySequence(Qt::Key_Plus));
