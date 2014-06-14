@@ -38,6 +38,7 @@ void Application::initialize() {
 
 	mainWindow_ = new MainWindow();
 
+	setQuitOnLastWindowClosed(false);
 	setWindowTitle(APPLICATION_TITLE);
 	loadWindowGeometry();
 
@@ -338,7 +339,10 @@ void Application::execAction(const QString& actionName) {
 	}
 
 	if (actionName == "close_window") {
-		quit();
+		if (mainWindow_ && !mainWindow_->isHidden()) {
+			mainWindow_->clearSource();
+			mainWindow_->hide();
+		}
 		return;
 	}
 
@@ -396,6 +400,8 @@ void Application::onZoomChange() {
 }
 
 void Application::onSourceChange() {
+	if (mainWindow_->isHidden()) mainWindow_->show();
+
 	mainWindow_->resetZoom();
 	Exif exif(source_);
 	mainWindow_->setRotation(360 - exif.rotation());

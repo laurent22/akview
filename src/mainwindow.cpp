@@ -142,6 +142,12 @@ void MainWindow::keyPressEvent(QKeyEvent* event) {
 	emit keypressed(event);
 }
 
+void MainWindow::clearSource() {
+	delete pixmap_;
+	pixmap_ = new QPixmap();
+	invalidate();
+}
+
 void MainWindow::setSource(const QString& v) {
 	if (source_ == v) return;
 	source_ = v;

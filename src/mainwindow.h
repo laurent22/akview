@@ -41,6 +41,7 @@ public:
 	void updateDisplay(int renderingType);
 	void setSource(const QString& v);
 	QString source() const;
+	void clearSource();
 	void reloadSource();
 	void doLoopAnimation();
 	void setRotation(int v);

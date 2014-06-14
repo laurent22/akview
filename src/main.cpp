@@ -38,5 +38,7 @@ int main(int argc, char *argv[]) {
 	qInstallMessageHandler(myMessageHandler);
 #endif // QT_DEBUG
 	app.initialize();
-	return app.exec();
+	int exitCode = app.exec();
+	qDebug() << "Exit with code" << exitCode;
+	return exitCode;
 }
