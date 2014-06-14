@@ -3,6 +3,7 @@
 
 #include <QApplication>
 #include <QKeyEvent>
+#include <QTimer>
 
 #include "action.h"
 #include "mainwindow.h"
@@ -52,6 +53,7 @@ private:
 	QStringQMenuMap menus_;
 	PreferencesDialog* preferencesDialog_;
 	QMenuBar* menuBar_;
+	QTimer* preloadTimer_;
 	Action* createAction(const QString& name, const QString& text, const QString& menu, const QKeySequence& shortcut1 = QKeySequence(), const QKeySequence& shortcut2 = QKeySequence());
 	void registerAction(const QString& menuName, Action* action);
 	void playLoopAnimation();
@@ -63,6 +65,7 @@ public slots:
 
 	void mainWindow_keypressed(QKeyEvent* event);
 	void mainWindow_actionTriggered();
+	void preloadTimer_timeout();
 
 	QString source() const;
 	void setSource(const QString& source);
@@ -72,6 +75,7 @@ public slots:
 	void setSourceIndex(int index);
 	void nextSource();
 	void previousSource();
+	QString nextSourcePath() const;
 	QStringList sources() const;
 	QStringList sources(const QString& filePath) const;
 	void refreshSources();

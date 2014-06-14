@@ -8,12 +8,13 @@
 XGraphicsView::XGraphicsView(QGraphicsScene* scene, QWidget* parent) : QGraphicsView(scene, parent) {}
 void XGraphicsView::scrollContentsBy(int x, int y) { QGraphicsView::scrollContentsBy(x, y); /* Override scrollContentsBy to disable scrolling */ }
 
-MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWindow) {
+MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWindow), pixmapCache_(3) {
 	ready_ = false;
 	updateDisplayTimer_ = NULL;
 	loopPixmapItem_ = NULL;
 	hideLoopItemTimer_ = NULL;
 	loopPixmap_ = NULL;
+	pixmap_ = NULL;
 	rotation_ = 0;
 	invalidated_ = true;
 	autoFit_ = true;
@@ -48,7 +49,7 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
 	view_->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
 	view_->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
 
-	pixmap_ = new QPixmap();
+	//pixmap_ = new QPixmap();
 	pixmapItem_ = new QGraphicsPixmapItem();
 
 	scene_->addItem(pixmapItem_);
@@ -143,17 +144,27 @@ void MainWindow::keyPressEvent(QKeyEvent* event) {
 }
 
 void MainWindow::clearSource() {
-	delete pixmap_;
-	pixmap_ = new QPixmap();
+	pixmap_ = NULL; // QCache will take care of deleting the object
 	invalidate();
+}
+
+// Loads the source in memory but doesn't display it
+QPixmap* MainWindow::loadSource(const QString& sourcePath) {
+	if (pixmapCache_.contains(sourcePath)) {
+		return pixmapCache_[sourcePath];
+	}
+
+	QPixmap* pixmap = new QPixmap();
+	pixmap->load(sourcePath);
+	pixmapCache_.insert(sourcePath, pixmap);
+	return pixmap;
 }
 
 void MainWindow::setSource(const QString& v) {
 	if (source_ == v) return;
 	source_ = v;
-
-	pixmap_->load(source_);
-
+	if (pixmap_) pixmap_ = NULL; // QCache will take care of deleting the object
+	pixmap_ = loadSource(source_);
 	invalidate();
 }
 
@@ -239,6 +250,8 @@ void MainWindow::paintEvent(QPaintEvent* event) {
 }
 
 float MainWindow::fitZoom() const {
+	if (!pixmap_) return 1;
+
 	bool rotated = rotation_ != 0 && rotation_ != 360;
 	QSize winSize = ui->centralwidget->size();
 
@@ -260,8 +273,8 @@ void MainWindow::updateDisplay(int renderingType) {
 	
 	if (winSize.width() <= 0 || winSize.height() <= 0) return;
 	
-	if (pixmap_->isNull()) {
-		pixmapItem_->setPixmap(*pixmap_);
+	if (!pixmap_) {
+		pixmapItem_->setPixmap(QPixmap());
 	} else {
 		bool rotated = rotation_ != 0 && rotation_ != 360;
 

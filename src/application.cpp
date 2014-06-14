@@ -21,6 +21,7 @@ Application::Application(int &argc, char **argv, int applicationFlags) : QApplic
 	settings_ = NULL;
 	preferencesDialog_ = NULL;
 	menuBar_ = NULL;
+	preloadTimer_ = NULL;
 
 	Application::setOrganizationName(VER_COMPANYNAME_STR);
 	Application::setOrganizationDomain(VER_DOMAIN_STR);
@@ -36,12 +37,17 @@ void Application::initialize() {
 	args.addPositionalArgument("file", tr("File to open."));
 	args.process(*this);
 
+	preloadTimer_ = new QTimer(this);
+	preloadTimer_->setInterval(1000);
+	preloadTimer_->setSingleShot(true);
+	connect(preloadTimer_, SIGNAL(timeout()), this, SLOT(preloadTimer_timeout()));
+
 	mainWindow_ = new MainWindow();
 
 	#ifdef Q_OS_MAC
 	setQuitOnLastWindowClosed(false);
 	#endif
-	
+
 	setWindowTitle(APPLICATION_TITLE);
 	loadWindowGeometry();
 
@@ -61,6 +67,12 @@ void Application::initialize() {
 	mainWindow_->setStatusItem("zoom", "Zoom: 100%");
 
 	mainWindow_->show();
+}
+
+void Application::preloadTimer_timeout() {
+	QString p = nextSourcePath();
+	if (p == "") return;
+	mainWindow_->loadSource(p);
 }
 
 void Application::setupActions() {
@@ -405,8 +417,9 @@ void Application::onZoomChange() {
 }
 
 void Application::onSourceChange() {
-	if (mainWindow_->isHidden()) mainWindow_->show();
+	preloadTimer_->stop();
 
+	if (mainWindow_->isHidden()) mainWindow_->show();
 	mainWindow_->resetZoom();
 	Exif exif(source_);
 	mainWindow_->setRotation(360 - exif.rotation());
@@ -414,6 +427,8 @@ void Application::onSourceChange() {
 	setWindowTitle(QFileInfo(source_).fileName());
 	QString counter = QString("#%1/%2").arg(sourceIndex() + 1).arg(sources().size());
 	mainWindow_->setStatusItem("counter", counter);
+
+	preloadTimer_->start();
 }
 
 void Application::saveWindowGeometry() {
@@ -472,6 +487,16 @@ void Application::setSourceIndex(int index) {
 	sourceIndex_ = index;
 
 	setSource(source);
+}
+
+QString Application::nextSourcePath() const {
+	QStringList sources = this->sources();
+	if (!sources.size()) return "";
+
+	int index = sourceIndex();
+	index++;
+	if (index >= sources.size()) index = 0;
+	return sources[index];
 }
 
 void Application::nextSource() {

@@ -1,6 +1,7 @@
 #ifndef MAINWINDOW_H
 #define MAINWINDOW_H
 
+#include <QCache>
 #include <QMainWindow>
 #include <QGraphicsScene>
 #include <QGraphicsView>
@@ -56,6 +57,7 @@ public:
 	float fitZoom() const;
 	void setStatusItem(const QString& name, const QString& value);
 	int zoomIndex() const;
+	QPixmap* loadSource(const QString& sourcePath);
 
 protected:
 
@@ -89,6 +91,7 @@ private:
 	int noZoomIndex_;
 	float beforeScaleFitZoom_;
 	QStringQLabelMap statusLabels_;
+	QCache<QString, QPixmap> pixmapCache_;
 
 public slots:
 
