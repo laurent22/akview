@@ -18,6 +18,9 @@ class Application : public QApplication, IApplication {
 
 public:
 
+	static const int Backward = 1;
+	static const int Forward = 2;
+
 	explicit Application(int &argc, char **argv, int applicationFlags = ApplicationFlags);
 	~Application();
 	static Application* instance();
@@ -54,6 +57,7 @@ private:
 	PreferencesDialog* preferencesDialog_;
 	QMenuBar* menuBar_;
 	QTimer* preloadTimer_;
+	int browsingDirection_;
 	Action* createAction(const QString& name, const QString& text, const QString& menu, const QKeySequence& shortcut1 = QKeySequence(), const QKeySequence& shortcut2 = QKeySequence());
 	void registerAction(const QString& menuName, Action* action);
 	void playLoopAnimation();
@@ -75,6 +79,7 @@ public slots:
 	void setSourceIndex(int index);
 	void nextSource();
 	void previousSource();
+	QString previousSourcePath() const;
 	QString nextSourcePath() const;
 	QStringList sources() const;
 	QStringList sources(const QString& filePath) const;

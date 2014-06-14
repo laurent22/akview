@@ -22,6 +22,7 @@ Application::Application(int &argc, char **argv, int applicationFlags) : QApplic
 	preferencesDialog_ = NULL;
 	menuBar_ = NULL;
 	preloadTimer_ = NULL;
+	browsingDirection_ = Forward;
 
 	Application::setOrganizationName(VER_COMPANYNAME_STR);
 	Application::setOrganizationDomain(VER_DOMAIN_STR);
@@ -38,7 +39,7 @@ void Application::initialize() {
 	args.process(*this);
 
 	preloadTimer_ = new QTimer(this);
-	preloadTimer_->setInterval(1000);
+	preloadTimer_->setInterval(100);
 	preloadTimer_->setSingleShot(true);
 	connect(preloadTimer_, SIGNAL(timeout()), this, SLOT(preloadTimer_timeout()));
 
@@ -70,7 +71,8 @@ void Application::initialize() {
 }
 
 void Application::preloadTimer_timeout() {
-	QString p = nextSourcePath();
+	QString p = browsingDirection_ == Backward ? previousSourcePath() : nextSourcePath();
+	qDebug() << "Preload" << p;
 	if (p == "") return;
 	mainWindow_->loadSource(p);
 }
@@ -298,6 +300,7 @@ bool Application::event(QEvent *event) {
 		case QEvent::FileOpen: {
 
 			QString filePath = static_cast<QFileOpenEvent*>(event)->file();
+			browsingDirection_ = Forward;
 
 			if (QFileInfo(filePath).isDir()) {
 				QStringList sources = this->sources(filePath);
@@ -349,6 +352,7 @@ void Application::execAction(const QString& actionName) {
 		QString lastDir = settings.value("lastOpenFileDirectory").toString();
 		QString filePath = QFileDialog::getOpenFileName(NULL, tr("Open File"), lastDir, tr("Supported Files (%1)").arg(filter));
 		if (filePath != "") {
+			browsingDirection_ = Forward;
 			setSource(filePath);
 			settings.setValue("lastOpenFileDirectory", QVariant(QFileInfo(filePath).absolutePath()));
 		}
@@ -492,10 +496,18 @@ void Application::setSourceIndex(int index) {
 QString Application::nextSourcePath() const {
 	QStringList sources = this->sources();
 	if (!sources.size()) return "";
-
 	int index = sourceIndex();
 	index++;
 	if (index >= sources.size()) index = 0;
+	return sources[index];
+}
+
+QString Application::previousSourcePath() const {
+	QStringList sources = this->sources();
+	if (!sources.size()) return "";
+	int index = sourceIndex();
+	index--;
+	if (index < 0) index = sources.size() - 1;
 	return sources[index];
 }
 
@@ -507,6 +519,7 @@ void Application::nextSource() {
 		index = 0;
 		playLoopAnimation();
 	}
+	browsingDirection_ = Forward;
 	setSourceIndex(index);
 }
 
@@ -518,6 +531,7 @@ void Application::previousSource() {
 		index = sources.size() - 1;
 		playLoopAnimation();
 	}
+	browsingDirection_ = Backward;
 	setSourceIndex(index);
 }
 
