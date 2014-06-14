@@ -20,12 +20,17 @@ public:
 	QString name() const;
 	QString menu() const;
 	void setMenu(const QString& menu);
+	void setDefaultShortcuts(const QList<QKeySequence>& v);
+	QList<QKeySequence> defaultShortcuts() const;
+	QKeySequence defaultShortcut() const;
+	void restoreDefaultShortcut();
 
 private:
 
 	QJsonObject jsonObject_;
 	QString name_;
 	QString menu_;
+	QList<QKeySequence> defaultShortcuts_;
 
 };
 

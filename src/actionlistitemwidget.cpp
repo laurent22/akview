@@ -18,7 +18,7 @@ void ActionListWidgetItem::setShortcut(const QKeySequence& ks) {
 
 QKeySequence ActionListWidgetItem::shortcut() const {
 	if (shortcutIsOverridden()) return shortcut_;
-	return action()->shortcut();
+	return action()->defaultShortcut();
 }
 
 void ActionListWidgetItem::setShortcutIsOverridden(bool v) {

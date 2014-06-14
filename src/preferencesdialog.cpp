@@ -114,15 +114,26 @@ void PreferencesDialog::buttonBox_accepted() {
 
 	if (openedTabs_.find(ui->shortcutsTab) != openedTabs_.end()) {
 		settings.beginGroup("shortcuts");
+		bool shortcutsChanged = false;
 		for (int i = 0; i < ui->shortcutListWidget->count(); i++) {
 			mv::ActionListWidgetItem* item = dynamic_cast<mv::ActionListWidgetItem*>(ui->shortcutListWidget->item(i));
+			QString actionName = item->action()->name();
 			if (!item->shortcutIsOverridden()) {
-				settings.remove(item->action()->name());
+				if (settings.contains(actionName)) {
+					settings.remove(actionName);
+					shortcutsChanged = true;
+				}
 			} else {
-				settings.setValue(item->action()->name(), item->shortcut().toString());
+				QString shortcut = item->shortcut().toString();
+				if (settings.value(actionName).toString() != shortcut || settings.value(actionName).isNull()) {
+					settings.setValue(actionName, shortcut);
+					shortcutsChanged = true;
+				}
 			}
 		}
 		settings.endGroup();
+
+		if (shortcutsChanged) mv::Application::instance()->refreshActionShortcuts();
 	}
 }
 

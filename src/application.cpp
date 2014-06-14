@@ -51,7 +51,7 @@ void Application::initialize() {
 	QStringList filePaths = args.positionalArguments();
 	if (filePaths.size() > 0) setSource(filePaths[0]);
 
-	buildMenu();
+	setupActions();
 
 	mainWindow_->setStatusItem("counter", "#-/-");
 	mainWindow_->setStatusItem("zoom", "Zoom: 100%");
@@ -59,7 +59,7 @@ void Application::initialize() {
 	mainWindow_->show();
 }
 
-void Application::buildMenu() {
+void Application::setupActions() {
 	QMenu* fileMenu = new QMenu(tr("File"));
 	QMenu* viewMenu = new QMenu(tr("View"));
 	QMenu* toolsMenu = new QMenu(tr("Tools"));
@@ -70,68 +70,105 @@ void Application::buildMenu() {
 	menus_["Tools"] = toolsMenu;
 	menus_["Help"] = helpMenu;
 
-	addAction("open_file", tr("Open a file..."), "File", QKeySequence(Qt::CTRL + Qt::Key_O));
-	addAction("close_window", tr("Close window"), "File", QKeySequence(Qt::CTRL + Qt::Key_W));
-	addAction("next", tr("Next"), "View", QKeySequence(Qt::Key_Right), QKeySequence("Num+Right"));
-	addAction("previous", tr("Previous"), "View", QKeySequence(Qt::Key_Left), QKeySequence("Num+Left"));
-	addAction("zoom_in", tr("Zoom In"), "View", QKeySequence(Qt::Key_Plus));
-	addAction("zoom_out", tr("Zoom Out"), "View", QKeySequence(Qt::Key_Minus));
-	addAction("about", tr("About"), "Help");
-	addAction("preferences", tr("Preferences"), "Tools");
+	createAction("open_file", tr("Open a file..."), "File", QKeySequence(Qt::CTRL + Qt::Key_O));
+	createAction("close_window", tr("Close window"), "File", QKeySequence(Qt::CTRL + Qt::Key_W));
+	createAction("next", tr("Next"), "View", QKeySequence(Qt::Key_Right), QKeySequence("Num+Right"));
+	createAction("previous", tr("Previous"), "View", QKeySequence(Qt::Key_Left), QKeySequence("Num+Left"));
+	createAction("zoom_in", tr("Zoom In"), "View", QKeySequence(Qt::Key_Plus));
+	createAction("zoom_out", tr("Zoom Out"), "View", QKeySequence(Qt::Key_Minus));
+	createAction("about", tr("About"), "Help");
+	createAction("preferences", tr("Preferences"), "Tools");
 
 	PluginVector plugins = pluginManager()->plugins();
 	for (unsigned int i = 0; i < plugins.size(); i++) {
 		Plugin* plugin = plugins[i];
 		for (unsigned int j = 0; j < plugin->actions().size(); j++) {
 			Action* action = plugin->actions()[j];
-			if (action->menu() == "") continue;
-			if (action->shortcuts().size() > 1) {
-				addAction(action->name(), action->text(), action->menu(), action->shortcuts()[0], action->shortcuts()[1]);
-			} else {
-				addAction(action->name(), action->text(), action->menu(), action->shortcut());
-			}
+			registerAction(action->menu(), action);
 		}
-	}	
+	}
 
 	menuBar_ = new QMenuBar(mainWindow_);
 
 	for(QStringQMenuMap::const_iterator i = menus_.begin(); i != menus_.end(); ++i) {
 		menuBar_->addMenu(i->second);
 	}
+
+	refreshActionShortcuts();
 }
 
-Action* Application::addAction(const QString& name, const QString& text, const QString& menu, const QKeySequence& shortcut) {
-	return addAction(name, text, menu, shortcut, QKeySequence());
+void Application::refreshActionShortcuts() {
+	Settings settings;
+	settings.beginGroup("shortcuts");
+
+	ActionVector actions = this->actions();
+	for (unsigned int i = 0; i < actions.size(); i++) {
+		Action* action = actions[i];
+		if (settings.contains(action->name())) {
+			QString shortcutString = settings.value(action->name()).toString();
+			QKeySequence kv(shortcutString);
+			action->setShortcut(kv);
+		} else {
+			action->restoreDefaultShortcut();
+		}
+	}
+
+	settings.endGroup();
 }
 
-Action* Application::addAction(const QString& name, const QString& text, const QString& menu, const QKeySequence& shortcut1, const QKeySequence& shortcut2) {
+Action* Application::actionByName(const QString& actionName) const {
+	for (unsigned int i = 0; i < actions_.size(); i++) {
+		Action* action = actions_[i];
+		if (action->name() == actionName) return action;
+	}
+
+	PluginVector plugins = pluginManager()->plugins();
+	for (unsigned int i = 0; i < plugins.size(); i++) {
+		Plugin* plugin = plugins[i];
+		for (unsigned int j = 0; j < plugin->actions().size(); j++) {
+			Action* action = plugin->actions()[j];
+			if (action->name() == actionName) return action;
+		}
+	}
+
+	return NULL;
+}
+
+Action* Application::createAction(const QString& name, const QString& text, const QString& menu, const QKeySequence& shortcut1, const QKeySequence& shortcut2) {
 	Action* action = new Action();
 	action->setName(name);
 	action->setText(text);
 
-	if (!shortcut1.isEmpty() && !shortcut2.isEmpty()) {
-		QList<QKeySequence> shortcuts;
-		shortcuts << shortcut1 << shortcut2;
-		action->setShortcuts(shortcuts);
-	} else if (!shortcut1.isEmpty()) {
-		action->setShortcut(shortcut1);
-	}
-
-	connect(action, SIGNAL(triggered()), this, SLOT(mainWindow_actionTriggered()));
-
-	actions_.push_back(action);
-
-	if (menu != "") {
-		if (menus_.find(menu) != menus_.end()) {
-			menus_[menu]->addAction(action);
-		} else {
-			QMenu* menuObject = new QMenu(menu);
-			menuObject->addAction(action);
-			menus_[menu] = menuObject;
+	QList<QKeySequence> shortcuts;
+	if (!shortcut1.isEmpty()) {
+		shortcuts << shortcut1;
+		if (!shortcut2.isEmpty()) {
+			shortcuts << shortcut2;
 		}
 	}
 
+	action->setShortcuts(shortcuts);
+	action->setDefaultShortcuts(shortcuts);
+
+	actions_.push_back(action);
+
+	registerAction(menu, action);
+
 	return action;
+}
+
+void Application::registerAction(const QString& menuName, Action* action) {
+	connect(action, SIGNAL(triggered()), this, SLOT(mainWindow_actionTriggered()));
+
+	if (menuName != "") {
+		if (menus_.find(menuName) != menus_.end()) {
+			menus_[menuName]->addAction(action);
+		} else {
+			QMenu* menuObject = new QMenu(menuName);
+			menuObject->addAction(action);
+			menus_[menuName] = menuObject;
+		}
+	}
 }
 
 void Application::setWindowTitle(const QString &title) {
@@ -162,7 +199,6 @@ PluginManager *Application::pluginManager() const {
 
 ActionVector Application::actions() const {
 	ActionVector output;
-
 	output.insert(output.end(), actions_.begin(), actions_.end());
 
 	PluginVector plugins = pluginManager()->plugins();

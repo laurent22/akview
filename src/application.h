@@ -29,6 +29,8 @@ public:
 	QKeySequence actionShortcut(const QString& actionName) const;
 	QString shortcutAction(const QKeySequence& shortcut) const;
 	void execAction(const QString& actionName);
+	Action* actionByName(const QString& actionName) const;
+	void refreshActionShortcuts();
 
 protected:
 
@@ -50,12 +52,12 @@ private:
 	QStringQMenuMap menus_;
 	PreferencesDialog* preferencesDialog_;
 	QMenuBar* menuBar_;
-	Action* addAction(const QString& name, const QString& text, const QString& menu, const QKeySequence& shortcut = QKeySequence());
-	Action* addAction(const QString& name, const QString& text, const QString& menu, const QKeySequence& shortcut1, const QKeySequence& shortcut2);
+	Action* createAction(const QString& name, const QString& text, const QString& menu, const QKeySequence& shortcut1 = QKeySequence(), const QKeySequence& shortcut2 = QKeySequence());
+	void registerAction(const QString& menuName, Action* action);
 	void playLoopAnimation();
 	void saveWindowGeometry();
 	void loadWindowGeometry();
-	void buildMenu();
+	void setupActions();
 
 public slots:
 

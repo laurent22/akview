@@ -21,6 +21,7 @@ Action::Action(const QJsonObject &jsonObject): QAction(NULL) {
 		s = s.trimmed();
 		QKeySequence ks(s);
 		shortcuts.push_back(ks);
+		defaultShortcuts_.push_back(ks);
 	}
 	setShortcuts(shortcuts);
 }
@@ -31,6 +32,14 @@ bool Action::supports(const QKeySequence &keySequence) const {
 		if (ks.matches(keySequence) == QKeySequence::ExactMatch) return true;
 	}
 	return false;
+}
+
+void Action::setDefaultShortcuts(const QList<QKeySequence>& v) {
+	defaultShortcuts_ = v;
+}
+
+void Action::restoreDefaultShortcut() {
+	setShortcuts(defaultShortcuts());
 }
 
 void Action::setName(const QString& v) {
@@ -47,6 +56,15 @@ QString Action::menu() const {
 
 void Action::setMenu(const QString& menu) {
 	menu_ = menu;
+}
+
+QList<QKeySequence> Action::defaultShortcuts() const {
+	return defaultShortcuts_;
+}
+
+QKeySequence Action::defaultShortcut() const {
+	if (defaultShortcuts_.size() <= 0) return QKeySequence();
+	return defaultShortcuts_[0];
 }
 
 }
