@@ -44,7 +44,7 @@ private:
 	MainWindow* mainWindow_;
 	QString source_;
 	PluginManager* pluginManager_;
-	ActionVector actions_;
+	ActionVector builtinActions_;
 	mutable QStringList sources_;
 	mutable int sourceIndex_;
 	mutable QString sourceDir_;

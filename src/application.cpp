@@ -117,8 +117,8 @@ void Application::refreshActionShortcuts() {
 }
 
 Action* Application::actionByName(const QString& actionName) const {
-	for (unsigned int i = 0; i < actions_.size(); i++) {
-		Action* action = actions_[i];
+	for (unsigned int i = 0; i < builtinActions_.size(); i++) {
+		Action* action = builtinActions_[i];
 		if (action->name() == actionName) return action;
 	}
 
@@ -150,7 +150,7 @@ Action* Application::createAction(const QString& name, const QString& text, cons
 	action->setShortcuts(shortcuts);
 	action->setDefaultShortcuts(shortcuts);
 
-	actions_.push_back(action);
+	builtinActions_.push_back(action);
 
 	registerAction(menu, action);
 
@@ -199,7 +199,7 @@ PluginManager *Application::pluginManager() const {
 
 ActionVector Application::actions() const {
 	ActionVector output;
-	output.insert(output.end(), actions_.begin(), actions_.end());
+	output.insert(output.end(), builtinActions_.begin(), builtinActions_.end());
 
 	PluginVector plugins = pluginManager()->plugins();
 	for (unsigned int i = 0; i < plugins.size(); i++) {
