@@ -49,12 +49,14 @@ if [ "$ACTION" == "clean-debug" ]; then
 	rm -rfv $ROOT_DIR/plugins/build-MvDeleteFile-debug
 	rm -rfv $ROOT_DIR/plugins/build-MvJpegTools-debug
 	rm -rfv $ROOT_DIR/plugins/build-MvReveal-debug
+	rm -rfv $ROOT_DIR/plugins/build-MvMetadata-debug
 	exit
 elif [ "$ACTION" == "clean-release" ]; then
 	rm -rfv $ROOT_DIR/build-release
 	rm -rfv $ROOT_DIR/plugins/build-MvDeleteFile-release
 	rm -rfv $ROOT_DIR/plugins/build-MvJpegTools-release
 	rm -rfv $ROOT_DIR/plugins/build-MvReveal-release
+	rm -rfv $ROOT_DIR/plugins/build-MvMetadata-release
 	exit
 fi
 
@@ -67,6 +69,7 @@ fi
 fn_runAction $ACTION $ROOT_DIR/plugins/build-MvDeleteFile-$ACTION $ROOT_DIR/plugins/MvDeleteFile/MvDeleteFilePlugin.pro
 fn_runAction $ACTION $ROOT_DIR/plugins/build-MvJpegTools-$ACTION $ROOT_DIR/plugins/MvJpegTools/MvJpegToolPlugin.pro
 fn_runAction $ACTION $ROOT_DIR/plugins/build-MvReveal-$ACTION $ROOT_DIR/plugins/MvReveal/MvRevealPlugin.pro
+fn_runAction $ACTION $ROOT_DIR/plugins/build-MvMetadata-$ACTION $ROOT_DIR/plugins/MvMetadata/MvMetadataPlugin.pro
 
 $ROOT_DIR/plugins/copyplugins.sh
 

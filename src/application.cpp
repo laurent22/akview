@@ -72,7 +72,6 @@ void Application::initialize() {
 
 void Application::preloadTimer_timeout() {
 	QString p = browsingDirection_ == Backward ? previousSourcePath() : nextSourcePath();
-	qDebug() << "Preload" << p;
 	if (p == "") return;
 	mainWindow_->loadSource(p);
 }
