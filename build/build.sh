@@ -42,6 +42,9 @@ fn_runAction() {
 	make
 
 	fn_exitOnError $?
+
+	cp -v $SCRIPT_DIR/version/Info.plist $BUILD_DIR/MultiViewer.app/Contents
+	cp -v $SCRIPT_DIR/version/MultiViewer.sh $BUILD_DIR/MultiViewer.app/Contents/MacOS
 }
 
 if [ "$ACTION" == "clean-debug" ]; then
@@ -66,10 +69,10 @@ if [ "$ACTION" != "debug" ] && [ "$ACTION" != "release" ]; then
 fi
 
 # First, build all the plugins
-fn_runAction $ACTION $ROOT_DIR/plugins/build-MvDeleteFile-$ACTION $ROOT_DIR/plugins/MvDeleteFile/MvDeleteFilePlugin.pro
-fn_runAction $ACTION $ROOT_DIR/plugins/build-MvJpegTools-$ACTION $ROOT_DIR/plugins/MvJpegTools/MvJpegToolPlugin.pro
-fn_runAction $ACTION $ROOT_DIR/plugins/build-MvReveal-$ACTION $ROOT_DIR/plugins/MvReveal/MvRevealPlugin.pro
-fn_runAction $ACTION $ROOT_DIR/plugins/build-MvMetadata-$ACTION $ROOT_DIR/plugins/MvMetadata/MvMetadataPlugin.pro
+# fn_runAction $ACTION $ROOT_DIR/plugins/build-MvDeleteFile-$ACTION $ROOT_DIR/plugins/MvDeleteFile/MvDeleteFilePlugin.pro
+# fn_runAction $ACTION $ROOT_DIR/plugins/build-MvJpegTools-$ACTION $ROOT_DIR/plugins/MvJpegTools/MvJpegToolPlugin.pro
+# fn_runAction $ACTION $ROOT_DIR/plugins/build-MvReveal-$ACTION $ROOT_DIR/plugins/MvReveal/MvRevealPlugin.pro
+# fn_runAction $ACTION $ROOT_DIR/plugins/build-MvMetadata-$ACTION $ROOT_DIR/plugins/MvMetadata/MvMetadataPlugin.pro
 
 $ROOT_DIR/plugins/copyplugins.sh
 
@@ -80,5 +83,5 @@ fi
 fn_runAction $ACTION $ROOT_DIR/build-$ACTION $ROOT_DIR/src/MultiViewer.pro
 
 if [ "$LAUNCH_AFTER_BUILD" == "1" ]; then
-	open -a $BUILD_DIR/MultiViewer.app "/Users/laurent/Desktop/test2 - copie/DSC_1875.jpg"
+	open -a $BUILD_DIR/MultiViewer.app "/Users/laurent/Desktop/tilted.jpg"
 fi

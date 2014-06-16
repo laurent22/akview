@@ -2,8 +2,11 @@
 #define APPLICATION_H
 
 #include <QApplication>
+#include <QFileSystemWatcher>
 #include <QKeyEvent>
 #include <QTimer>
+
+#include "iapplication.h" // remove
 
 #include "action.h"
 #include "mainwindow.h"
@@ -14,6 +17,7 @@
 namespace mv {
 
 class Application : public QApplication, IApplication {
+
 	Q_OBJECT
 
 public:
@@ -64,12 +68,14 @@ private:
 	void saveWindowGeometry();
 	void loadWindowGeometry();
 	void setupActions();
+	QFileSystemWatcher fsWatcher_;
 
 public slots:
 
 	void mainWindow_keypressed(QKeyEvent* event);
 	void mainWindow_actionTriggered();
 	void preloadTimer_timeout();
+	void fsWatcher_fileChanged(const QString& path);
 
 	QString source() const;
 	void setSource(const QString& source);

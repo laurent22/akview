@@ -170,6 +170,7 @@ void MainWindow::setSource(const QString& v) {
 
 void MainWindow::reloadSource() {
 	QString s = source();
+	pixmapCache_.remove(s);
 	source_ = "";
 	setSource(s);
 }

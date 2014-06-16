@@ -1,0 +1,11 @@
+{
+	"title": "JPEG auto-rotation",
+	"description": "Rotate JPEG according to Exif orientation tag",
+	"require": [
+		"jhead",
+		"libjpeg"
+	],
+	"command": [ "jhead", "-autorot", "__FILE__" ],
+	"shortcuts": [ "Ctrl + Shift + O" ],
+	"menu": "transform"
+}

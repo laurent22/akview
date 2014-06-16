@@ -13,7 +13,7 @@
 	<key>CFBundleSignature</key>
 	<string>????</string>
 	<key>CFBundleExecutable</key>
-	<string>MultiViewer</string>
+	<string>MultiViewer.sh</string>
 	<key>CFBundleIdentifier</key>
 	<string>org.mv-project.MultiViewer</string>
 	<key>CFBundleShortVersionString</key>

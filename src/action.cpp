@@ -1,17 +1,26 @@
 #include "action.h"
 
+#include <QDebug>
+
 namespace mv {
 
-Action::Action(): QAction(NULL) {
+Action::Action(): QAction(NULL) {}
 
-}
-
-Action::Action(const QJsonObject &jsonObject): QAction(NULL) {
+Action::Action(const QString& name, const QJsonObject &jsonObject): QAction(NULL) {
 	jsonObject_ = jsonObject;
 
-	name_ = jsonObject_.value("name").toString();
-	setText(jsonObject_.value("text").toString());
+	name_ = name;
+	setText(jsonObject_.value("title").toString());
 	menu_ = jsonObject_.value("menu").toString();
+	description_ = jsonObject_.value("description").toString();
+
+	QJsonArray commandArray = jsonObject.value("command").toArray();
+	for (int i = 0; i < commandArray.size(); i++) {
+		QString s = commandArray[i].toString();
+		command_ << s;
+	}
+
+	qDebug() << command_;
 
 	QJsonArray array = jsonObject.value("shortcuts").toArray();
 	QList<QKeySequence> shortcuts;
@@ -23,6 +32,7 @@ Action::Action(const QJsonObject &jsonObject): QAction(NULL) {
 		shortcuts.push_back(ks);
 		defaultShortcuts_.push_back(ks);
 	}
+
 	setShortcuts(shortcuts);
 }
 
@@ -52,6 +62,14 @@ QString Action::name() const {
 
 QString Action::menu() const {
 	return menu_;
+}
+
+QString Action::description() const {
+	return description_;
+}
+
+QStringList Action::command() const {
+	return command_;
 }
 
 void Action::setMenu(const QString& menu) {

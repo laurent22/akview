@@ -2,7 +2,6 @@
 #define PLUGINMANAGER_H
 
 #include "plugin.h"
-#include "pluginevents.h"
 
 namespace mv {
 
@@ -10,8 +9,8 @@ class PluginManager {
 
 public:
 
-	PluginManager(IApplication* application);
-	bool loadPlugin(const QString& filePath);
+	PluginManager();
+	bool loadPlugin(const QString& folderPath);
 	void loadPlugins(const QString& folderPath);
 	PluginVector plugins() const;
 	void onAction(const QString& actionName);
@@ -19,7 +18,8 @@ public:
 private:
 
 	PluginVector plugins_;
-	IApplication* application_;
+
+	QStringList replaceVariables(const QStringList& command);
 
 };
 

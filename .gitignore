@@ -7,3 +7,5 @@ build/version/CreateVersionInfo
 *.sublime-workspace
 jhead
 TODO.md
+.tags_sorted_by_file
+.tags

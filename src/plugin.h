@@ -2,7 +2,6 @@
 #define MV_PLUGIN_H
 
 #include "action.h"
-#include "mvplugininterface.h"
 #include "pluginevents.h"
 
 namespace mv {
@@ -11,27 +10,23 @@ class Plugin {
 
 public:
 
-	Plugin(IApplication* application, const QString &pluginFilePath);
-	bool loadMetadata();
-	bool loadInterface();
-	MvPluginInterface* interface() const;
+	Plugin(const QString &pluginFolderPath);
+	bool load();
 	QString errorMessage() const;
 	QString description() const;
 	QString version() const;
-	QString compatibilityMinVersion() const;
-	QString compatibilityMaxVersion() const;
+	QString minEngineVersion() const;
 	ActionVector actions() const;
-	bool interfaceLoaded() const;
 	Action *findAction(const QString& name) const;
 
 private:
 
-	QString metadataFilePath(const QString &pluginFilePath) const;
+	bool loadManifest();
+	bool loadActions();
+
 	QString errorMessage_;
-	MvPluginInterface* interface_;
-	IApplication* application_;
-	QString pluginFilePath_;
-	QJsonObject metadata_;
+	QString pluginFolderPath_;
+	QJsonObject manifest_;
 	ActionVector actions_;
 
 };

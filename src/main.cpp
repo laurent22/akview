@@ -7,6 +7,7 @@
 #include <QtGlobal>
 #include <QtGui>
 
+
 #ifdef QT_DEBUG
 void myMessageHandler(QtMsgType type, const QMessageLogContext &, const QString & msg)
 {
@@ -38,7 +39,5 @@ int main(int argc, char *argv[]) {
 	qInstallMessageHandler(myMessageHandler);
 #endif // QT_DEBUG
 	app.initialize();
-	int exitCode = app.exec();
-	qDebug() << "Exit with code" << exitCode;
-	return exitCode;
+	return app.exec();
 }

@@ -54,10 +54,11 @@ void Application::initialize() {
 
 	Paths paths;
 
-	pluginManager_ = new PluginManager(dynamic_cast<IApplication*>(this));
+	pluginManager_ = new PluginManager();
 	pluginManager_->loadPlugins(paths.pluginFolder());
 
 	connect(mainWindow_, SIGNAL(keypressed(QKeyEvent*)), this, SLOT(mainWindow_keypressed(QKeyEvent*)));
+	connect(&fsWatcher_, SIGNAL(fileChanged(const QString&)), this, SLOT(fsWatcher_fileChanged(const QString&)));
 
 	QStringList filePaths = args.positionalArguments();
 	if (filePaths.size() > 0) setSource(filePaths[0]);
@@ -74,6 +75,13 @@ void Application::preloadTimer_timeout() {
 	QString p = browsingDirection_ == Backward ? previousSourcePath() : nextSourcePath();
 	if (p == "") return;
 	mainWindow_->loadSource(p);
+}
+
+void Application::fsWatcher_fileChanged(const QString& path) {
+	if (path == source_) {
+		qDebug() << "File has been changed:" << path;
+		reloadSource();
+	}
 }
 
 void Application::setupActions() {
@@ -422,10 +430,13 @@ void Application::onZoomChange() {
 void Application::onSourceChange() {
 	preloadTimer_->stop();
 
+	fsWatcher_.removePaths(fsWatcher_.files());
+	fsWatcher_.addPath(source_);
+
 	if (mainWindow_->isHidden()) mainWindow_->show();
 	mainWindow_->resetZoom();
 	Exif exif(source_);
-	mainWindow_->setRotation(360 - exif.rotation());
+	// mainWindow_->setRotation(360 - exif.rotation());
 	mainWindow_->setSource(source_);
 	setWindowTitle(QFileInfo(source_).fileName());
 	QString counter = QString("#%1/%2").arg(sourceIndex() + 1).arg(sources().size());
