@@ -4,6 +4,9 @@
 #include <math.h>
 
 #include <QDebug>
+#include <QVariant>
+
+#include "settings.h"
 
 XGraphicsView::XGraphicsView(QGraphicsScene* scene, QWidget* parent) : QGraphicsView(scene, parent) {}
 void XGraphicsView::scrollContentsBy(int x, int y) { QGraphicsView::scrollContentsBy(x, y); /* Override scrollContentsBy to disable scrolling */ }
@@ -27,7 +30,9 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
 	possibleZoomValues_.push_back(1.0/8.0);
 	possibleZoomValues_.push_back(1.0/4.0);
 	possibleZoomValues_.push_back(1.0/2.0);
+	possibleZoomValues_.push_back(1.0/1.5);
 	possibleZoomValues_.push_back(1.0);
+	possibleZoomValues_.push_back(1.5);
 	possibleZoomValues_.push_back(2.0);
 	possibleZoomValues_.push_back(4.0);
 	possibleZoomValues_.push_back(8.0);
@@ -49,12 +54,18 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
 	view_->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
 	view_->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
 
-	//pixmap_ = new QPixmap();
 	pixmapItem_ = new QGraphicsPixmapItem();
 
 	scene_->addItem(pixmapItem_);
 
-	ui->centralwidget->layout()->addWidget(view_);
+	splitter_ = new QSplitter(this);
+	splitter_->setOrientation(Qt::Vertical);
+	console_ = new mv::ConsoleWidget(this);
+	splitter_->addWidget(view_);
+	splitter_->addWidget(console_);
+	console_->hide();
+	connect(splitter_, SIGNAL(splitterMoved(int, int)), this, SLOT(splitter_splitterMoved(int, int)));
+	ui->centralwidget->layout()->addWidget(splitter_);
 
 	view_->show();
 
@@ -65,6 +76,34 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
 MainWindow::~MainWindow() {
 	// TODO: delete objects
 	delete ui;
+}
+
+void MainWindow::showConsole(bool doShow) {
+	if (console()->isHidden() && !doShow) return;
+	if (!console()->isHidden() && doShow) return;
+
+	if (doShow) {
+		console()->show();
+		mv::Settings settings;
+		QVariant v = settings.value("applicationWindow/consoleHeight");
+		int consoleHeight = v.isNull() ? 200 : v.toInt();
+		QSize winSize = ui->centralwidget->size();
+		QList<int> sizes;
+		sizes << winSize.height() - consoleHeight << consoleHeight;
+		splitter_->setSizes(sizes);
+	} else {
+		console()->hide();
+	}
+
+	invalidate();
+}
+
+void MainWindow::toggleConsole() {
+	showConsole(console()->isHidden());
+}
+
+mv::ConsoleWidget* MainWindow::console() const {
+	return console_;
 }
 
 void MainWindow::setStatusItem(const QString& name, const QString& value) {
@@ -94,7 +133,7 @@ void MainWindow::doLoopAnimation() {
 		connect(hideLoopItemTimer_, SIGNAL(timeout()), this, SLOT(hideLoopItemTimer_timeout()));
 	}
 
-	QSize winSize = ui->centralwidget->size();
+	QSize winSize = viewContainerSize();
 
 	loopPixmapItem_->setPos((winSize.width() - loopPixmap_->width()) / 2, (winSize.height() - loopPixmap_->height()) / 2);
 	hideLoopItemTimer_->stop();
@@ -103,9 +142,21 @@ void MainWindow::doLoopAnimation() {
 	invalidate();
 }
 
+void MainWindow::splitter_splitterMoved(int, int) {
+	mv::Settings settings;
+	settings.setValue("applicationWindow/consoleHeight", splitter_->sizes()[1]);
+	invalidate();
+}
+
 void MainWindow::hideLoopItemTimer_timeout() {
 	loopAnimationPlaying_ = false;
 	invalidate();
+}
+
+QSize MainWindow::viewContainerSize() const {
+	int h = splitter_->sizes()[0];
+	int w = splitter_->size().width();
+	return QSize(w, h);
 }
 
 void MainWindow::invalidate() {
@@ -254,7 +305,7 @@ float MainWindow::fitZoom() const {
 	if (!pixmap_) return 1;
 
 	bool rotated = rotation_ != 0 && rotation_ != 360;
-	QSize winSize = ui->centralwidget->size();
+	QSize winSize = viewContainerSize();
 
 	int pixmapWidth = rotated ? pixmap_->height() : pixmap_->width();
 	int pixmapHeight = rotated ? pixmap_->width() : pixmap_->height();
@@ -270,7 +321,7 @@ void MainWindow::updateDisplay(int renderingType) {
 
 	invalidated_ = false;
 
-	QSize winSize = ui->centralwidget->size();
+	QSize winSize = viewContainerSize();
 	
 	if (winSize.width() <= 0 || winSize.height() <= 0) return;
 	

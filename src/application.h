@@ -39,6 +39,7 @@ public:
 	void execAction(const QString& actionName);
 	Action* actionByName(const QString& actionName) const;
 	void refreshActionShortcuts();
+	MainWindow* mainWindow() const;
 
 protected:
 

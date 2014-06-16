@@ -7,8 +7,10 @@
 #include <QGraphicsView>
 #include <QGraphicsPixmapItem>
 #include <QShowEvent>
+#include <QSplitter>
 #include <QTimer>
 
+#include "consolewidget.h"
 #include "simpletypes.h"
 
 class XGraphicsView: public QGraphicsView {
@@ -58,6 +60,9 @@ public:
 	void setStatusItem(const QString& name, const QString& value);
 	int zoomIndex() const;
 	QPixmap* loadSource(const QString& sourcePath);
+	mv::ConsoleWidget* console() const;
+	void showConsole(bool doShow);
+	void toggleConsole();
 
 protected:
 
@@ -70,6 +75,7 @@ private:
 
 	QTimer* updateDisplayTimer() const;
 	void setZoomIndex(int v);
+	QSize viewContainerSize() const;
 	
 	Ui::MainWindow *ui;
 	QGraphicsPixmapItem* pixmapItem_;
@@ -92,11 +98,14 @@ private:
 	float beforeScaleFitZoom_;
 	QStringQLabelMap statusLabels_;
 	QCache<QString, QPixmap> pixmapCache_;
+	QSplitter* splitter_;
+	mv::ConsoleWidget* console_;
 
 public slots:
 
 	void updateDisplayTimer_timeout();
 	void hideLoopItemTimer_timeout();
+	void splitter_splitterMoved(int pos, int index);
 
 signals:
 

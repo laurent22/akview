@@ -6,6 +6,7 @@ HEADERS += \
 	action.h \
 	actionlistitemwidget.h \
 	application.h \
+	consolewidget.h \
 	constants.h \
 	exif.h \
 	iapplication.h \
@@ -28,6 +29,7 @@ SOURCES += main.cpp \
 	action.cpp \
 	actionlistitemwidget.cpp \
 	application.cpp \
+	consolewidget.cpp \
 	exif.cpp \
 	jheadhandler.cpp \
 	paths.cpp \

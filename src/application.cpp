@@ -17,7 +17,38 @@
 
 namespace mv {
 
+#ifdef QT_DEBUG
+QStringList queuedMessages_;
+
+void myMessageHandler(QtMsgType type, const QMessageLogContext&, const QString& msg)
+{
+	QString txt;
+	switch (type) {
+		case QtDebugMsg: txt = QString("%1").arg(msg); break;
+		case QtWarningMsg: txt = QString("Warning: %1").arg(msg); break;
+		case QtCriticalMsg: txt = QString("Critical: %1").arg(msg); break;
+		case QtFatalMsg: txt = QString("Fatal: %1").arg(msg); break;
+	}
+
+	if (!Application::instance()->mainWindow()) {
+		queuedMessages_ << txt;
+	} else {
+		Application::instance()->mainWindow()->console()->log(txt);
+	}
+
+	// QFile outFile(QDir::homePath() + "/mv.log");
+	// outFile.open(QIODevice::WriteOnly | QIODevice::Append);
+	// QTextStream ts(&outFile);
+	// ts << txt << endl;
+}
+#endif // QT_DEBUG
+
 Application::Application(int &argc, char **argv, int applicationFlags) : QApplication(argc, argv, applicationFlags) {
+#ifdef QT_DEBUG
+	qInstallMessageHandler(myMessageHandler);
+#endif // QT_DEBUG
+
+	mainWindow_ = NULL;
 	settings_ = NULL;
 	preferencesDialog_ = NULL;
 	menuBar_ = NULL;
@@ -69,6 +100,11 @@ void Application::initialize() {
 	mainWindow_->setStatusItem("zoom", "Zoom: 100%");
 
 	mainWindow_->show();
+
+#ifdef QT_DEBUG
+	for (int i = 0; i < queuedMessages_.size(); i++) mainWindow_->console()->log(queuedMessages_[i]);
+	queuedMessages_.clear();
+#endif
 }
 
 void Application::preloadTimer_timeout() {
@@ -82,6 +118,10 @@ void Application::fsWatcher_fileChanged(const QString& path) {
 		qDebug() << "File has been changed:" << path;
 		reloadSource();
 	}
+}
+
+MainWindow* Application::mainWindow() const {
+	return mainWindow_;
 }
 
 void Application::setupActions() {
@@ -103,6 +143,7 @@ void Application::setupActions() {
 	createAction("previous", tr("Previous"), "View", QKeySequence(Qt::Key_Left), QKeySequence("Num+Left"));
 	createAction("zoom_in", tr("Zoom In"), "View", QKeySequence(Qt::Key_Plus));
 	createAction("zoom_out", tr("Zoom Out"), "View", QKeySequence(Qt::Key_Minus));
+	createAction("toggle_console", tr("Toggle console"), "View", QKeySequence(Qt::Key_F12));
 	createAction("about", tr("About"), "Help");
 	createAction("preferences", tr("Preferences"), "Tools");
 
@@ -398,6 +439,11 @@ void Application::execAction(const QString& actionName) {
 		return;
 	}
 
+	if (actionName == "toggle_console") {
+		mainWindow_->toggleConsole();
+		return;
+	}
+
 	if (actionName == "about") {
 		QMessageBox::about(NULL, tr("About %1").arg(APPLICATION_TITLE), tr("%1 %2").arg(APPLICATION_TITLE).arg(version::number()));
 		return;
@@ -430,7 +476,7 @@ void Application::onZoomChange() {
 void Application::onSourceChange() {
 	preloadTimer_->stop();
 
-	fsWatcher_.removePaths(fsWatcher_.files());
+	if (fsWatcher_.files().size()) fsWatcher_.removePaths(fsWatcher_.files());
 	fsWatcher_.addPath(source_);
 
 	if (mainWindow_->isHidden()) mainWindow_->show();
