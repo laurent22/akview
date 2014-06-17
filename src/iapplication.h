@@ -2,7 +2,6 @@
 #define IAPPLICATION_H
 
 #include "settings.h"
-#include "jheadhandler.h"
 
 namespace mv {
 
@@ -19,7 +18,6 @@ public slots:
 	virtual void setSourceIndex(int index) = 0;
 	virtual Settings* settings() const = 0;
 	virtual void reloadSource() const = 0;
-	virtual void exifClearOrientation(const QString& filePath) = 0;
 	virtual bool runAppleScript(const QString& script) = 0;
 
 };

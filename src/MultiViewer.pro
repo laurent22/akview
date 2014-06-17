@@ -10,7 +10,6 @@ HEADERS += \
 	constants.h \
 	exif.h \
 	iapplication.h \
-	jheadhandler.h \
 	messageboxes.h \
 	mvplugininterface.h \
 	packagemanager.h \
@@ -24,7 +23,6 @@ HEADERS += \
 	simplefunctions.h \
 	simpletypes.h \
 	stringutil.h \
-	third_party/jhead/jhead.h \
 	version.h \
     mainwindow.h \
     progressbardialog.h
@@ -35,7 +33,6 @@ SOURCES += main.cpp \
 	application.cpp \
 	consolewidget.cpp \
 	exif.cpp \
-	jheadhandler.cpp \
 	messageboxes.cpp \
 	packagemanager.cpp \
 	paths.cpp \
@@ -45,14 +42,6 @@ SOURCES += main.cpp \
 	processutil.cpp \
 	settings.cpp \
 	stringutil.cpp \
-	third_party/jhead/jhead_exif.cpp \
-	third_party/jhead/jhead_gpsinfo.cpp \
-	third_party/jhead/jhead_iptc.cpp \
-	third_party/jhead/jhead_jhead.cpp \
-	third_party/jhead/jhead_jpgfile.cpp \
-	third_party/jhead/jhead_jpgqguess.cpp \
-	third_party/jhead/jhead_makernote.cpp \
-	third_party/jhead/jhead_paths.cpp \
 	version.cpp \
     mainwindow.cpp \
     progressbardialog.cpp

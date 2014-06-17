@@ -95,7 +95,6 @@ public slots:
 	QStringList sources(const QString& filePath) const;
 	void refreshSources();
 	void reloadSource() const;
-	void exifClearOrientation(const QString& filePath);
 	bool runAppleScript(const QString& script);
 
 	Settings* settings() const;

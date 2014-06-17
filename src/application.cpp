@@ -639,11 +639,6 @@ void Application::reloadSource() const {
 	mainWindow_->reloadSource();
 }
 
-void Application::exifClearOrientation(const QString &filePath) {
-	JheadHandler handler(filePath);
-	handler.clearOrientation();
-}
-
 bool Application::runAppleScript(const QString &script) {
 	QStringList scriptArgs;
 	scriptArgs << QLatin1String("-e") << script;

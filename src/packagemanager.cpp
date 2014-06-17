@@ -103,17 +103,6 @@ bool PackageManager::managerIsInstalled(int managerId) const {
 }
 
 bool PackageManager::commandIsInstalled(const QString& command) {
-	// brew ls --versions <formula>
-
-	// Manager* manager = managerById(selectedManagerId_);
-	// if (manager->command() == "brew") {
-	// 	QProcess p;
-	// 	p.start("brew", QStringList() << "info" << package);
-	// 	p.waitForFinished();
-	// 	qDebug() << QString(p.readAll());
-	// }
-	// return false;
-
 	if (installedCommands_.contains(command)) return true;
 	bool ok = processutil::commandIsAvailable(command);
 	if (ok) installedCommands_.push_back(command);
