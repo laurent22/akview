@@ -6,6 +6,7 @@
 #include <QGraphicsScene>
 #include <QGraphicsView>
 #include <QGraphicsPixmapItem>
+#include <QGraphicsRectItem>
 #include <QShowEvent>
 #include <QSplitter>
 #include <QTimer>
@@ -15,6 +16,8 @@
 
 class XGraphicsView: public QGraphicsView {
 
+	Q_OBJECT
+
 public:
 
 	XGraphicsView(QGraphicsScene * scene, QWidget * parent = 0);
@@ -22,6 +25,19 @@ public:
 protected:
 
 	void scrollContentsBy(int x, int y);
+	void mousePressEvent(QMouseEvent* event);
+	void mouseReleaseEvent(QMouseEvent* event);
+	void mouseMoveEvent(QMouseEvent* event);
+
+private:
+
+	bool clicked_;
+
+signals:
+
+	void mousePress(QMouseEvent* event);
+	void mouseRelease(QMouseEvent* event);
+	void mouseDrag(QMouseEvent* event);
 
 };
 
@@ -30,8 +46,7 @@ namespace Ui {
 class MainWindow;
 }
 
-class MainWindow : public QMainWindow
-{
+class MainWindow : public QMainWindow {
 	Q_OBJECT
 
 public:
@@ -42,6 +57,7 @@ public:
 	explicit MainWindow(QWidget *parent = 0);
 	~MainWindow();
 	void updateDisplay(int renderingType);
+	void updateSelectionDisplay();
 	void setSource(const QString& v);
 	QString source() const;
 	void clearSource();
@@ -50,10 +66,12 @@ public:
 	void setRotation(int v);
 	int rotation() const;
 	void invalidate();
+	void invalidateSelection();
 	void zoomIn();
 	void zoomOut();
 	void resetZoom();
 	float zoom() const;
+	QRect selectionRect() const;
 	void setAutoFit(bool v);
 	bool autoFit() const;
 	float fitZoom() const;
@@ -63,6 +81,7 @@ public:
 	mv::ConsoleWidget* console() const;
 	void showConsole(bool doShow = true);
 	void toggleConsole();
+	bool selectionOn() const;
 
 protected:
 
@@ -76,6 +95,8 @@ private:
 	QTimer* updateDisplayTimer() const;
 	void setZoomIndex(int v);
 	QSize viewContainerSize() const;
+	QPoint mapViewToPixmapItem(const QPoint& point) const;
+	QRectF mapPixmapItemToView(const QRect& rect) const;
 	
 	Ui::MainWindow *ui;
 	QGraphicsPixmapItem* pixmapItem_;
@@ -90,6 +111,7 @@ private:
 	bool loopAnimationPlaying_;
 	int rotation_;
 	bool invalidated_;
+	bool selectionInvalidated_;
 	bool ready_;
 	bool autoFit_;
 	FloatVector possibleZoomValues_;
@@ -100,12 +122,20 @@ private:
 	QCache<QString, QPixmap> pixmapCache_;
 	QSplitter* splitter_;
 	mv::ConsoleWidget* console_;
+	QGraphicsRectItem* selectionRectItem_;
+	QGraphicsRectItem* selectionRectItem2_;
+	QRect selectionRect_;
+	QPoint selectionP1_;
+	QPoint selectionP2_;
 
 public slots:
 
 	void updateDisplayTimer_timeout();
 	void hideLoopItemTimer_timeout();
 	void splitter_splitterMoved(int pos, int index);
+	void view_mousePress(QMouseEvent* event);
+	void view_mouseRelease(QMouseEvent* event);
+	void view_mouseDrag(QMouseEvent* event);
 
 signals:
 

@@ -118,9 +118,9 @@ void PluginManager::onAction(const QString& actionName) {
 			qWarning() << "Error:" << QString(process.readAllStandardOutput()) << QString(process.readAllStandardError());
 		} else {
 			QString s = QString(process.readAllStandardError()).trimmed();
-			if (s != "") qDebug() << s;
+			if (s != "") qDebug() << qPrintable(s);
 			s = qPrintable(QString(process.readAllStandardOutput()).trimmed());
-			if (s != "") qDebug() << s;
+			if (s != "") qDebug() << qPrintable(s);
 		}
 	
 		if (action->showConsole()) {

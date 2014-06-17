@@ -8,9 +8,32 @@
 
 #include "messageboxes.h"
 #include "settings.h"
+#include "simplefunctions.h"
 
-XGraphicsView::XGraphicsView(QGraphicsScene* scene, QWidget* parent) : QGraphicsView(scene, parent) {}
-void XGraphicsView::scrollContentsBy(int x, int y) { QGraphicsView::scrollContentsBy(x, y); /* Override scrollContentsBy to disable scrolling */ }
+XGraphicsView::XGraphicsView(QGraphicsScene* scene, QWidget* parent) : QGraphicsView(scene, parent) {
+	clicked_ = false;
+}
+
+void XGraphicsView::scrollContentsBy(int x, int y) {
+	QGraphicsView::scrollContentsBy(x, y); // Override scrollContentsBy to disable scrolling
+}
+
+void XGraphicsView::mousePressEvent(QMouseEvent* event) {
+	QGraphicsView::mousePressEvent(event);
+	clicked_ = true;
+	emit mousePress(event);
+}
+
+void XGraphicsView::mouseReleaseEvent(QMouseEvent* event) {
+	QGraphicsView::mouseReleaseEvent(event);
+	clicked_ = false;
+	emit mouseRelease(event);
+}
+
+void XGraphicsView::mouseMoveEvent(QMouseEvent* event) {
+	QGraphicsView::mouseMoveEvent(event);
+	if (clicked_) emit mouseDrag(event);
+}
 
 MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWindow), pixmapCache_(3) {
 	ready_ = false;
@@ -21,8 +44,11 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
 	pixmap_ = NULL;
 	rotation_ = 0;
 	invalidated_ = true;
+	selectionInvalidated_ = true;
 	autoFit_ = true;
 	loopAnimationPlaying_ = false;
+	selectionP1_ = QPoint(0,0);
+	selectionP2_ = QPoint(0,0);
 
 	mv::messageBoxes::setParent(this);
 
@@ -52,14 +78,32 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
 	scene_->setBackgroundBrush(QBrush(Qt::black));
 
 	view_ = new XGraphicsView(scene_, this);
-
-	view_->setEnabled(false);
 	view_->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
 	view_->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
 
 	pixmapItem_ = new QGraphicsPixmapItem();
-
 	scene_->addItem(pixmapItem_);
+
+	selectionRectItem_ = new QGraphicsRectItem();
+	selectionRectItem_->setBrush(QBrush(QColor(255,255,255,25)));
+	selectionRectItem_->setPen(QPen(Qt::black));
+	selectionRectItem_->setZValue(1000);
+	selectionRectItem_->setVisible(false);
+	selectionRectItem_->setRect(0,0,0,0);
+	scene_->addItem(selectionRectItem_);
+
+	selectionRectItem2_ = new QGraphicsRectItem();
+	selectionRectItem2_->setBrush(QBrush(QColor(255,255,255,0)));
+	QPen pen;
+	QVector<qreal> dashes;
+	dashes << 4 << 4;
+	pen.setDashPattern(dashes);
+	pen.setColor(Qt::white);
+	selectionRectItem2_->setPen(pen);
+	selectionRectItem2_->setZValue(1001);
+	selectionRectItem2_->setVisible(false);
+	selectionRectItem2_->setRect(0,0,0,0);
+	scene_->addItem(selectionRectItem2_);
 
 	splitter_ = new QSplitter(this);
 	splitter_->setOrientation(Qt::Vertical);
@@ -70,6 +114,10 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
 	connect(splitter_, SIGNAL(splitterMoved(int, int)), this, SLOT(splitter_splitterMoved(int, int)));
 	ui->centralwidget->layout()->addWidget(splitter_);
 
+	connect(view_, SIGNAL(mousePress(QMouseEvent*)), this, SLOT(view_mousePress(QMouseEvent*)));
+	connect(view_, SIGNAL(mouseRelease(QMouseEvent*)), this, SLOT(view_mouseRelease(QMouseEvent*)));
+	connect(view_, SIGNAL(mouseDrag(QMouseEvent*)), this, SLOT(view_mouseDrag(QMouseEvent*)));
+
 	view_->show();
 
 	ready_ = true;
@@ -79,6 +127,10 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
 MainWindow::~MainWindow() {
 	// TODO: delete objects
 	delete ui;
+}
+
+bool MainWindow::selectionOn() const {
+	return selectionP1_.x() != selectionP2_.x() && selectionP1_.y() != selectionP2_.y();
 }
 
 void MainWindow::showConsole(bool doShow) {
@@ -99,6 +151,62 @@ void MainWindow::showConsole(bool doShow) {
 	}
 
 	invalidate();
+}
+
+QRect MainWindow::selectionRect() const {
+	int x1 = selectionP1_.x();
+	int x2 = selectionP2_.x();
+	int y1 = selectionP1_.y();
+	int y2 = selectionP2_.y();
+	QRect output;
+	output.setLeft(x1 < x2 ? x1 : x2);
+	output.setTop(y1 < y2 ? y1 : y2);
+	output.setRight(x1 > x2 ? x1 : x2);
+	output.setBottom(y1 > y2 ? y1 : y2);
+	return output;
+}
+
+QPoint MainWindow::mapViewToPixmapItem(const QPoint& point) const {
+	QPointF p = view_->mapToScene(point);
+	QPointF p2 = pixmapItem_->mapFromScene(p);
+	QPoint output(floor(p2.x()), floor(p2.y()));
+	if (autoFit()) {
+		float z = fitZoom();
+		if (z != 0) {
+			output.setX((float)output.x() / z);
+			output.setY((float)output.y() / z);
+		}
+	}
+	return output;
+}
+
+QRectF MainWindow::mapPixmapItemToView(const QRect& rect) const {
+	if (autoFit()) {
+		float z = fitZoom();
+		QRectF output;
+		output.setX(rect.x() * z + pixmapItem_->x());
+		output.setY(rect.y() * z + pixmapItem_->y());
+		output.setWidth(rect.width() * z);
+		output.setHeight(rect.height() * z);
+		return output;
+	}
+	return pixmapItem_->mapToScene(rect).boundingRect();
+}
+
+void MainWindow::view_mousePress(QMouseEvent* event) {
+	selectionP1_ = mapViewToPixmapItem(event->pos());
+	selectionP2_ = selectionP1_;
+	invalidateSelection();
+}
+
+void MainWindow::view_mouseRelease(QMouseEvent* event) {
+	selectionP2_ = mapViewToPixmapItem(event->pos());
+	invalidateSelection();
+}
+
+void MainWindow::view_mouseDrag(QMouseEvent* event) {
+	selectionP2_ = mapViewToPixmapItem(event->pos());
+	invalidateSelection();
 }
 
 void MainWindow::toggleConsole() {
@@ -164,6 +272,12 @@ QSize MainWindow::viewContainerSize() const {
 
 void MainWindow::invalidate() {
 	invalidated_ = true;
+	selectionInvalidated_ = true;
+	update();
+}
+
+void MainWindow::invalidateSelection() {
+	selectionInvalidated_ = true;
 	update();
 }
 
@@ -246,8 +360,6 @@ int MainWindow::rotation() const {
 void MainWindow::setAutoFit(bool v) {
 	if (autoFit_ == v) return;
 	autoFit_ = v;
-	
-	view_->setEnabled(!autoFit_);
 
 	if (autoFit_) {
 		view_->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
@@ -299,6 +411,11 @@ void MainWindow::paintEvent(QPaintEvent* event) {
 	if (invalidated_) {
 		invalidated_ = false;
 		updateDisplay(FullRendering);
+	}
+
+	if (selectionInvalidated_) {
+		selectionInvalidated_ = false;
+		updateSelectionDisplay();
 	}
 
 	QMainWindow::paintEvent(event);
@@ -366,4 +483,21 @@ void MainWindow::updateDisplay(int renderingType) {
 	}
 
 	if (loopPixmapItem_) loopPixmapItem_->setVisible(loopAnimationPlaying_);
+
+	updateSelectionDisplay();
+}
+
+void MainWindow::updateSelectionDisplay() {
+	selectionInvalidated_ = false;
+
+	if (!selectionOn()) {
+		selectionRectItem_->setVisible(false);
+		selectionRectItem2_->setVisible(false);
+	} else {
+		QRectF r = mapPixmapItemToView(selectionRect());
+		selectionRectItem_->setVisible(true);
+		selectionRectItem_->setRect(r);
+		selectionRectItem2_->setVisible(true);
+		selectionRectItem2_->setRect(r);
+	}
 }
