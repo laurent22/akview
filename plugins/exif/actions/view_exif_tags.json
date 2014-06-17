@@ -1,0 +1,10 @@
+{
+	"title": "View Exif tags",
+	"dependencies": [
+		{ "command": "exif" }
+	],
+	"command": [ "exif", "__FILE__" ],
+	"shortcuts": [ "Ctrl + I" ],
+	"show_console": true,
+	"menu": "view"
+}

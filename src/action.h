@@ -26,6 +26,7 @@ public:
 	void setName(const QString& v);
 	QString name() const;
 	QString menu() const;
+	bool showConsole() const;
 	QString description() const;
 	QStringList command() const;
 	void setMenu(const QString& menu);
@@ -44,6 +45,7 @@ private:
 	QStringList command_;
 	QList<QKeySequence> defaultShortcuts_;
 	DependencyVector dependencies_;
+	bool showConsole_;
 
 };
 

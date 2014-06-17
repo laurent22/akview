@@ -104,6 +104,12 @@ void PluginManager::onAction(const QString& actionName) {
 
 		qDebug() << qPrintable("$ " + command.join(" "));
 
+		int consoleVScrollValue = 0;
+		if (action->showConsole()) {
+			Application::instance()->mainWindow()->showConsole();
+			consoleVScrollValue = Application::instance()->mainWindow()->console()->documentSize().height();
+		}
+
 		QProcess process;
 		process.start(program, arguments);
 		process.waitForFinished(60000);
@@ -111,14 +117,15 @@ void PluginManager::onAction(const QString& actionName) {
 		if (process.exitStatus() != QProcess::NormalExit) {
 			qWarning() << "Error:" << QString(process.readAllStandardOutput()) << QString(process.readAllStandardError());
 		} else {
-			qDebug() << qPrintable(QString("Exit with code %1").arg(process.exitCode()));
 			QString s = QString(process.readAllStandardError()).trimmed();
 			if (s != "") qDebug() << s;
 			s = qPrintable(QString(process.readAllStandardOutput()).trimmed());
 			if (s != "") qDebug() << s;
 		}
 	
-		qDebug() << "Action" << actionName << "has been processed by plugin" << plugin->description();
+		if (action->showConsole()) {
+			Application::instance()->mainWindow()->console()->setVScrollValue(consoleVScrollValue);
+		}
 		return;
 	}
 }

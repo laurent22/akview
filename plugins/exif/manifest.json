@@ -1,0 +1,7 @@
+{
+	"name": "Exif",
+	"description": "Exif",
+	"version": "1.0.0",
+	"manifest_version": 1,
+	"min_engine_version": "1"
+}

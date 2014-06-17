@@ -14,6 +14,9 @@ Action::Action(const QString& name, const QJsonObject &jsonObject): QAction(NULL
 	menu_ = jsonObject_.value("menu").toString();
 	description_ = jsonObject_.value("description").toString();
 
+	QJsonValue v = jsonObject_.value("show_console");
+	showConsole_ = v.isUndefined() ? false : v.toBool();
+
 	QJsonArray dependenciesArray;
 
 #ifdef Q_OS_MAC
@@ -52,6 +55,10 @@ Action::Action(const QString& name, const QJsonObject &jsonObject): QAction(NULL
 	}
 
 	setShortcuts(shortcuts);
+}
+
+bool Action::showConsole() const {
+	return showConsole_;
 }
 
 bool Action::supports(const QKeySequence &keySequence) const {

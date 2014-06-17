@@ -13,11 +13,18 @@ public:
 
 	ConsoleWidget(QWidget* parent = 0);
 	void log(const QString& s);
-	// QSize sizeHint() const;
+	int vScrollValue() const;
+	void setVScrollValue(int v);
+	QSizeF documentSize() const;
+
+protected:
+
+	void showEvent(QShowEvent* event);
 
 private:
 
 	QPlainTextEdit* textbox_;
+	bool fontIsSet_;
 
 };
 
