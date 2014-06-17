@@ -6,6 +6,7 @@
 #include <QDebug>
 #include <QVariant>
 
+#include "messageboxes.h"
 #include "settings.h"
 
 XGraphicsView::XGraphicsView(QGraphicsScene* scene, QWidget* parent) : QGraphicsView(scene, parent) {}
@@ -22,6 +23,8 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
 	invalidated_ = true;
 	autoFit_ = true;
 	loopAnimationPlaying_ = false;
+
+	mv::messageBoxes::setParent(this);
 
 	possibleZoomValues_.push_back(1.0/128.0);
 	possibleZoomValues_.push_back(1.0/64.0);

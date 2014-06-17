@@ -5,7 +5,9 @@
 
 namespace mv {
 
-class PluginManager {
+class PluginManager : public QObject {
+
+	Q_OBJECT
 
 public:
 
@@ -18,8 +20,13 @@ public:
 private:
 
 	PluginVector plugins_;
+	QString afterPackageInstallationAction_;
 
 	QStringList replaceVariables(const QStringList& command);
+
+public slots:
+
+	void packageManager_installationDone();
 
 };
 

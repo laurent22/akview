@@ -61,7 +61,7 @@ public:
 	int zoomIndex() const;
 	QPixmap* loadSource(const QString& sourcePath);
 	mv::ConsoleWidget* console() const;
-	void showConsole(bool doShow);
+	void showConsole(bool doShow = true);
 	void toggleConsole();
 
 protected:

@@ -11,19 +11,23 @@ HEADERS += \
 	exif.h \
 	iapplication.h \
 	jheadhandler.h \
+	messageboxes.h \
 	mvplugininterface.h \
+	packagemanager.h \
 	paths.h \
 	plugin.h \
 	pluginevents.h \
 	pluginmanager.h \
 	preferencesdialog.h \
+	processutil.h \
 	settings.h \
 	simplefunctions.h \
 	simpletypes.h \
 	stringutil.h \
 	third_party/jhead/jhead.h \
 	version.h \
-    mainwindow.h
+    mainwindow.h \
+    progressbardialog.h
 	
 SOURCES += main.cpp \
 	action.cpp \
@@ -32,10 +36,13 @@ SOURCES += main.cpp \
 	consolewidget.cpp \
 	exif.cpp \
 	jheadhandler.cpp \
+	messageboxes.cpp \
+	packagemanager.cpp \
 	paths.cpp \
 	plugin.cpp \
 	pluginmanager.cpp \
 	preferencesdialog.cpp \
+	processutil.cpp \
 	settings.cpp \
 	stringutil.cpp \
 	third_party/jhead/jhead_exif.cpp \
@@ -47,7 +54,8 @@ SOURCES += main.cpp \
 	third_party/jhead/jhead_makernote.cpp \
 	third_party/jhead/jhead_paths.cpp \
 	version.cpp \
-    mainwindow.cpp
+    mainwindow.cpp \
+    progressbardialog.cpp
 
 RESOURCES += resources.qrc
 
@@ -56,4 +64,5 @@ LIBS += /usr/local/Cellar/freeimage/3.15.4/lib/libfreeimage.dylib
 
 FORMS += \
 	preferencesdialog.ui \
-    mainwindow.ui
+    mainwindow.ui \
+    progressbardialog.ui

@@ -1,10 +1,12 @@
 #include <QDebug>
 #include <QDir>
+#include <QMessageBox>
 #include <QPluginLoader>
 #include <QProcess>
 
 #include "action.h"
 #include "application.h"
+#include "messageboxes.h"
 #include "pluginmanager.h"
 
 namespace mv {
@@ -70,21 +72,61 @@ void PluginManager::onAction(const QString& actionName) {
 			return;
 		}
 
+		PackageManager* packageManager = Application::instance()->packageManager();
+
 		QString program = command[0];
 		QStringList arguments = command.mid(1);
+
+		QStringList missingPackages;
+		DependencyVector dependencies = action->dependencies();
+		for (unsigned int i = 0; i < dependencies.size(); i++) {
+			Dependency* dependency = dependencies[i];
+			if (!packageManager->commandIsInstalled(dependency->command)) {
+			 	missingPackages.push_back(dependency->package);
+			}
+		}
+
+		if (missingPackages.size()) {
+			int answer = messageBoxes::info(
+				QObject::tr("In order to do this operation, the following package(s) must be installed:\n\n%1\n\nDo you wish to install them now?").arg(missingPackages.join(", ")),
+				QObject::tr("Information"),
+				"okCancel"
+			);
+			if (answer == QMessageBox::Cancel) return;
+
+			Application::instance()->mainWindow()->showConsole();
+
+			afterPackageInstallationAction_ = actionName;
+			connect(packageManager, SIGNAL(installationDone()), this, SLOT(packageManager_installationDone()));
+			packageManager->install(missingPackages);
+			return;
+		}
+
+		qDebug() << qPrintable("$ " + command.join(" "));
+
 		QProcess process;
 		process.start(program, arguments);
 		process.waitForFinished(60000);
 
 		if (process.exitStatus() != QProcess::NormalExit) {
-			qWarning() << "process failed:" << command << QString(process.readAllStandardOutput()) << QString(process.readAllStandardError());
+			qWarning() << "Error:" << QString(process.readAllStandardOutput()) << QString(process.readAllStandardError());
 		} else {
-			qDebug() << QString("process exited with error code %1").arg(process.exitCode()) << command << QString(process.readAllStandardOutput()) << QString(process.readAllStandardError());
+			qDebug() << qPrintable(QString("Exit with code %1").arg(process.exitCode()));
+			QString s = QString(process.readAllStandardError()).trimmed();
+			if (s != "") qDebug() << s;
+			s = qPrintable(QString(process.readAllStandardOutput()).trimmed());
+			if (s != "") qDebug() << s;
 		}
 	
 		qDebug() << "Action" << actionName << "has been processed by plugin" << plugin->description();
 		return;
 	}
+}
+
+void PluginManager::packageManager_installationDone() {
+	PackageManager* packageManager = Application::instance()->packageManager();
+	disconnect(packageManager, SIGNAL(installationDone()), this, SLOT(packageManager_installationDone()));
+	onAction(afterPackageInstallationAction_);
 }
 
 }

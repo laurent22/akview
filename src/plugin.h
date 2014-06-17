@@ -17,7 +17,7 @@ public:
 	QString version() const;
 	QString minEngineVersion() const;
 	ActionVector actions() const;
-	Action *findAction(const QString& name) const;
+	Action* findAction(const QString& name) const;
 
 private:
 

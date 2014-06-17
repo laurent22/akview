@@ -9,6 +9,13 @@
 
 namespace mv {
 
+struct Dependency {
+	QString command;
+	QString package;
+};
+
+typedef std::vector<Dependency*> DependencyVector;
+
 class Action: public QAction {
 
 public:
@@ -26,6 +33,7 @@ public:
 	QList<QKeySequence> defaultShortcuts() const;
 	QKeySequence defaultShortcut() const;
 	void restoreDefaultShortcut();
+	DependencyVector dependencies() const;
 
 private:
 
@@ -35,6 +43,7 @@ private:
 	QString description_;
 	QStringList command_;
 	QList<QKeySequence> defaultShortcuts_;
+	DependencyVector dependencies_;
 
 };
 

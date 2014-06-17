@@ -10,6 +10,7 @@
 
 #include "action.h"
 #include "mainwindow.h"
+#include "packagemanager.h"
 #include "pluginmanager.h"
 #include "preferencesdialog.h"
 #include "simpletypes.h"
@@ -40,6 +41,7 @@ public:
 	Action* actionByName(const QString& actionName) const;
 	void refreshActionShortcuts();
 	MainWindow* mainWindow() const;
+	PackageManager* packageManager() const;
 
 protected:
 
@@ -70,6 +72,7 @@ private:
 	void loadWindowGeometry();
 	void setupActions();
 	QFileSystemWatcher fsWatcher_;
+	mutable PackageManager* packageManager_;
 
 public slots:
 

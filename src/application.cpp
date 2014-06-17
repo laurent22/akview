@@ -20,8 +20,7 @@ namespace mv {
 #ifdef QT_DEBUG
 QStringList queuedMessages_;
 
-void myMessageHandler(QtMsgType type, const QMessageLogContext&, const QString& msg)
-{
+void myMessageHandler(QtMsgType type, const QMessageLogContext&, const QString& msg) {
 	QString txt;
 	switch (type) {
 		case QtDebugMsg: txt = QString("%1").arg(msg); break;
@@ -48,6 +47,7 @@ Application::Application(int &argc, char **argv, int applicationFlags) : QApplic
 	qInstallMessageHandler(myMessageHandler);
 #endif // QT_DEBUG
 
+	packageManager_ = NULL;
 	mainWindow_ = NULL;
 	settings_ = NULL;
 	preferencesDialog_ = NULL;
@@ -102,6 +102,10 @@ void Application::initialize() {
 	mainWindow_->show();
 
 #ifdef QT_DEBUG
+	mainWindow_->showConsole(true);
+#endif
+
+#ifdef QT_DEBUG
 	for (int i = 0; i < queuedMessages_.size(); i++) mainWindow_->console()->log(queuedMessages_[i]);
 	queuedMessages_.clear();
 #endif
@@ -118,6 +122,12 @@ void Application::fsWatcher_fileChanged(const QString& path) {
 		qDebug() << "File has been changed:" << path;
 		reloadSource();
 	}
+}
+
+PackageManager* Application::packageManager() const {
+	if (packageManager_) return packageManager_;
+	packageManager_ = new PackageManager();
+	return packageManager_;
 }
 
 MainWindow* Application::mainWindow() const {

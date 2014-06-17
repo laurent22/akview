@@ -14,13 +14,31 @@ Action::Action(const QString& name, const QJsonObject &jsonObject): QAction(NULL
 	menu_ = jsonObject_.value("menu").toString();
 	description_ = jsonObject_.value("description").toString();
 
+	QJsonArray dependenciesArray;
+
+#ifdef Q_OS_MAC
+	dependenciesArray = jsonObject.value("osx_dependencies").toArray();
+#elif defined(Q_OS_WIN)
+	dependenciesArray = jsonObject.value("win_dependencies").toArray();
+#elif defined(Q_OS_LINUX)
+	dependenciesArray = jsonObject.value("linux_dependencies").toArray();
+#endif
+
+	if (dependenciesArray.size() == 0) dependenciesArray = jsonObject.value("dependencies").toArray();
+	for (int i = 0; i < dependenciesArray.size(); i++) {
+		QJsonObject o = dependenciesArray[i].toObject();
+		Dependency* d = new Dependency();
+		d->command = o.value("command").toString();
+		d->package = o.value("package").toString();
+		if (d->package == "") d->package = d->command;
+		dependencies_.push_back(d);
+	}
+
 	QJsonArray commandArray = jsonObject.value("command").toArray();
 	for (int i = 0; i < commandArray.size(); i++) {
 		QString s = commandArray[i].toString();
 		command_ << s;
 	}
-
-	qDebug() << command_;
 
 	QJsonArray array = jsonObject.value("shortcuts").toArray();
 	QList<QKeySequence> shortcuts;
@@ -70,6 +88,10 @@ QString Action::description() const {
 
 QStringList Action::command() const {
 	return command_;
+}
+
+DependencyVector Action::dependencies() const {
+	return dependencies_;
 }
 
 void Action::setMenu(const QString& menu) {
