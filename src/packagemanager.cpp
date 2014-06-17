@@ -41,7 +41,7 @@ PackageManager::PackageManager() {
 	progressBarDialog_ = NULL;
 	installProcess_ = NULL;
 	managers_.push_back(new Manager(1, "Homebrew", "http://brew.sh", "brew", QStringList() << "brew" << "install" << "__PACKAGE__"));
-	selectedManagerId_ = 1;
+	selectedManagerId_ = 0;
 }
 
 PackageManager::~PackageManager() {
@@ -74,10 +74,25 @@ Manager* PackageManager::managerById(int id) const {
 }
 
 Manager* PackageManager::selectedManager() const {
+	if (selectedManagerId_ <= 0) {
+		for (unsigned int i = 0; i < managers_.size(); i++) {
+			if (managerIsInstalled(managers_[i]->id())) {
+				selectedManagerId_ = managers_[i]->id();
+				qDebug() << "Auto selected package manager:" << managers_[i]->name();
+				break;
+			}
+		}
+
+		if (selectedManagerId_ <= 0) {
+			qWarning() << "Could not auto-select package manager.";
+			return NULL;
+		}
+	}
+
 	return managerById(selectedManagerId_);
 }
 
-bool PackageManager::managerIsInstalled(int managerId) {
+bool PackageManager::managerIsInstalled(int managerId) const {
 	Manager* manager = managerById(managerId);
 	QString command = manager->command();
 

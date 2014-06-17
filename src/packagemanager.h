@@ -46,16 +46,16 @@ public:
 	void install(const QString& package);
 	void install(const QStringList& packages);
 	Manager* selectedManager() const;
-	bool managerIsInstalled(int managerId);
+	bool managerIsInstalled(int managerId) const;
 	bool commandIsInstalled(const QString& command);
 	bool installationInProgress() const;
 
 private:
 
 	Manager* managerById(int id) const;
-	int selectedManagerId_;
+	mutable int selectedManagerId_;
 	ManagerVector managers_;
-	QStringList installedCommands_;
+	mutable QStringList installedCommands_;
 	ProgressBarDialog* progressBarDialog_;
 	QProcess* installProcess_;
 
