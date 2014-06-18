@@ -82,6 +82,7 @@ public:
 	void showConsole(bool doShow = true);
 	void toggleConsole();
 	bool selectionOn() const;
+	void clearSelection();
 
 protected:
 

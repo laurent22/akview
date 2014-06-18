@@ -129,8 +129,15 @@ MainWindow::~MainWindow() {
 	delete ui;
 }
 
+void MainWindow::clearSelection() {
+	selectionP1_ = QPoint(0,0);
+	selectionP2_ = QPoint(0,0);
+	invalidateSelection();
+}
+
 bool MainWindow::selectionOn() const {
-	return selectionP1_.x() != selectionP2_.x() && selectionP1_.y() != selectionP2_.y();
+	QRect r = selectionRect();
+	return r.isValid();
 }
 
 void MainWindow::showConsole(bool doShow) {
@@ -161,8 +168,14 @@ QRect MainWindow::selectionRect() const {
 	QRect output;
 	output.setLeft(x1 < x2 ? x1 : x2);
 	output.setTop(y1 < y2 ? y1 : y2);
-	output.setRight(x1 > x2 ? x1 : x2);
-	output.setBottom(y1 > y2 ? y1 : y2);
+	output.setWidth((x1 > x2 ? x1 : x2) - output.x());
+	output.setHeight((y1 > y2 ? y1 : y2) - output.y());
+	if (output.x() < 0) output.setX(0);
+	if (output.y() < 0) output.setY(0);
+	if (pixmap_) {
+		if (output.right() > pixmap_->width()) output.setWidth(pixmap_->width() - output.x());
+		if (output.bottom() > pixmap_->height()) output.setHeight(pixmap_->height() - output.y());
+	}
 	return output;
 }
 
@@ -331,16 +344,15 @@ QPixmap* MainWindow::loadSource(const QString& sourcePath) {
 void MainWindow::setSource(const QString& v) {
 	if (source_ == v) return;
 	source_ = v;
-	if (pixmap_) pixmap_ = NULL; // QCache will take care of deleting the object
 	pixmap_ = loadSource(source_);
+	clearSelection();
 	invalidate();
 }
 
 void MainWindow::reloadSource() {
-	QString s = source();
-	pixmapCache_.remove(s);
-	source_ = "";
-	setSource(s);
+	pixmapCache_.remove(source());
+	pixmap_ = loadSource(source_);
+	invalidate();
 }
 
 QString MainWindow::source() const {
