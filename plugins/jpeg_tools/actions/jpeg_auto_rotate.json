@@ -1,6 +1,6 @@
 {
-	"title": "JPEG auto-rotation",
-	"description": "Rotate JPEG according to Exif orientation tag",
+	"title": "JPEG lossless auto-rotation",
+	"description": "Lossless rotation of JPEG according to Exif orientation tag",
 	"dependencies": [
 		{ "command": "jhead" },
 		{ "command": "jpegtran", "package": "libjpeg" }
