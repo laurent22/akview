@@ -17,17 +17,7 @@ Action::Action(const QJsonObject &jsonObject): QAction(NULL) {
 	QJsonValue v = jsonObject_.value("show_console");
 	showConsole_ = v.isUndefined() ? false : v.toBool();
 
-	QJsonArray dependenciesArray;
-
-#ifdef Q_OS_MAC
-	dependenciesArray = jsonObject.value("osx_dependencies").toArray();
-#elif defined(Q_OS_WIN)
-	dependenciesArray = jsonObject.value("win_dependencies").toArray();
-#elif defined(Q_OS_LINUX)
-	dependenciesArray = jsonObject.value("linux_dependencies").toArray();
-#endif
-
-	if (dependenciesArray.size() == 0) dependenciesArray = jsonObject.value("dependencies").toArray();
+	QJsonArray dependenciesArray = perOsValue(jsonObject, "dependencies").toArray();
 	for (int i = 0; i < dependenciesArray.size(); i++) {
 		QJsonObject o = dependenciesArray[i].toObject();
 		Dependency* d = new Dependency();
@@ -43,7 +33,7 @@ Action::Action(const QJsonObject &jsonObject): QAction(NULL) {
 		command_ << s;
 	}
 
-	QJsonArray array = jsonObject.value("shortcuts").toArray();
+	QJsonArray array = perOsValue(jsonObject, "shortcuts").toArray();
 	QList<QKeySequence> shortcuts;
 	for (int i = 0; i < array.size(); i++) {
 		QString s = array[i].toString();
@@ -55,6 +45,20 @@ Action::Action(const QJsonObject &jsonObject): QAction(NULL) {
 	}
 
 	setShortcuts(shortcuts);
+}
+
+QJsonValue Action::perOsValue(const QJsonObject& jsonObject, const QString& name) const {
+	QJsonValue output;
+#ifdef Q_OS_MAC
+	output = jsonObject.value("osx_" + name);
+#elif defined(Q_OS_WIN)
+	output = jsonObject.value("win_" + name);
+#elif defined(Q_OS_LINUX)
+	output = jsonObject.value("linux_" + name);
+#else
+#error Unsupported OS
+#endif
+	return output.isNull() ? jsonObject.value(name) : output;
 }
 
 bool Action::showConsole() const {

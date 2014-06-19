@@ -37,6 +37,8 @@ public:
 	DependencyVector dependencies() const;
 
 private:
+	
+	QJsonValue perOsValue(const QJsonObject& jsonObject, const QString& name) const;
 
 	QJsonObject jsonObject_;
 	QString id_;
