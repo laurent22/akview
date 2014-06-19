@@ -11,4 +11,8 @@ void Application::pushUndoState() {
 	mv::Application::instance()->pushUndoState();
 }
 
+void Application::popUndoState() {
+	mv::Application::instance()->popUndoState();
+}
+
 }

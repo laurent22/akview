@@ -16,6 +16,7 @@ public:
 public slots:
 
 	void pushUndoState();
+	void popUndoState();
 
 private:
 

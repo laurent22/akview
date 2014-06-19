@@ -15,8 +15,17 @@
 			"win_dependencies": [
 				{ "command": "jhead" },
 				{ "command": "jpegtran" }
+			]
+		},
+		{
+			"id": "jpeg_crop",
+			"title": "JPEG lossless crop",
+			"dependencies": [
+				{ "command": "jpegtran", "package": "libjpeg" }
 			],
-			"shortcuts": [ "Ctrl + Shift + O" ]
+			"win_dependencies": [
+				{ "command": "jpegtran" }
+			]
 		}
 	]
 }

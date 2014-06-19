@@ -67,21 +67,14 @@ QStringList PluginManager::replaceVariables(const QStringList& command) {
 }
 
 void PluginManager::onAction(const QString& actionName) {
+	Application* app = Application::instance();
+
 	for (unsigned int i = 0; i < plugins_.size(); i++) {
 		Plugin* plugin = plugins_[i];
 		Action* action = plugin->findAction(actionName);
 		if (!action) continue;
 
-		// QStringList command = replaceVariables(action->command());
-		// if (command.size() <= 0) {
-		// 	qWarning() << "action" << actionName << "has an empty command";
-		// 	return;
-		// }
-
-		PackageManager* packageManager = Application::instance()->packageManager();
-
-		// QString program = command[0];
-		// QStringList arguments = command.mid(1);
+		PackageManager* packageManager = app->packageManager();
 
 		QStringList missingPackages;
 		DependencyVector dependencies = action->dependencies();
@@ -100,7 +93,7 @@ void PluginManager::onAction(const QString& actionName) {
 			);
 			if (answer == QMessageBox::Cancel) return;
 
-			Application::instance()->mainWindow()->showConsole();
+			app->mainWindow()->showConsole();
 
 			afterPackageInstallationAction_ = actionName;
 			connect(packageManager, SIGNAL(installationDone()), this, SLOT(packageManager_installationDone()));
@@ -110,8 +103,8 @@ void PluginManager::onAction(const QString& actionName) {
 
 		int consoleVScrollValue = 0;
 		if (action->showConsole()) {
-			Application::instance()->mainWindow()->showConsole();
-			consoleVScrollValue = Application::instance()->mainWindow()->console()->documentSize().height();
+			app->mainWindow()->showConsole();
+			consoleVScrollValue = app->mainWindow()->console()->documentSize().height();
 		}
 
 		if (!scriptEngine_) {
@@ -126,13 +119,13 @@ void PluginManager::onAction(const QString& actionName) {
 			scriptEngine_->globalObject().setProperty("system", scriptEngine_->newQObject(jsSystem));
 		}
 
-		QObject* jsInput = new jsapi::Input(scriptEngine_, QStringList() << Application::instance()->source());
+		QObject* jsInput = new jsapi::Input(scriptEngine_, QStringList() << app->source(), app->mainWindow()->selectionRect());
 		scriptEngine_->globalObject().setProperty("input", scriptEngine_->newQObject(jsInput));
 
 		QString scriptFilePath = plugin->actionScriptFilePath(action->id());
 		QFile scriptFile(scriptFilePath);
 		if (!scriptFile.open(QIODevice::ReadOnly)) {
-			qWarning() << "Cannot open script file: " << scriptFilePath;
+			qWarning() << "Cannot open script file:" << scriptFilePath;
 			return;
 		}
 
