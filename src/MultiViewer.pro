@@ -2,8 +2,8 @@ TEMPLATE = app
 
 QT += widgets script
 
-debug:TARGET = MultiViewer-debug
-release:TARGET = MultiViewer
+CONFIG(debug, debug|release):TARGET = MultiViewer-debug
+CONFIG(release, debug|release):TARGET = MultiViewer
 
 HEADERS += \
 	action.h \

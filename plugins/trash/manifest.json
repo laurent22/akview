@@ -1,0 +1,14 @@
+{
+	"name": "Move file to trash",
+	"version": "1.0.0",
+	"manifest_version": 1,
+	"min_engine_version": "1",
+	"actions": [
+		{
+			"id": "move_to_trash",
+			"title": "Move file to trash",
+			"shortcuts": [ "Delete" ],
+			"osx_shortcuts": [ "Ctrl + Backspace" ]
+		}
+	]
+}

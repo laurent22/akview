@@ -53,11 +53,12 @@ fn_runAction() {
 	fn_exitOnError $?
 
 	if [ "$ACTION" == "debug" ]; then
-		cp -v $SCRIPT_DIR/version/Info-debug.plist $BUILD_DIR/$(fn_appName $ACTION)/Contents
+		cp -v $SCRIPT_DIR/version/Info-debug.plist $BUILD_DIR/$(fn_appName $ACTION)/Contents/Info.plist
+		cp -v $SCRIPT_DIR/version/MultiViewer-debug.sh $BUILD_DIR/$(fn_appName $ACTION)/Contents/MacOS/MultiViewer-debug.sh
 	else
 		cp -v $SCRIPT_DIR/version/Info.plist $BUILD_DIR/$(fn_appName $ACTION)/Contents
+		cp -v $SCRIPT_DIR/version/MultiViewer.sh $BUILD_DIR/$(fn_appName $ACTION)/Contents/MacOS
 	fi
-	cp -v $SCRIPT_DIR/version/MultiViewer.sh $BUILD_DIR/$(fn_appName $ACTION)/Contents/MacOS
 }
 
 if [ "$ACTION" == "clean-debug" ]; then

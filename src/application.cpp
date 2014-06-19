@@ -114,7 +114,24 @@ void Application::preloadTimer_timeout() {
 }
 
 void Application::fsWatcher_fileChanged(const QString& path) {
-	if (path == source_) reloadSource();
+	if (path == source_) {
+		if (!QFileInfo::exists(path)) {
+			// File has been deleted
+			int sourceIndex = this->sourceIndex();
+			refreshSources();
+			QStringList sources = this->sources();
+			if (sources.size() == 0) {
+				setSource("");
+			} else {
+				if (sourceIndex >= sources.size()) {
+					sourceIndex = 0;
+				}
+				setSource(sources[sourceIndex]);
+			}
+		} else {
+			reloadSource();
+		}
+	}
 }
 
 void Application::refreshMenu(const QString& actionId) {
@@ -544,7 +561,7 @@ void Application::onSourceChange() {
 
 	if (mainWindow_->isHidden()) mainWindow_->show();
 	mainWindow_->resetZoom();
-	Exif exif(source_);
+	//Exif exif(source_);
 	// mainWindow_->setRotation(360 - exif.rotation());
 	mainWindow_->setSource(source_);
 	setWindowTitle(QFileInfo(source_).fileName());
