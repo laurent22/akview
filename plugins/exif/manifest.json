@@ -3,5 +3,15 @@
 	"description": "Exif",
 	"version": "1.0.0",
 	"manifest_version": 1,
-	"min_engine_version": "1"
+	"min_engine_version": "1",
+	"actions": [
+		{
+			"id": "view_exif_tags",
+			"title": "View Exif tags",
+			"dependencies": [
+				{ "command": "exif" }
+			],
+			"shortcuts": [ "Ctrl + I" ]
+		}
+	]
 }

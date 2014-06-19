@@ -11,13 +11,22 @@ class Console : public QObject {
 
 public:
 
-	Console() {};
+	Console();
+	void saveVScrollValue(int v);
+	void restoreVScrollValue();
 
 public slots:
 
-	inline void info(const QString& s) { qDebug() << qPrintable(s); }
-	inline void warn(const QString& s) { qWarning() << qPrintable(s); }
-	inline void error(const QString& s) { qCritical() << qPrintable(s); }
+	void info(const QString& s);
+	void warn(const QString& s);
+	void error(const QString& s);
+	void showLastOutput();
+	void show();
+	void hide();
+
+private:
+
+	int savedScrollValue_;
 
 };
 

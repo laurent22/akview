@@ -25,6 +25,7 @@ private:
 	QString afterPackageInstallationAction_;
 	QScriptEngine* scriptEngine_;
 	QStringList replaceVariables(const QStringList& command);
+	QObject* jsConsole_;
 
 public slots:
 

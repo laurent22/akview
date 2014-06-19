@@ -54,6 +54,7 @@ SOURCES += main.cpp \
     mainwindow.cpp \
     progressbardialog.cpp \
     jsapi/jsapi_application.cpp \
+    jsapi/jsapi_console.cpp \
     jsapi/jsapi_fileinfo.cpp \
     jsapi/jsapi_input.cpp \
     jsapi/jsapi_system.cpp

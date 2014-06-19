@@ -17,6 +17,7 @@ public slots:
 
 	void pushUndoState();
 	void popUndoState();
+	void showConsole(bool doShow = true);
 
 private:
 

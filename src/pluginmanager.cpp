@@ -101,23 +101,20 @@ void PluginManager::onAction(const QString& actionName) {
 			return;
 		}
 
-		int consoleVScrollValue = 0;
-		if (action->showConsole()) {
-			app->mainWindow()->showConsole();
-			consoleVScrollValue = app->mainWindow()->console()->documentSize().height();
-		}
-
 		if (!scriptEngine_) {
 			scriptEngine_ = new QScriptEngine();
 			QObject* jsApplication = new jsapi::Application(scriptEngine_);
-			QObject* jsConsole = new jsapi::Console();
+			jsConsole_ = new jsapi::Console();
 			QObject* jsFileInfo = new jsapi::FileInfo();
 			QObject* jsSystem = new jsapi::System(scriptEngine_);
 			scriptEngine_->globalObject().setProperty("application", scriptEngine_->newQObject(jsApplication));
-			scriptEngine_->globalObject().setProperty("console", scriptEngine_->newQObject(jsConsole));
+			scriptEngine_->globalObject().setProperty("console", scriptEngine_->newQObject(jsConsole_));
 			scriptEngine_->globalObject().setProperty("fileinfo", scriptEngine_->newQObject(jsFileInfo));
 			scriptEngine_->globalObject().setProperty("system", scriptEngine_->newQObject(jsSystem));
 		}
+
+		jsapi::Console* c = (jsapi::Console*)jsConsole_;
+		c->saveVScrollValue(app->mainWindow()->console()->documentSize().height());
 
 		QObject* jsInput = new jsapi::Input(scriptEngine_, QStringList() << app->source(), app->mainWindow()->selectionRect());
 		scriptEngine_->globalObject().setProperty("input", scriptEngine_->newQObject(jsInput));

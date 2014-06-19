@@ -15,4 +15,8 @@ void Application::popUndoState() {
 	mv::Application::instance()->popUndoState();
 }
 
+void Application::showConsole(bool doShow) {
+	mv::Application::instance()->mainWindow()->showConsole(doShow);
+}
+
 }
