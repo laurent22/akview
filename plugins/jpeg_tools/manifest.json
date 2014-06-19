@@ -20,12 +20,8 @@
 		{
 			"id": "jpeg_crop",
 			"title": "JPEG lossless crop",
-			"dependencies": [
-				{ "command": "jpegtran", "package": "libjpeg" }
-			],
-			"win_dependencies": [
-				{ "command": "jpegtran" }
-			]
+			"dependencies": [ { "command": "jpegtran", "package": "libjpeg" } ],
+			"win_dependencies": [ { "command": "jpegtran" } ]
 		}
 	]
 }

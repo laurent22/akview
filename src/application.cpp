@@ -17,7 +17,6 @@
 
 namespace mv {
 
-#ifdef QT_DEBUG
 QStringList queuedMessages_;
 
 void myMessageHandler(QtMsgType type, const QMessageLogContext&, const QString& msg) {
@@ -40,12 +39,9 @@ void myMessageHandler(QtMsgType type, const QMessageLogContext&, const QString& 
 	// QTextStream ts(&outFile);
 	// ts << txt << endl;
 }
-#endif // QT_DEBUG
 
 Application::Application(int &argc, char **argv, int applicationFlags) : QApplication(argc, argv, applicationFlags) {
-#ifdef QT_DEBUG
 	qInstallMessageHandler(myMessageHandler);
-#endif // QT_DEBUG
 
 	packageManager_ = NULL;
 	mainWindow_ = NULL;
@@ -107,10 +103,8 @@ void Application::initialize() {
 	mainWindow_->showConsole(true);
 #endif
 
-#ifdef QT_DEBUG
 	for (int i = 0; i < queuedMessages_.size(); i++) mainWindow_->console()->log(queuedMessages_[i]);
 	queuedMessages_.clear();
-#endif
 }
 
 void Application::preloadTimer_timeout() {

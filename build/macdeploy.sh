@@ -18,7 +18,7 @@ cd $APP_RELEASE_DIR
 
 if [[ ! -d MultiViewer.app ]]; then
 	echo "Cannot find MultiViewer.app"
-	exit 1	
+	exit 1
 fi
 
 echo "Running macdeployqt..."
@@ -26,7 +26,7 @@ $MACDEPLOYQT_PATH MultiViewer.app
 
 echo "Copying own plugins..."
 mkdir -p MultiViewer.app/Contents/PlugIns/multiviewer
-cp ../plugins/release/* MultiViewer.app/Contents/PlugIns/multiviewer
+rsync --exclude ".DS_Store" -aP ../plugins/release/ MultiViewer.app/Contents/PlugIns/multiviewer/
 
 echo "Copying FreeImage lib..."
 cp "$FREEIMAGE_LIB_PATH" MultiViewer.app/Contents/PlugIns/multiviewer/

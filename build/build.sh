@@ -21,6 +21,15 @@ fn_exitOnError() {
 	fi
 }
 
+fn_appName() {
+	TYPE=$1
+	if [ "$TYPE" == "debug" ]; then
+		echo "MultiViewer-debug.app"
+	else
+		echo "MultiViewer.app"
+	fi
+}
+
 fn_runAction() {
 	ACTION=$1
 	BUILD_DIR=$2
@@ -43,23 +52,19 @@ fn_runAction() {
 
 	fn_exitOnError $?
 
-	cp -v $SCRIPT_DIR/version/Info.plist $BUILD_DIR/MultiViewer.app/Contents
-	cp -v $SCRIPT_DIR/version/MultiViewer.sh $BUILD_DIR/MultiViewer.app/Contents/MacOS
+	if [ "$ACTION" == "debug" ]; then
+		cp -v $SCRIPT_DIR/version/Info-debug.plist $BUILD_DIR/$(fn_appName $ACTION)/Contents
+	else
+		cp -v $SCRIPT_DIR/version/Info.plist $BUILD_DIR/$(fn_appName $ACTION)/Contents
+	fi
+	cp -v $SCRIPT_DIR/version/MultiViewer.sh $BUILD_DIR/$(fn_appName $ACTION)/Contents/MacOS
 }
 
 if [ "$ACTION" == "clean-debug" ]; then
 	rm -rfv $ROOT_DIR/build-debug
-	rm -rfv $ROOT_DIR/plugins/build-MvDeleteFile-debug
-	rm -rfv $ROOT_DIR/plugins/build-MvJpegTools-debug
-	rm -rfv $ROOT_DIR/plugins/build-MvReveal-debug
-	rm -rfv $ROOT_DIR/plugins/build-MvMetadata-debug
 	exit
 elif [ "$ACTION" == "clean-release" ]; then
 	rm -rfv $ROOT_DIR/build-release
-	rm -rfv $ROOT_DIR/plugins/build-MvDeleteFile-release
-	rm -rfv $ROOT_DIR/plugins/build-MvJpegTools-release
-	rm -rfv $ROOT_DIR/plugins/build-MvReveal-release
-	rm -rfv $ROOT_DIR/plugins/build-MvMetadata-release
 	exit
 fi
 
@@ -67,12 +72,6 @@ if [ "$ACTION" != "debug" ] && [ "$ACTION" != "release" ]; then
 	fn_usage
 	exit 1
 fi
-
-# First, build all the plugins
-# fn_runAction $ACTION $ROOT_DIR/plugins/build-MvDeleteFile-$ACTION $ROOT_DIR/plugins/MvDeleteFile/MvDeleteFilePlugin.pro
-# fn_runAction $ACTION $ROOT_DIR/plugins/build-MvJpegTools-$ACTION $ROOT_DIR/plugins/MvJpegTools/MvJpegToolPlugin.pro
-# fn_runAction $ACTION $ROOT_DIR/plugins/build-MvReveal-$ACTION $ROOT_DIR/plugins/MvReveal/MvRevealPlugin.pro
-# fn_runAction $ACTION $ROOT_DIR/plugins/build-MvMetadata-$ACTION $ROOT_DIR/plugins/MvMetadata/MvMetadataPlugin.pro
 
 $ROOT_DIR/plugins/copyplugins.sh
 
@@ -83,5 +82,5 @@ fi
 fn_runAction $ACTION $ROOT_DIR/build-$ACTION $ROOT_DIR/src/MultiViewer.pro
 
 if [ "$LAUNCH_AFTER_BUILD" == "1" ]; then
-	open -a $BUILD_DIR/MultiViewer.app "/Users/laurent/Desktop/tilted.jpg"
+	open -a $BUILD_DIR/$(fn_appName $ACTION) "/Users/laurent/Desktop/tilted.jpg"
 fi

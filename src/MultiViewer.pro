@@ -2,6 +2,9 @@ TEMPLATE = app
 
 QT += widgets script
 
+debug:TARGET = MultiViewer-debug
+release:TARGET = MultiViewer
+
 HEADERS += \
 	action.h \
 	actionlistitemwidget.h \
