@@ -350,8 +350,17 @@ void MainWindow::setSource(const QString& v) {
 }
 
 void MainWindow::reloadSource() {
+	int previousWidth = 0;
+	int previousHeight = 0;
+	if (pixmap_) {
+		previousWidth = pixmap_->width();
+		previousHeight = pixmap_->height();
+	}
 	pixmapCache_.remove(source());
 	pixmap_ = loadSource(source_);
+	if (!pixmap_ || pixmap_->width() != previousWidth || pixmap_->height() != previousHeight) {
+		clearSelection();
+	}
 	invalidate();
 }
 
