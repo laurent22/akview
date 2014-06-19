@@ -6,10 +6,10 @@ namespace mv {
 
 Action::Action(): QAction(NULL) {}
 
-Action::Action(const QString& name, const QJsonObject &jsonObject): QAction(NULL) {
+Action::Action(const QJsonObject &jsonObject): QAction(NULL) {
 	jsonObject_ = jsonObject;
 
-	name_ = name;
+	id_ = jsonObject_.value("id").toString();
 	setText(jsonObject_.value("title").toString());
 	menu_ = jsonObject_.value("menu").toString();
 	description_ = jsonObject_.value("description").toString();
@@ -77,12 +77,12 @@ void Action::restoreDefaultShortcut() {
 	setShortcuts(defaultShortcuts());
 }
 
-void Action::setName(const QString& v) {
-	name_ = v;
+void Action::setId(const QString& v) {
+	id_ = v;
 }
 
-QString Action::name() const {
-	return name_;
+QString Action::id() const {
+	return id_;
 }
 
 QString Action::menu() const {

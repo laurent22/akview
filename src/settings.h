@@ -12,6 +12,7 @@ class Settings : public QSettings  {
 public:
 
 	explicit Settings();
+	QVariant value(const QString & key, const QVariant & defaultValue = QVariant()) const;
 
 };
 

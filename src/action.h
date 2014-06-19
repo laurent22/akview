@@ -21,10 +21,10 @@ class Action: public QAction {
 public:
 
 	Action();
-	Action(const QString& name, const QJsonObject& jsonObject);
+	Action(const QJsonObject& jsonObject);
 	bool supports(const QKeySequence &keySequence) const;
-	void setName(const QString& v);
-	QString name() const;
+	void setId(const QString& v);
+	QString id() const;
 	QString menu() const;
 	bool showConsole() const;
 	QString description() const;
@@ -39,7 +39,7 @@ public:
 private:
 
 	QJsonObject jsonObject_;
-	QString name_;
+	QString id_;
 	QString menu_;
 	QString description_;
 	QStringList command_;

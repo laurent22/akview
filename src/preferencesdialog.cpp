@@ -58,8 +58,8 @@ void PreferencesDialog::rebuildCurrentTab() {
 		for (unsigned i = 0; i < actions.size(); i++) {
 			mv::Action* action = actions[i];
 			mv::ActionListWidgetItem* item = new mv::ActionListWidgetItem(action);
-			QKeySequence ks = mv::Application::instance()->actionShortcut(action->name());
-			item->setShortcutIsOverridden(mv::Application::instance()->actionShortcutIsOverridden(action->name()));
+			QKeySequence ks = mv::Application::instance()->actionShortcut(action->id());
+			item->setShortcutIsOverridden(mv::Application::instance()->actionShortcutIsOverridden(action->id()));
 			item->setShortcut(ks);
 			item->updateDisplay();
 			ui->shortcutListWidget->addItem(item);
@@ -117,7 +117,7 @@ void PreferencesDialog::buttonBox_accepted() {
 		bool shortcutsChanged = false;
 		for (int i = 0; i < ui->shortcutListWidget->count(); i++) {
 			mv::ActionListWidgetItem* item = dynamic_cast<mv::ActionListWidgetItem*>(ui->shortcutListWidget->item(i));
-			QString actionName = item->action()->name();
+			QString actionName = item->action()->id();
 			if (!item->shortcutIsOverridden()) {
 				if (settings.contains(actionName)) {
 					settings.remove(actionName);

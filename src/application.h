@@ -2,8 +2,10 @@
 #define APPLICATION_H
 
 #include <QApplication>
+#include <QByteArray>
 #include <QFileSystemWatcher>
 #include <QKeyEvent>
+#include <QList>
 #include <QTimer>
 
 #include "iapplication.h" // remove
@@ -38,10 +40,11 @@ public:
 	QKeySequence actionShortcut(const QString& actionName) const;
 	QString shortcutAction(const QKeySequence& shortcut) const;
 	void execAction(const QString& actionName);
-	Action* actionByName(const QString& actionName) const;
+	Action* actionById(const QString& actionId) const;
 	void refreshActionShortcuts();
 	MainWindow* mainWindow() const;
 	PackageManager* packageManager() const;
+	void refreshMenu(const QString& actionId = "");
 
 protected:
 
@@ -73,6 +76,7 @@ private:
 	void setupActions();
 	QFileSystemWatcher fsWatcher_;
 	mutable PackageManager* packageManager_;
+	QList<QByteArray> undoVector_;
 
 public slots:
 
@@ -96,6 +100,9 @@ public slots:
 	void refreshSources();
 	void reloadSource() const;
 	bool runAppleScript(const QString& script);
+	void pushUndoState();
+	void popUndoState();
+	void undo();
 
 	Settings* settings() const;
 

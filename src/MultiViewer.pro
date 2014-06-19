@@ -1,6 +1,6 @@
 TEMPLATE = app
 
-QT += widgets
+QT += widgets script
 
 HEADERS += \
 	action.h \
@@ -25,7 +25,12 @@ HEADERS += \
 	stringutil.h \
 	version.h \
     mainwindow.h \
-    progressbardialog.h
+    progressbardialog.h \
+    jsapi/jsapi_application.h \
+    jsapi/jsapi_console.h \
+    jsapi/jsapi_fileinfo.h \
+    jsapi/jsapi_input.h \
+    jsapi/jsapi_system.h
 	
 SOURCES += main.cpp \
 	action.cpp \
@@ -44,7 +49,11 @@ SOURCES += main.cpp \
 	stringutil.cpp \
 	version.cpp \
     mainwindow.cpp \
-    progressbardialog.cpp
+    progressbardialog.cpp \
+    jsapi/jsapi_application.cpp \
+    jsapi/jsapi_fileinfo.cpp \
+    jsapi/jsapi_input.cpp \
+    jsapi/jsapi_system.cpp
 
 RESOURCES += resources.qrc
 

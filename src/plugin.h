@@ -18,6 +18,7 @@ public:
 	QString minEngineVersion() const;
 	ActionVector actions() const;
 	Action* findAction(const QString& name) const;
+	QString actionScriptFilePath(const QString& actionId) const;
 
 private:
 

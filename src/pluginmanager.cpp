@@ -9,10 +9,16 @@
 #include "messageboxes.h"
 #include "pluginmanager.h"
 
+#include "jsapi/jsapi_application.h"
+#include "jsapi/jsapi_console.h"
+#include "jsapi/jsapi_fileinfo.h"
+#include "jsapi/jsapi_input.h"
+#include "jsapi/jsapi_system.h"
+
 namespace mv {
 
 PluginManager::PluginManager() {
-
+	scriptEngine_ = NULL;
 }
 
 bool PluginManager::loadPlugin(const QString& folderPath) {
@@ -66,16 +72,16 @@ void PluginManager::onAction(const QString& actionName) {
 		Action* action = plugin->findAction(actionName);
 		if (!action) continue;
 
-		QStringList command = replaceVariables(action->command());
-		if (command.size() <= 0) {
-			qWarning() << "action" << actionName << "has an empty command";
-			return;
-		}
+		// QStringList command = replaceVariables(action->command());
+		// if (command.size() <= 0) {
+		// 	qWarning() << "action" << actionName << "has an empty command";
+		// 	return;
+		// }
 
 		PackageManager* packageManager = Application::instance()->packageManager();
 
-		QString program = command[0];
-		QStringList arguments = command.mid(1);
+		// QString program = command[0];
+		// QStringList arguments = command.mid(1);
 
 		QStringList missingPackages;
 		DependencyVector dependencies = action->dependencies();
@@ -102,29 +108,46 @@ void PluginManager::onAction(const QString& actionName) {
 			return;
 		}
 
-		qDebug() << qPrintable("$ " + command.join(" "));
-
 		int consoleVScrollValue = 0;
 		if (action->showConsole()) {
 			Application::instance()->mainWindow()->showConsole();
 			consoleVScrollValue = Application::instance()->mainWindow()->console()->documentSize().height();
 		}
 
-		QProcess process;
-		process.start(program, arguments);
-		process.waitForFinished(60000);
-
-		if (process.exitStatus() != QProcess::NormalExit) {
-			qWarning() << "Error:" << QString(process.readAllStandardOutput()) << QString(process.readAllStandardError());
-		} else {
-			QString s = QString(process.readAllStandardError()).trimmed();
-			if (s != "") qDebug() << qPrintable(s);
-			s = qPrintable(QString(process.readAllStandardOutput()).trimmed());
-			if (s != "") qDebug() << qPrintable(s);
+		if (!scriptEngine_) {
+			scriptEngine_ = new QScriptEngine();
+			QObject* jsApplication = new jsapi::Application(scriptEngine_);
+			QObject* jsConsole = new jsapi::Console();
+			QObject* jsFileInfo = new jsapi::FileInfo();
+			QObject* jsSystem = new jsapi::System(scriptEngine_);
+			scriptEngine_->globalObject().setProperty("application", scriptEngine_->newQObject(jsApplication));
+			scriptEngine_->globalObject().setProperty("console", scriptEngine_->newQObject(jsConsole));
+			scriptEngine_->globalObject().setProperty("fileinfo", scriptEngine_->newQObject(jsFileInfo));
+			scriptEngine_->globalObject().setProperty("system", scriptEngine_->newQObject(jsSystem));
 		}
-	
-		if (action->showConsole()) {
-			Application::instance()->mainWindow()->console()->setVScrollValue(consoleVScrollValue);
+
+		QObject* jsInput = new jsapi::Input(scriptEngine_, QStringList() << Application::instance()->source());
+		scriptEngine_->globalObject().setProperty("input", scriptEngine_->newQObject(jsInput));
+
+		QString scriptFilePath = plugin->actionScriptFilePath(action->id());
+		QFile scriptFile(scriptFilePath);
+		if (!scriptFile.open(QIODevice::ReadOnly)) {
+			qWarning() << "Cannot open script file: " << scriptFilePath;
+			return;
+		}
+
+		QTextStream stream(&scriptFile);
+		QString contents = stream.readAll();
+		scriptFile.close();
+		scriptEngine_->evaluate(contents, scriptFilePath);
+
+		QScriptValue errorValue = scriptEngine_->uncaughtException();
+		if (errorValue.isValid()) {
+			qWarning() << qPrintable(errorValue.toString());
+			QStringList backtrace = scriptEngine_->uncaughtExceptionBacktrace();
+			for (int i = 0; i < backtrace.size(); i++) {
+				qDebug() << qPrintable("    " + backtrace[i]);
+			}
 		}
 		return;
 	}

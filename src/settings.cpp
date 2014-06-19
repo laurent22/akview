@@ -12,4 +12,10 @@ Settings::Settings() : QSettings(VER_COMPANYNAME_STR, QString("%1_DEBUG").arg(VE
 
 }
 
+QVariant Settings::value(const QString & key, const QVariant & defaultValue) const {
+	QVariant v = QSettings::value(key, defaultValue);
+	if (key == "undoSize" && v.isNull()) return QVariant(10);
+	return v;
+}
+
 }

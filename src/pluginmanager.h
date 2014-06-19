@@ -1,6 +1,8 @@
 #ifndef PLUGINMANAGER_H
 #define PLUGINMANAGER_H
 
+#include <QScriptEngine>
+
 #include "plugin.h"
 
 namespace mv {
@@ -21,7 +23,7 @@ private:
 
 	PluginVector plugins_;
 	QString afterPackageInstallationAction_;
-
+	QScriptEngine* scriptEngine_;
 	QStringList replaceVariables(const QStringList& command);
 
 public slots:

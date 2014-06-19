@@ -99,6 +99,8 @@ void Application::initialize() {
 	mainWindow_->setStatusItem("counter", "#-/-");
 	mainWindow_->setStatusItem("zoom", "Zoom: 100%");
 
+	refreshMenu();
+
 	mainWindow_->show();
 
 #ifdef QT_DEBUG
@@ -118,10 +120,60 @@ void Application::preloadTimer_timeout() {
 }
 
 void Application::fsWatcher_fileChanged(const QString& path) {
-	if (path == source_) {
-		qDebug() << "File has been changed:" << path;
-		reloadSource();
+	if (path == source_) reloadSource();
+}
+
+void Application::refreshMenu(const QString& actionId) {
+	if (actionId == "") {
+		ActionVector actions = this->actions();
+		for (unsigned int i = 0; i < actions.size(); i++) {
+			Action* action = actions[i];
+			if (action->id() == "") continue; // Safety to avoid infinite loops
+			refreshMenu(action->id());
+		}
 	}
+
+	Action* action = actionById(actionId);
+	if (actionId == "undo") action->setEnabled(undoVector_.size() > 0);
+}
+
+void Application::pushUndoState() {
+	QFile file(source());
+
+	if (!file.open(QIODevice::ReadOnly)) {
+		qWarning() << "Could not save undo information - could not open" << source();
+		return;
+	}
+
+	Settings settings;
+	int undoSize = settings.value("undoSize").toInt();
+	while (undoVector_.size() > undoSize - 1) undoVector_.removeFirst();
+	undoVector_ << file.readAll();
+	refreshMenu("undo");
+}
+
+void Application::popUndoState() {
+	undoVector_.removeLast();
+	refreshMenu("undo");
+}
+
+void Application::undo() {
+	if (undoVector_.size() <= 0) return;
+
+	QFile file(source());
+	if (!file.open(QIODevice::WriteOnly | QIODevice::Truncate)) {
+		qWarning() << "Could not read undo information - could not open" << source();
+		return;
+	}
+
+	QByteArray content = undoVector_[undoVector_.size() - 1];
+	qint64 writtenBytes = file.write(content);
+	if (writtenBytes != content.size()) {
+		qWarning() << "Restored" << writtenBytes << "bytes out of" << content.size();
+		return;
+	}
+
+	popUndoState();
 }
 
 PackageManager* Application::packageManager() const {
@@ -135,20 +187,21 @@ MainWindow* Application::mainWindow() const {
 }
 
 void Application::setupActions() {
-	QMenu* fileMenu = new QMenu(tr("File"));
-	QMenu* viewMenu = new QMenu(tr("View"));
-	QMenu* toolsMenu = new QMenu(tr("Tools"));
-	QMenu* helpMenu = new QMenu(tr("Help"));
+	menus_["File"] = new QMenu(tr("File"));
+	menus_["Edit"] = new QMenu(tr("Edit"));
+	menus_["View"] = new QMenu(tr("View"));
+	menus_["Tools"] = new QMenu(tr("Tools"));
+	menus_["Plugins"] = new QMenu(tr("Plugins"));
+	menus_["Help"] = new QMenu(tr("Help"));
 
-	menus_["File"] = fileMenu;
-	menus_["View"] = viewMenu;
-	menus_["Tools"] = toolsMenu;
-	menus_["Help"] = helpMenu;
+	QStringList menuOrder;
+	menuOrder << "File" << "Edit" << "View" << "Tools" << "Plugins" << "Help";
 
 	createAction("open_file", tr("Open a file..."), "File", QKeySequence(Qt::CTRL + Qt::Key_O));
 	#ifdef Q_OS_MAC
 	createAction("close_window", tr("Close window"), "File", QKeySequence(Qt::CTRL + Qt::Key_W));
 	#endif
+	createAction("undo", tr("Undo"), "Edit", QKeySequence("Ctrl+Z"));
 	createAction("next", tr("Next"), "View", QKeySequence(Qt::Key_Right), QKeySequence("Num+Right"));
 	createAction("previous", tr("Previous"), "View", QKeySequence(Qt::Key_Left), QKeySequence("Num+Left"));
 	createAction("zoom_in", tr("Zoom In"), "View", QKeySequence(Qt::Key_Plus));
@@ -162,14 +215,14 @@ void Application::setupActions() {
 		Plugin* plugin = plugins[i];
 		for (unsigned int j = 0; j < plugin->actions().size(); j++) {
 			Action* action = plugin->actions()[j];
-			registerAction(action->menu(), action);
+			registerAction("Plugins", action);
 		}
 	}
 
 	menuBar_ = new QMenuBar(mainWindow_);
 
-	for(QStringQMenuMap::const_iterator i = menus_.begin(); i != menus_.end(); ++i) {
-		menuBar_->addMenu(i->second);
+	for (int i = 0; i < menuOrder.size(); i++) {
+		menuBar_->addMenu(menus_[menuOrder[i]]);
 	}
 
 	refreshActionShortcuts();
@@ -182,8 +235,8 @@ void Application::refreshActionShortcuts() {
 	ActionVector actions = this->actions();
 	for (unsigned int i = 0; i < actions.size(); i++) {
 		Action* action = actions[i];
-		if (settings.contains(action->name())) {
-			QString shortcutString = settings.value(action->name()).toString();
+		if (settings.contains(action->id())) {
+			QString shortcutString = settings.value(action->id()).toString();
 			QKeySequence kv(shortcutString);
 			action->setShortcut(kv);
 		} else {
@@ -194,10 +247,10 @@ void Application::refreshActionShortcuts() {
 	settings.endGroup();
 }
 
-Action* Application::actionByName(const QString& actionName) const {
+Action* Application::actionById(const QString& actionId) const {
 	for (unsigned int i = 0; i < builtinActions_.size(); i++) {
 		Action* action = builtinActions_[i];
-		if (action->name() == actionName) return action;
+		if (action->id() == actionId) return action;
 	}
 
 	PluginVector plugins = pluginManager()->plugins();
@@ -205,7 +258,7 @@ Action* Application::actionByName(const QString& actionName) const {
 		Plugin* plugin = plugins[i];
 		for (unsigned int j = 0; j < plugin->actions().size(); j++) {
 			Action* action = plugin->actions()[j];
-			if (action->name() == actionName) return action;
+			if (action->id() == actionId) return action;
 		}
 	}
 
@@ -214,7 +267,7 @@ Action* Application::actionByName(const QString& actionName) const {
 
 Action* Application::createAction(const QString& name, const QString& text, const QString& menu, const QKeySequence& shortcut1, const QKeySequence& shortcut2) {
 	Action* action = new Action();
-	action->setName(name);
+	action->setId(name);
 	action->setText(text);
 
 	QList<QKeySequence> shortcuts;
@@ -318,8 +371,8 @@ QString Application::shortcutAction(const QKeySequence& shortcut) const {
 		if (a->supports(shortcut)) {
 			// Now also check if the shortcut has been overridden by a blank shortcut (which means
 			// this action cannot be started via a shortcut)
-			if (noopActions.contains(a->name())) return "";
-			return a->name();
+			if (noopActions.contains(a->id())) return "";
+			return a->id();
 		}
 	}
 
@@ -333,7 +386,7 @@ QKeySequence Application::actionShortcut(const QString &actionName) const {
 	Action* action = NULL;
 	for (unsigned int i = 0; i < actions.size(); i++) {
 		Action* a = actions[i];
-		if (a->name() == actionName) {
+		if (a->id() == actionName) {
 			action = a;
 			break;
 		}
@@ -464,6 +517,11 @@ void Application::execAction(const QString& actionName) {
 		return;
 	}
 
+	if (actionName == "undo") {
+		undo();
+		return;
+	}
+
 	pluginManager_->onAction(actionName);
 }
 
@@ -475,7 +533,7 @@ void Application::mainWindow_keypressed(QKeyEvent* event) {
 
 void Application::mainWindow_actionTriggered() {
 	Action* action = dynamic_cast<Action*>(sender());
-	QString name = action->name();
+	QString name = action->id();
 	execAction(name);
 }
 
@@ -484,6 +542,7 @@ void Application::onZoomChange() {
 }
 
 void Application::onSourceChange() {
+	undoVector_.clear();
 	preloadTimer_->stop();
 
 	if (fsWatcher_.files().size()) fsWatcher_.removePaths(fsWatcher_.files());

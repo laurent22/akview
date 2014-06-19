@@ -1,7 +1,22 @@
 {
-	"name": "JPEG Tools",
+	"name": "JPEG Lossless Operations",
 	"description": "JPEG tools for lossless operations",
 	"version": "1.0.0",
 	"manifest_version": 1,
-	"min_engine_version": "1"
+	"min_engine_version": "1",
+	"actions": [
+		{
+			"id": "jpeg_auto_rotate",
+			"title": "JPEG lossless auto-rotation",
+			"dependencies": [
+				{ "command": "jhead" },
+				{ "command": "jpegtran", "package": "libjpeg" }
+			],
+			"win_dependencies": [
+				{ "command": "jhead" },
+				{ "command": "jpegtran" }
+			],
+			"shortcuts": [ "Ctrl + Shift + O" ]
+		}
+	]
 }
