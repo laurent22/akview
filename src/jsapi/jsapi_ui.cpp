@@ -13,6 +13,7 @@
 #include <QSpinBox>
 
 #include "../messageboxes.h"
+#include "../scriptutil.h"
 
 namespace jsapi {
 
@@ -259,14 +260,6 @@ QObject* Ui::newFormElement(const QString& type, const QString& name, const QStr
 	return dynamic_cast<QObject*>(e);
 }
 
-QScriptValue Ui::variantToScriptValue(const QVariant& v) const {
-	if (v.type() == QVariant::String) return QScriptValue(v.toString());
-	if (v.type() == QVariant::Int) return QScriptValue(v.toInt());
-	if (v.type() == QVariant::Bool) return QScriptValue(v.toBool());
-	if (v.type() == QVariant::Double) return QScriptValue(v.toDouble());
-	return engine_->newVariant(v);
-}
-
 QString Ui::messageBox(const QString& message, const QString& type) {
 	if (type == "info") {
 		mv::messageBoxes::info(message);
@@ -307,7 +300,7 @@ QScriptValue Ui::form(const QScriptValue& form, const QString& title) {
 	formElements = dialog.formElements();
 	for (unsigned int i = 0; i < formElements.size(); i++) {
 		FormElement* e = formElements[i];
-		output.setProperty(e->name(), variantToScriptValue(e->value()));
+		output.setProperty(e->name(), mv::scriptutil::variantToScriptValue(e->value()));
 	}
 
 	return output;

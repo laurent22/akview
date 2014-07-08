@@ -13,6 +13,7 @@
 #include "jsapi/jsapi_console.h"
 #include "jsapi/jsapi_fileinfo.h"
 #include "jsapi/jsapi_input.h"
+#include "jsapi/jsapi_plugin.h"
 #include "jsapi/jsapi_ui.h"
 #include "jsapi/jsapi_system.h"
 
@@ -125,6 +126,9 @@ void PluginManager::onAction(const QString& actionName) {
 			app->mainWindow()->pixmap()->size()
 		);
 		scriptEngine_->globalObject().setProperty("input", scriptEngine_->newQObject(jsInput));
+
+		QObject* jsPlugin = new jsapi::Plugin(scriptEngine_, plugin, action);
+		scriptEngine_->globalObject().setProperty("plugin", scriptEngine_->newQObject(jsPlugin));
 
 		QString scriptFilePath = plugin->actionScriptFilePath(action->id());
 		QFile scriptFile(scriptFilePath);

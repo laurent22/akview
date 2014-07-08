@@ -7,6 +7,7 @@ function buildForm() {
 		{ title: "Pixels", value: "pixels" },
 		{ title: "Percent", value: "percent" }
 	];
+	e.value = plugin.setting("resize/unit", "pixels");
 	form.push(e);
 
 	e = ui.newFormElement("text", "width", "Width");
@@ -18,6 +19,7 @@ function buildForm() {
 	form.push(e);
 
 	e = ui.newFormElement("checkbox", "preserveAspectRatio", "Preserve aspect ratio", "If this option is selected, enter either the width or height. The other dimension will be automatically calculated.");
+	e.value = plugin.setting("resize/preserveAspectRatio", true);
 	form.push(e);
 
 	return form;
@@ -70,6 +72,12 @@ function main() {
 
 		application.pushUndoState();
 		system.exec("mogrify -resize " + w + "x" + h + "! " + input.escapedFilePath);
+
+		for (var n in result) {
+			if (n == "width" || n == "height") continue;
+			plugin.setSetting("resize/" + n, result[n]);
+		}
+
 		break;
 	}
 }

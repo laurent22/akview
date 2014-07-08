@@ -22,6 +22,7 @@ HEADERS += \
 	pluginmanager.h \
 	preferencesdialog.h \
 	processutil.h \
+	scriptutil.h \
 	settings.h \
 	simplefunctions.h \
 	simpletypes.h \
@@ -33,6 +34,7 @@ HEADERS += \
     jsapi/jsapi_console.h \
     jsapi/jsapi_fileinfo.h \
     jsapi/jsapi_input.h \
+    jsapi/jsapi_plugin.h \
     jsapi/jsapi_ui.h \
     jsapi/jsapi_system.h
 	
@@ -50,6 +52,7 @@ SOURCES += main.cpp \
 	preferencesdialog.cpp \
 	processutil.cpp \
 	settings.cpp \
+	scriptutil.cpp \
 	stringutil.cpp \
 	version.cpp \
     mainwindow.cpp \
@@ -58,6 +61,7 @@ SOURCES += main.cpp \
     jsapi/jsapi_console.cpp \
     jsapi/jsapi_fileinfo.cpp \
     jsapi/jsapi_input.cpp \
+    jsapi/jsapi_plugin.cpp \
     jsapi/jsapi_ui.cpp \
     jsapi/jsapi_system.cpp
 

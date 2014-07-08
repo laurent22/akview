@@ -12,6 +12,8 @@ namespace mv {
 
 Plugin::Plugin(const QString& pluginFolderPath) {
 	pluginFolderPath_ = pluginFolderPath;
+	id_ = QFileInfo(pluginFolderPath).fileName();
+	qDebug() << id_;
 }
 
 bool Plugin::load() {
@@ -90,6 +92,10 @@ bool Plugin::loadActions() {
 	// }
 
 	return true;
+}
+
+QString Plugin::id() const {
+	return id_;
 }
 
 QString Plugin::errorMessage() const {

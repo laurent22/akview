@@ -12,6 +12,7 @@ public:
 
 	Plugin(const QString &pluginFolderPath);
 	bool load();
+	QString id() const;
 	QString errorMessage() const;
 	QString description() const;
 	QString version() const;
@@ -25,6 +26,7 @@ private:
 	bool loadManifest();
 	bool loadActions();
 
+	QString id_;
 	QString errorMessage_;
 	QString pluginFolderPath_;
 	QJsonObject manifest_;

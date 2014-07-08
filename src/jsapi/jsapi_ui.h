@@ -105,7 +105,6 @@ private:
 
 	QScriptEngine* engine_;
 	bool formElementRegistered_;
-	QScriptValue variantToScriptValue(const QVariant& v) const;
 
 };
 
