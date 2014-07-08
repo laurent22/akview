@@ -2,6 +2,7 @@
 #define MV_JSAPI_CONSOLE_H
 
 #include <QDebug>
+#include <QScriptValue>
 
 namespace jsapi {
 
@@ -20,6 +21,7 @@ public slots:
 	void info(const QString& s);
 	void warn(const QString& s);
 	void error(const QString& s);
+	void dir(const QScriptValue& v);
 	void showLastOutput();
 	void show();
 	void hide();
@@ -27,6 +29,7 @@ public slots:
 private:
 
 	int savedScrollValue_;
+	QString dir_(const QScriptValue& v, int indent);
 
 };
 
