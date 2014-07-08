@@ -46,7 +46,7 @@ function main() {
 		}
 
 		if ((w !== null && w < 1) || (h !== null && h < 1)) {
-			ui.messageBox("Width and height must be greated than 1.");
+			ui.messageBox("Width and/or height must be greated than 1.");
 			continue;
 		}
 
