@@ -13,6 +13,7 @@
 #include "jsapi/jsapi_console.h"
 #include "jsapi/jsapi_fileinfo.h"
 #include "jsapi/jsapi_input.h"
+#include "jsapi/jsapi_ui.h"
 #include "jsapi/jsapi_system.h"
 
 namespace mv {
@@ -106,17 +107,23 @@ void PluginManager::onAction(const QString& actionName) {
 			QObject* jsApplication = new jsapi::Application(scriptEngine_);
 			jsConsole_ = new jsapi::Console();
 			QObject* jsFileInfo = new jsapi::FileInfo();
+			QObject* jsUi = new jsapi::Ui(scriptEngine_);
 			QObject* jsSystem = new jsapi::System(scriptEngine_);
 			scriptEngine_->globalObject().setProperty("application", scriptEngine_->newQObject(jsApplication));
 			scriptEngine_->globalObject().setProperty("console", scriptEngine_->newQObject(jsConsole_));
 			scriptEngine_->globalObject().setProperty("fileinfo", scriptEngine_->newQObject(jsFileInfo));
+			scriptEngine_->globalObject().setProperty("ui", scriptEngine_->newQObject(jsUi));
 			scriptEngine_->globalObject().setProperty("system", scriptEngine_->newQObject(jsSystem));
 		}
 
 		jsapi::Console* c = (jsapi::Console*)jsConsole_;
 		c->saveVScrollValue(app->mainWindow()->console()->documentSize().height());
 
-		QObject* jsInput = new jsapi::Input(scriptEngine_, QStringList() << app->source(), app->mainWindow()->selectionRect());
+		QObject* jsInput = new jsapi::Input(
+			scriptEngine_,
+			QStringList() << app->source(), app->mainWindow()->selectionRect(),
+			app->mainWindow()->pixmap()->size()
+		);
 		scriptEngine_->globalObject().setProperty("input", scriptEngine_->newQObject(jsInput));
 
 		QString scriptFilePath = plugin->actionScriptFilePath(action->id());

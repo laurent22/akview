@@ -17,7 +17,7 @@ public slots:
 
 	void pushUndoState();
 	void popUndoState();
-	void showConsole(bool doShow = true);
+	// void form(const QScriptValue& form);
 
 private:
 

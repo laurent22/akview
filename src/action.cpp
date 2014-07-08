@@ -50,15 +50,16 @@ Action::Action(const QJsonObject &jsonObject): QAction(NULL) {
 QJsonValue Action::perOsValue(const QJsonObject& jsonObject, const QString& name) const {
 	QJsonValue output;
 #ifdef Q_OS_MAC
-	output = jsonObject.value("osx_" + name);
+	QString key = "osx_" + name;
 #elif defined(Q_OS_WIN)
-	output = jsonObject.value("win_" + name);
+	QString key = "win_" + name;
 #elif defined(Q_OS_LINUX)
-	output = jsonObject.value("linux_" + name);
+	QString key = "linux_" + name;
 #else
 #error Unsupported OS
 #endif
-	return output.isNull() ? jsonObject.value(name) : output;
+	if (jsonObject.contains(key)) return jsonObject.value(key);
+	return jsonObject.value(name);
 }
 
 bool Action::showConsole() const {

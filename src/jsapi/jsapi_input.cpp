@@ -2,10 +2,11 @@
 
 namespace jsapi {
 
-Input::Input(QScriptEngine* engine, const QStringList& filePaths, const QRect& selectionRect) {
+Input::Input(QScriptEngine* engine, const QStringList& filePaths, const QRect& selectionRect, const QSize& imageSize) {
 	engine_ = engine;
 	filePaths_ = filePaths;
 	selectionRect_ = selectionRect;
+	imageSize_ = imageSize;
 }
 
 QString Input::filePath() const {
@@ -47,6 +48,13 @@ QString Input::escapePath(const QString& path) const {
 	output.replace("\"", "\\\"");
 	output = "\"" + output + "\"";
 	return output;
+}
+
+QScriptValue Input::imageSize() const {
+	QScriptValue v = engine_->newObject();
+	v.setProperty("width", imageSize_.width());
+	v.setProperty("height", imageSize_.height());
+	return v;
 }
 
 }

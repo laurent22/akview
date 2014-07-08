@@ -25,15 +25,18 @@ QString Console::dir_(const QScriptValue& v, int indent) {
 	} else if (v.isNumber()) {
 		output = v.toString();
 	} else if (v.isObject()) {
+		bool isArray = v.isArray();
 		QScriptValueIterator it(v);
 		while (it.hasNext()) {
 			it.next();
 			if (output != "") output += "\n";
+			if (isArray && it.name() == "length") continue;
 			indent = !indent ? 1 : indent;
 			for (int i = 0; i < indent; i++) output += "    ";
 			output += it.name() + " : " + dir_(it.value(), indent + 1);
 		}
-		output = output != "" ? "Object\n" + output : "Object";
+		QString typeName = isArray ? "<Array>" : "<Object>";
+		output = output != "" ? typeName + "\n" + output : typeName;
 	}
 
 	return output;

@@ -33,6 +33,7 @@ HEADERS += \
     jsapi/jsapi_console.h \
     jsapi/jsapi_fileinfo.h \
     jsapi/jsapi_input.h \
+    jsapi/jsapi_ui.h \
     jsapi/jsapi_system.h
 	
 SOURCES += main.cpp \
@@ -57,6 +58,7 @@ SOURCES += main.cpp \
     jsapi/jsapi_console.cpp \
     jsapi/jsapi_fileinfo.cpp \
     jsapi/jsapi_input.cpp \
+    jsapi/jsapi_ui.cpp \
     jsapi/jsapi_system.cpp
 
 RESOURCES += resources.qrc

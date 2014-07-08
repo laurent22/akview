@@ -374,6 +374,10 @@ void MainWindow::setRotation(int v) {
 	invalidate();
 }
 
+QPixmap* MainWindow::pixmap() const {
+	return pixmap_;
+}
+
 int MainWindow::rotation() const {
 	return rotation_;
 }

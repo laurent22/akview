@@ -78,6 +78,7 @@ public:
 	void setStatusItem(const QString& name, const QString& value);
 	int zoomIndex() const;
 	QPixmap* loadSource(const QString& sourcePath);
+	QPixmap* pixmap() const;
 	mv::ConsoleWidget* console() const;
 	void showConsole(bool doShow = true);
 	void toggleConsole();

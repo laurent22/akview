@@ -1,0 +1,16 @@
+{
+	"name": "Transformation tools",
+	"version": "1.0.0",
+	"manifest_version": 1,
+	"min_engine_version": "1",
+	"actions": [
+		{
+			"id": "resize",
+			"title": "Resize...",
+			"shortcuts": [ "Ctrl+R" ],
+			"dependencies": [
+				{ "command": "mogrify", "package": "imagemagick" }
+			]
+		}
+	]
+}

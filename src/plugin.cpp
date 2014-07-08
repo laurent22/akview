@@ -28,7 +28,7 @@ bool Plugin::loadManifest() {
 		errorMessage_ = QString("cannot open manifest file at \"%1\"").arg(filePath);
 		return false;
 	}
-
+	
 	QJsonDocument doc(QJsonDocument::fromJson(file.readAll()));
 	if (doc.isNull()) {
 		errorMessage_ = QString("JSON document at \"%1\" is not valid").arg(filePath);
