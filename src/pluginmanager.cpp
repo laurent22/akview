@@ -120,10 +120,11 @@ void PluginManager::onAction(const QString& actionName) {
 		jsapi::Console* c = (jsapi::Console*)jsConsole_;
 		c->saveVScrollValue(app->mainWindow()->console()->documentSize().height());
 
+		QPixmap* pixmap = app->mainWindow()->pixmap();
 		QObject* jsInput = new jsapi::Input(
 			scriptEngine_,
 			QStringList() << app->source(), app->mainWindow()->selectionRect(),
-			app->mainWindow()->pixmap()->size()
+			pixmap ? pixmap->size() : QSize()
 		);
 		scriptEngine_->globalObject().setProperty("input", scriptEngine_->newQObject(jsInput));
 
