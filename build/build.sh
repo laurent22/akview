@@ -43,6 +43,8 @@ fn_runAction() {
 	mkdir -p "$BUILD_DIR"
 	cd "$BUILD_DIR"
 
+	rm -rf $BUILD_DIR/$(fn_appName $ACTION)
+
 	if [ "$ACTION" == "debug" ]; then
 		$QMAKE $PROJECT_FILE -r -spec macx-clang CONFIG+=x86_64 CONFIG+=debug
 	elif [ "$ACTION" == "release" ]; then
@@ -58,7 +60,6 @@ fn_runAction() {
 	fn_exitOnError $?
 
 	if [ "$ACTION" == "debugrelease" ]; then
-		rm -rf $BUILD_DIR/$(fn_appName "debugrelease")
 		mv $BUILD_DIR/$(fn_appName "debug") $BUILD_DIR/$(fn_appName "debugrelease")
 	fi
 
