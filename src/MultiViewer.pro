@@ -9,6 +9,10 @@ PRECOMPILED_HEADER = stable.h
 CONFIG(debug, debug|release):TARGET = MultiViewer-debug
 CONFIG(release, debug|release):TARGET = MultiViewer
 
+equals(AK_IS_DEBUGRELEASE, "1") {
+	DEFINES += "AK_IS_DEBUGRELEASE"
+}
+
 HEADERS += \
 	action.h \
 	actionlistitemwidget.h \

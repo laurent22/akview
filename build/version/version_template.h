@@ -17,8 +17,6 @@
 #define VER_PRODUCTNAME_STR         "MultiViewer"
 #define VER_DOMAIN_STR              "mv-project.org"
 
-#include <QString>
-
 namespace mv {
 namespace version {
 

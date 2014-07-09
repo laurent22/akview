@@ -91,7 +91,7 @@ void Application::initialize() {
 
 	mainWindow_->show();
 
-#ifdef QT_DEBUG
+#if defined(QT_DEBUG) && !defined(AK_IS_DEBUGRELEASE)
 	mainWindow_->showConsole(true);
 #endif
 

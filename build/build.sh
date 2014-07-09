@@ -50,7 +50,7 @@ fn_runAction() {
 	elif [ "$ACTION" == "release" ]; then
 		$QMAKE $PROJECT_FILE -r -spec macx-clang CONFIG+=x86_64
 	elif [ "$ACTION" == "debugrelease" ]; then
-		$QMAKE $PROJECT_FILE -r -spec macx-clang CONFIG+=x86_64 CONFIG+=debug
+		$QMAKE $PROJECT_FILE -r -spec macx-clang CONFIG+=x86_64 CONFIG+=debug AK_IS_DEBUGRELEASE=1
 	fi
 
 	fn_exitOnError $?
