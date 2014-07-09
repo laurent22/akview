@@ -1,0 +1,17 @@
+{
+	"name": "Info",
+	"description": "Get information about a file.",
+	"version": "1.0.0",
+	"manifest_version": 1,
+	"min_engine_version": "1",
+	"actions": [
+		{
+			"id": "get_info",
+			"title": "Get Info",
+			"dependencies": [
+				{ "command": "identify", "package": "imagemagick" }
+			],
+			"shortcuts": [ "Ctrl + I" ]
+		}
+	]
+}
