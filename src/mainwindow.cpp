@@ -262,13 +262,13 @@ void MainWindow::setStatusItem(const QString& name, const QString& value) {
 
 	if (statusLabels_.find(name) == statusLabels_.end()) {
 		label = new QLabel(this);
-		statusBar()->insertPermanentWidget(0, label);	
+		statusBar()->insertPermanentWidget(0, label);
 		statusLabels_[name] = label;	
 	} else {
 		label = statusLabels_[name];
 	}
 	
-	label->setText(value);
+	label->setText(" " + value + " ");
 }
 
 void MainWindow::doLoopAnimation() {

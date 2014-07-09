@@ -83,6 +83,7 @@ void Application::initialize() {
 
 	setupActions();
 
+	mainWindow_->setStatusItem("dimensions", "-x-");
 	mainWindow_->setStatusItem("counter", "#-/-");
 	mainWindow_->setStatusItem("zoom", "Zoom: 100%");
 
@@ -568,6 +569,10 @@ void Application::onSourceChange() {
 	setWindowTitle(QFileInfo(source_).fileName());
 	QString counter = QString("#%1/%2").arg(sourceIndex() + 1).arg(sources().size());
 	mainWindow_->setStatusItem("counter", counter);
+	
+	QPixmap* pixmap = mainWindow_->pixmap();
+	QString sizeString = pixmap ? QString("%1x%2").arg(pixmap->width()).arg(pixmap->height()) : "";
+	mainWindow_->setStatusItem("dimensions", sizeString);
 
 	preloadTimer_->start();
 }
