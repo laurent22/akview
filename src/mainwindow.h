@@ -1,19 +1,6 @@
 #ifndef MAINWINDOW_H
 #define MAINWINDOW_H
 
-#include <QCache>
-#include <QMainWindow>
-#include <QDragEnterEvent>
-#include <QDropEvent>
-#include <QDragMoveEvent>
-#include <QGraphicsScene>
-#include <QGraphicsView>
-#include <QGraphicsPixmapItem>
-#include <QGraphicsRectItem>
-#include <QShowEvent>
-#include <QSplitter>
-#include <QTimer>
-
 #include "consolewidget.h"
 #include "simpletypes.h"
 

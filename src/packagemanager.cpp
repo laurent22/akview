@@ -1,8 +1,5 @@
 #include "packagemanager.h"
 
-#include <QDebug>
-#include <QProcess>
-
 #include "application.h"
 #include "processutil.h"
 

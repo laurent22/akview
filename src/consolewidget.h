@@ -1,8 +1,6 @@
 #ifndef MV_CONSOLEWIDGET_H
 #define MV_CONSOLEWIDGET_H
 
-#include <QPlainTextEdit>
-
 namespace mv {
 
 class ConsoleWidget: public QWidget {

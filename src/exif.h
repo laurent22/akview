@@ -1,9 +1,6 @@
 #ifndef MV_EXIF_H
 #define MV_EXIF_H
 
-#include <FreeImage.h>
-#include <QString>
-
 namespace mv {
 
 class Exif {

@@ -1,8 +1,5 @@
 #include <version.h>
 
-#include <QString>
-#include <QStringList>
-
 namespace mv {
 namespace version {
 

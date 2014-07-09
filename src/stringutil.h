@@ -1,8 +1,6 @@
 #ifndef STRINGUTIL_H
 #define STRINGUTIL_H
 
-#include <QString>
-
 namespace mv {
 
 namespace stringutil {

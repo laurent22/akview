@@ -1,9 +1,3 @@
-#include <QDebug>
-#include <QDir>
-#include <QMessageBox>
-#include <QPluginLoader>
-#include <QProcess>
-
 #include "action.h"
 #include "application.h"
 #include "messageboxes.h"

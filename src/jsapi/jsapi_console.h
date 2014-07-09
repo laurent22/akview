@@ -1,9 +1,6 @@
 #ifndef MV_JSAPI_CONSOLE_H
 #define MV_JSAPI_CONSOLE_H
 
-#include <QDebug>
-#include <QScriptValue>
-
 namespace jsapi {
 
 class Console : public QObject {

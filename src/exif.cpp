@@ -1,8 +1,5 @@
 #include "exif.h"
 
-#include <QDebug>
-#include <QFileInfo>
-
 namespace mv {
 
 Exif::Exif(const QString& filePath) {

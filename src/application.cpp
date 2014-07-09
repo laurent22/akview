@@ -1,12 +1,3 @@
-#include <QCommandLineParser>
-#include <QDebug>
-#include <QFileDialog>
-#include <QFileOpenEvent>
-#include <QMenuBar>
-#include <QMessageBox>
-#include <QProcess>
-#include <QUrl>
-
 #include "application.h"
 #include "constants.h"
 #include "exif.h"

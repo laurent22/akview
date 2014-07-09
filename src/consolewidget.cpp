@@ -1,9 +1,5 @@
 #include "consolewidget.h"
 
-#include <QFontDatabase>
-#include <QScrollBar>
-#include <QVBoxLayout>
-
 namespace mv {
 
 ConsoleWidget::ConsoleWidget(QWidget* parent) : QWidget(parent) {

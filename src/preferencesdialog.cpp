@@ -4,9 +4,6 @@
 #include "application.h"
 #include "settings.h"
 
-#include <QDebug>
-#include <QKeySequence>
-
 PreferencesDialog::PreferencesDialog(QWidget *parent) : QDialog(parent), ui(new Ui::PreferencesDialog) {
 	ui->setupUi(this);
 

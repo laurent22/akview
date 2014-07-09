@@ -2,12 +2,6 @@
 #include "stringutil.h"
 #include "version.h"
 
-#include <QDir>
-#include <QDebug>
-#include <QFileInfo>
-#include <QJsonDocument>
-#include <QPluginLoader>
-
 namespace mv {
 
 Plugin::Plugin(const QString& pluginFolderPath) {

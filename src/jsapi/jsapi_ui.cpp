@@ -1,17 +1,5 @@
 #include "jsapi_ui.h"
 
-#include <QDebug>
-#include <QDialog>
-#include <QLineEdit>
-#include <QFormLayout>
-#include <QComboBox>
-#include <QCheckBox>
-#include <QLabel>
-#include <QVBoxLayout>
-#include <QDialogButtonBox>
-#include <QMessageBox>
-#include <QSpinBox>
-
 #include "../messageboxes.h"
 #include "../scriptutil.h"
 

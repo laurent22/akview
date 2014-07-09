@@ -1,8 +1,6 @@
 #ifndef PLUGINMANAGER_H
 #define PLUGINMANAGER_H
 
-#include <QScriptEngine>
-
 #include "plugin.h"
 
 namespace mv {

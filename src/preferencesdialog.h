@@ -1,10 +1,6 @@
 #ifndef PREFERENCESDIALOG_H
 #define PREFERENCESDIALOG_H
 
-#include <QDialog>
-#include <QListWidgetItem>
-#include <QShowEvent>
-
 #include "actionlistitemwidget.h"
 #include "pluginmanager.h"
 #include "simpletypes.h"

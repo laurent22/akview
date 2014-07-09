@@ -1,7 +1,5 @@
 #include "action.h"
 
-#include <QDebug>
-
 namespace mv {
 
 Action::Action(): QAction(NULL) {}

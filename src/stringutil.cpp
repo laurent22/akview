@@ -1,7 +1,5 @@
 #include "stringutil.h"
 
-#include <QStringList>
-
 namespace mv {
 namespace stringutil {
 

@@ -1,7 +1,5 @@
 #include "jsapi_system.h"
 
-#include <QDebug>
-
 namespace jsapi {
 
 System::System(QScriptEngine* engine) {

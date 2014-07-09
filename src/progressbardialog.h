@@ -1,8 +1,6 @@
 #ifndef PROGRESSBARDIALOG_H
 #define PROGRESSBARDIALOG_H
 
-#include <QDialog>
-
 namespace Ui {
 class ProgressBarDialog;
 }

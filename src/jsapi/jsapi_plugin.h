@@ -1,16 +1,8 @@
 #ifndef JSAPI_PLUGIN_H
 #define JSAPI_PLUGIN_H
 
-#include <QScriptEngine>
-#include <QScriptValue>
-
 #include "../action.h"
 #include "../plugin.h"
-
-// namespace mv {
-// 	class Plugin;
-// 	class Action;
-// }
 
 namespace jsapi {
 

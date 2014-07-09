@@ -1,8 +1,6 @@
 #include "jsapi_console.h"
 #include "../application.h"
 
-#include <QScriptValueIterator>
-
 namespace jsapi {
 
 Console::Console() {}

@@ -1,11 +1,6 @@
 #ifndef MV_PACKAGEMANAGER_H
 #define MV_PACKAGEMANAGER_H
 
-#include <vector>
-#include <QProcess>
-#include <QString>
-#include <QStringList>
-
 #include "progressbardialog.h"
 
 namespace mv {

@@ -1,8 +1,6 @@
 #ifndef JSAPI_APPLICATION_H
 #define JSAPI_APPLICATION_H
 
-#include <QScriptEngine>
-
 namespace jsapi {
 
 class Application : public QObject {

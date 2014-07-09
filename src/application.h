@@ -1,13 +1,6 @@
 #ifndef APPLICATION_H
 #define APPLICATION_H
 
-#include <QApplication>
-#include <QByteArray>
-#include <QFileSystemWatcher>
-#include <QKeyEvent>
-#include <QList>
-#include <QTimer>
-
 #include "iapplication.h" // remove
 
 #include "action.h"

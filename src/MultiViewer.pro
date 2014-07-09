@@ -2,6 +2,10 @@ TEMPLATE = app
 
 QT += widgets script
 
+CONFIG += precompile_header
+
+PRECOMPILED_HEADER = stable.h
+
 CONFIG(debug, debug|release):TARGET = MultiViewer-debug
 CONFIG(release, debug|release):TARGET = MultiViewer
 

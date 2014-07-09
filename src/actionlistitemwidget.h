@@ -1,9 +1,6 @@
 #ifndef MV_ACTIONLISTWIDGETITEM_H
 #define MV_ACTIONLISTWIDGETITEM_H
 
-#include <QKeySequence>
-#include <QListWidgetItem>
-
 #include "action.h"
 
 namespace mv {

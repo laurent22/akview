@@ -1,7 +1,5 @@
 #include "scriptutil.h"
 
-#include <QDebug>
-
 namespace mv {
 namespace scriptutil {
 

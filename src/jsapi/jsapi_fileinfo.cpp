@@ -1,7 +1,5 @@
 #include "jsapi_fileinfo.h"
 
-#include <QFileInfo>
-
 namespace jsapi {
 
 FileInfo::FileInfo() {}

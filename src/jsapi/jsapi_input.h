@@ -1,12 +1,6 @@
 #ifndef MV_JSAPI_INPUT_H
 #define MV_JSAPI_INPUT_H
 
-#include <QObject>
-#include <QPixmap>
-#include <QScriptEngine>
-#include <QScriptValue>
-#include <QRect>
-
 namespace jsapi {
 
 class Input : public QObject {

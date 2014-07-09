@@ -1,10 +1,6 @@
 #ifndef MV_JSAPI_UI_H
 #define MV_JSAPI_UI_H
 
-#include <QDialog>
-#include <QScriptEngine>
-#include <QVariant>
-
 namespace jsapi {
 
 class FormElement : public QObject {

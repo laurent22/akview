@@ -1,10 +1,6 @@
 #ifndef MV_ACTION_H
 #define MV_ACTION_H
 
-#include <QAction>
-#include <QJsonArray>
-#include <QJsonObject>
-
 #include "pluginevents.h"
 
 namespace mv {

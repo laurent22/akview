@@ -1,8 +1,6 @@
 #ifndef MV_JSAPI_FILEINFO_H
 #define MV_JSAPI_FILEINFO_H
 
-#include <QObject>
-
 namespace jsapi {
 
 class FileInfo : public QObject {

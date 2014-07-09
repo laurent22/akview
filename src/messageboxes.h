@@ -1,9 +1,6 @@
 #ifndef MESSAGEBOXES_H
 #define MESSAGEBOXES_H
 
-#include <QObject>
-#include <QString>
-
 namespace mv {
 
 namespace messageBoxes {

@@ -1,8 +1,5 @@
 #include "messageboxes.h"
 
-#include <QMessageBox>
-#include <QPushButton>
-
 namespace mv {
 
 namespace messageBoxes {

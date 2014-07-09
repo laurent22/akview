@@ -1,12 +1,6 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
 
-#include <math.h>
-
-#include <QDebug>
-#include <QMimeData>
-#include <QVariant>
-
 #include "application.h"
 #include "messageboxes.h"
 #include "settings.h"

@@ -1,10 +1,6 @@
 #ifndef MV_JSAPI_SYSTEM_H
 #define MV_JSAPI_SYSTEM_H
 
-#include <QProcess>
-#include <QScriptEngine>
-#include <QScriptValue>
-
 namespace jsapi {
 
 class System : public QObject {
