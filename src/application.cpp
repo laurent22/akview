@@ -123,9 +123,13 @@ void Application::fsWatcher_fileChanged(const QString& path) {
 			if (sources.size() == 0) {
 				setSource("");
 			} else {
-				if (sourceIndex >= sources.size()) {
+				if (sourceIndex < 0) {
+					// Shouldn't happen but sometime does. In that case, reset
+					// it to 0. Behavior won't be right but better than crashing.
+					qWarning() << "Application::fsWatcher_fileChanged: sourceIndex was" << sourceIndex;
 					sourceIndex = 0;
 				}
+				if (sourceIndex >= sources.size()) sourceIndex = 0;
 				setSource(sources[sourceIndex]);
 			}
 		} else {
@@ -218,6 +222,7 @@ void Application::setupActions() {
 	createAction("zoom_in", tr("Zoom In"), "View", QKeySequence(Qt::Key_Plus));
 	createAction("zoom_out", tr("Zoom Out"), "View", QKeySequence(Qt::Key_Minus));
 	createAction("toggle_console", tr("Toggle console"), "View", QKeySequence(Qt::Key_F12));
+	createAction("close_console", tr("Close console"), "", QKeySequence(Qt::Key_Escape));
 	createAction("about", tr("About"), "Help");
 	createAction("preferences", tr("Preferences"), "Tools");
 
@@ -510,6 +515,11 @@ void Application::execAction(const QString& actionName) {
 		int previous = mainWindow_->zoomIndex();
 		mainWindow_->zoomOut();
 		if (previous != mainWindow_->zoomIndex()) onZoomChange();
+		return;
+	}
+
+	if (actionName == "close_console") {
+		mainWindow_->showConsole(false);
 		return;
 	}
 
