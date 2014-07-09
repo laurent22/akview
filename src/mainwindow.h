@@ -3,6 +3,9 @@
 
 #include <QCache>
 #include <QMainWindow>
+#include <QDragEnterEvent>
+#include <QDropEvent>
+#include <QDragMoveEvent>
 #include <QGraphicsScene>
 #include <QGraphicsView>
 #include <QGraphicsPixmapItem>
@@ -28,9 +31,13 @@ protected:
 	void mousePressEvent(QMouseEvent* event);
 	void mouseReleaseEvent(QMouseEvent* event);
 	void mouseMoveEvent(QMouseEvent* event);
+	void dragEnterEvent(QDragEnterEvent* event);
+	void dragMoveEvent(QDragMoveEvent* event);
+	void dropEvent(QDropEvent* event);
 
 private:
 
+	QString dragDropFilePath(QDropEvent* event);
 	bool clicked_;
 
 signals:

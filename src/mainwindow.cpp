@@ -4,14 +4,17 @@
 #include <math.h>
 
 #include <QDebug>
+#include <QMimeData>
 #include <QVariant>
 
+#include "application.h"
 #include "messageboxes.h"
 #include "settings.h"
 #include "simplefunctions.h"
 
 XGraphicsView::XGraphicsView(QGraphicsScene* scene, QWidget* parent) : QGraphicsView(scene, parent) {
 	clicked_ = false;
+	setAcceptDrops(true);
 }
 
 void XGraphicsView::scrollContentsBy(int x, int y) {
@@ -33,6 +36,36 @@ void XGraphicsView::mouseReleaseEvent(QMouseEvent* event) {
 void XGraphicsView::mouseMoveEvent(QMouseEvent* event) {
 	QGraphicsView::mouseMoveEvent(event);
 	if (clicked_) emit mouseDrag(event);
+}
+
+// Will only return a non-empty string if the dropped item is supported
+QString XGraphicsView::dragDropFilePath(QDropEvent* event) {
+	QList<QUrl> urls = event->mimeData()->urls();
+	if (!urls.size()) return "";
+	QUrl url = urls[0];
+	if (!url.isLocalFile()) return "";
+	QString filePath = url.toLocalFile();
+	if (!mv::Application::instance()->isSupportedFile(filePath)) return "";
+	return filePath;
+}
+
+void XGraphicsView::dragEnterEvent(QDragEnterEvent* event) {
+	QString filePath = dragDropFilePath((QDropEvent*)event);
+	if (filePath == "") return;
+	event->acceptProposedAction();
+}
+
+void XGraphicsView::dragMoveEvent(QDragMoveEvent* event) {
+	QString filePath = dragDropFilePath((QDropEvent*)event);
+	if (filePath == "") return;
+	event->acceptProposedAction();
+}
+
+void XGraphicsView::dropEvent(QDropEvent* event) {
+	QString filePath = dragDropFilePath(event);
+	if (filePath == "") return;
+	event->acceptProposedAction();
+	mv::Application::instance()->setSource(filePath);
 }
 
 MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWindow), pixmapCache_(3) {

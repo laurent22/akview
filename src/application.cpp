@@ -625,6 +625,15 @@ QStringList Application::supportedFileExtensions() const {
 	return output;
 }
 
+bool Application::isSupportedFileExtension(const QString& extension) const {
+	QStringList extensions = supportedFileExtensions();
+	return extensions.contains(extension.toLower());
+}
+
+bool Application::isSupportedFile(const QString& filePath) const {
+	return isSupportedFileExtension(QFileInfo(filePath).suffix());
+}
+
 void Application::playLoopAnimation() {
 	mainWindow_->doLoopAnimation();
 }

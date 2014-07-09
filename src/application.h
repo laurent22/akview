@@ -88,6 +88,8 @@ public slots:
 	QString source() const;
 	void setSource(const QString& source);
 	QStringList supportedFileExtensions() const;
+	bool isSupportedFileExtension(const QString& extension) const;
+	bool isSupportedFile(const QString& filePath) const;
 
 	int sourceIndex() const;
 	void setSourceIndex(int index);

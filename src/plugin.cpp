@@ -13,7 +13,6 @@ namespace mv {
 Plugin::Plugin(const QString& pluginFolderPath) {
 	pluginFolderPath_ = pluginFolderPath;
 	id_ = QFileInfo(pluginFolderPath).fileName();
-	qDebug() << id_;
 }
 
 bool Plugin::load() {
