@@ -370,6 +370,7 @@ QPixmap* MainWindow::loadSource(const QString& sourcePath) {
 
 void MainWindow::setSource(const QString& v) {
 	if (source_ == v) return;
+	setRotation(0);
 	source_ = v;
 	pixmap_ = loadSource(source_);
 	clearSelection();
@@ -396,6 +397,8 @@ QString MainWindow::source() const {
 }
 
 void MainWindow::setRotation(int v) {
+	v = v % 360;
+	if (v < 0) v = 360 + v;
 	if (rotation_ == v) return;
 	rotation_ = v;
 	invalidate();
@@ -407,6 +410,10 @@ QPixmap* MainWindow::pixmap() const {
 
 int MainWindow::rotation() const {
 	return rotation_;
+}
+
+bool MainWindow::rotated() const {
+	return rotation_ == 90 || rotation_ == 270;
 }
 
 void MainWindow::setAutoFit(bool v) {
@@ -476,7 +483,7 @@ void MainWindow::paintEvent(QPaintEvent* event) {
 float MainWindow::fitZoom() const {
 	if (!pixmap_) return 1;
 
-	bool rotated = rotation_ != 0 && rotation_ != 360;
+	bool rotated = this->rotated();
 	QSize winSize = viewContainerSize();
 
 	int pixmapWidth = rotated ? pixmap_->height() : pixmap_->width();
@@ -500,14 +507,13 @@ void MainWindow::updateDisplay(int renderingType) {
 	if (!pixmap_) {
 		pixmapItem_->setPixmap(QPixmap());
 	} else {
-		bool rotated = rotation_ != 0 && rotation_ != 360;
-
 		// Calculate scale factor so that the picture fits within the view
-		int pixmapWidth = rotated ? pixmap_->height() : pixmap_->width();
-		int pixmapHeight = rotated ? pixmap_->width() : pixmap_->height();
+		int pixmapWidth = pixmap_->width();
+		int pixmapHeight = pixmap_->height();
 
 		// If not autofit, we use the zoom level as it was before zooming
 		// so that if the window is resized the zoom remains constant.
+		if (!beforeScaleFitZoom_) beforeScaleFitZoom_ = fitZoom();
 		float zoom = autoFit_ ? fitZoom() : beforeScaleFitZoom_;
 
 		// If we're not trying to fit the photo within the view, we apply the user supplied zoom

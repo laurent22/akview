@@ -213,6 +213,8 @@ void Application::setupActions() {
 	createAction("previous", tr("Previous"), "View", QKeySequence(Qt::Key_Left), QKeySequence("Num+Left"));
 	createAction("zoom_in", tr("Zoom In"), "View", QKeySequence(Qt::Key_Plus));
 	createAction("zoom_out", tr("Zoom Out"), "View", QKeySequence(Qt::Key_Minus));
+	createAction("rotate_right", tr("Rotate right"), "View", QKeySequence(Qt::Key_R));
+	createAction("rotate_left", tr("Rotate left"), "View", QKeySequence(Qt::Key_L));
 	createAction("toggle_console", tr("Toggle console"), "View", QKeySequence(Qt::Key_F12));
 	createAction("close_console", tr("Close console"), "", QKeySequence(Qt::Key_Escape));
 	createAction("about", tr("About"), "Help");
@@ -507,6 +509,16 @@ void Application::execAction(const QString& actionName) {
 		int previous = mainWindow_->zoomIndex();
 		mainWindow_->zoomOut();
 		if (previous != mainWindow_->zoomIndex()) onZoomChange();
+		return;
+	}
+
+	if (actionName == "rotate_right") {
+		mainWindow_->setRotation(mainWindow_->rotation() + 90);
+		return;
+	}
+
+	if (actionName == "rotate_left") {
+		mainWindow_->setRotation(mainWindow_->rotation() - 90);
 		return;
 	}
 

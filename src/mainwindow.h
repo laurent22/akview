@@ -59,6 +59,7 @@ public:
 	void doLoopAnimation();
 	void setRotation(int v);
 	int rotation() const;
+	bool rotated() const;
 	void invalidate();
 	void invalidateSelection();
 	void zoomIn();
