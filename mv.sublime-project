@@ -25,6 +25,12 @@
 			"file_regex": "^../([^:]+):([^:]+):([^:]+):\\s[a-z]+:\\s(.*)$"
 		},
 		{
+			"name": "Build Debug-Release",
+			"working_dir": "/Users/laurent/Docs/PROGS/C++/mv",
+			"cmd": ["/Users/laurent/Docs/PROGS/C++/mv/build/build.sh", "debugrelease"],
+			"file_regex": "^../([^:]+):([^:]+):([^:]+):\\s[a-z]+:\\s(.*)$"
+		},
+		{
 			"name": "Run Release",
 			"working_dir": "/Users/laurent/Docs/PROGS/C++/mv",
 			"cmd": ["/Users/laurent/Docs/PROGS/C++/mv/build/build.sh", "release", "1"],

@@ -21,14 +21,7 @@ QString Paths::pluginFolder() const {
 	QDir dir = QFileInfo(appFilePath).dir();
 
 #ifdef QT_DEBUG
-	if (appFilePath.indexOf(".app/Contents/MacOS/") >= 0) {
-		dir.cdUp();
-		dir.cdUp();
-		dir.cdUp();
-	}
-
-	dir.cdUp();
-	dir.cd("plugins/debug");
+	return QDir::homePath() + "/.config/akview/plugins";
 #else // QT_DEBUG
 
 #ifdef MV_DEBUG
