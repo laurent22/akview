@@ -40,7 +40,7 @@ function main() {
 			continue;
 		}
 
-		if (result.unit == "pixels" && (w === null || h === null)) {
+		if (!result.preserveAspectRatio && (w === null || h === null)) {
 			ui.messageBox("Both width and height must be specified.");
 			continue;
 		}
