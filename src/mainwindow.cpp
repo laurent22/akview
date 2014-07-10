@@ -139,6 +139,11 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
 	splitter_->addWidget(console_);
 	console_->hide();
 	connect(splitter_, SIGNAL(splitterMoved(int, int)), this, SLOT(splitter_splitterMoved(int, int)));
+
+	toolbar_ = new QToolBar(this);
+	toolbar_->setStyleSheet("QToolButton:hover { background-color: rgba(0, 0, 0, 10%); } QToolButton:!hover { color: rgba(0, 0, 0, 0%); }");
+
+	ui->centralwidget->layout()->addWidget(toolbar_);
 	ui->centralwidget->layout()->addWidget(splitter_);
 
 	connect(view_, SIGNAL(mousePress(QMouseEvent*)), this, SLOT(view_mousePress(QMouseEvent*)));
@@ -154,6 +159,10 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
 MainWindow::~MainWindow() {
 	// TODO: delete objects
 	delete ui;
+}
+
+QToolBar* MainWindow::toolbar() const {
+	return toolbar_;
 }
 
 void MainWindow::clearSelection() {
@@ -251,6 +260,38 @@ void MainWindow::view_mouseDrag(QMouseEvent* event) {
 
 void MainWindow::toggleConsole() {
 	showConsole(console()->isHidden());
+}
+
+void MainWindow::showStatusBar(bool doShow) {
+	if (doShow) {
+		statusBar()->show();
+	} else {
+		statusBar()->hide();
+	}
+}
+
+bool MainWindow::statusBarShown() const {
+	return !statusBar()->isHidden();
+}
+
+void MainWindow::toggleStatusBar() {
+	showStatusBar(statusBar()->isHidden());
+}
+
+void MainWindow::showToolbar(bool doShow) {
+	if (doShow) {
+		toolbar()->show();
+	} else {
+		toolbar()->hide();
+	}
+}
+
+bool MainWindow::toolbarShown() const {
+	return !toolbar()->isHidden();
+}
+
+void MainWindow::toggleToolbar() {
+	showToolbar(toolbar()->isHidden());
 }
 
 mv::ConsoleWidget* MainWindow::console() const {

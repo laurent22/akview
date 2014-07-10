@@ -1,5 +1,9 @@
 <RCC>
 	<qresource prefix="/">
 		<file>loop.png</file>
+		<file>icon_zoom_in.png</file>
+		<file>icon_zoom_out.png</file>
+		<file>icon_rotate.png</file>
+		<file>icon_next.png</file>
 	</qresource>
 </RCC>

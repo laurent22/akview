@@ -56,6 +56,8 @@ void Application::initialize() {
 	args.addPositionalArgument("file", tr("File to open."));
 	args.process(*this);
 
+	Settings settings;
+
 	preloadTimer_ = new QTimer(this);
 	preloadTimer_->setInterval(100);
 	preloadTimer_->setSingleShot(true);
@@ -87,8 +89,16 @@ void Application::initialize() {
 	mainWindow_->setStatusItem("counter", "#-/-");
 	mainWindow_->setStatusItem("zoom", "Zoom: 100%");
 
+	mainWindow_->toolbar()->addAction(actionById("zoom_in"));
+	mainWindow_->toolbar()->addAction(actionById("zoom_out"));
+	mainWindow_->toolbar()->addAction(actionById("rotate"));
+	mainWindow_->toolbar()->addAction(actionById("previous"));
+	mainWindow_->toolbar()->addAction(actionById("next"));
+
 	refreshMenu();
 
+	mainWindow_->showStatusBar(settings.value("showStatusBar").toBool());
+	mainWindow_->showToolbar(settings.value("showToolbar").toBool());
 	mainWindow_->show();
 
 #if defined(QT_DEBUG) && !defined(AK_IS_DEBUGRELEASE)
@@ -204,18 +214,26 @@ void Application::setupActions() {
 	QStringList menuOrder;
 	menuOrder << "File" << "Edit" << "View" << "Tools" << "Plugins" << "Help";
 
+	Action* action = NULL;
+
 	createAction("open_file", tr("Open a file..."), "File", QKeySequence(Qt::CTRL + Qt::Key_O));
 	#ifdef Q_OS_MAC
 	createAction("close_window", tr("Close window"), "File", QKeySequence(Qt::CTRL + Qt::Key_W));
 	#endif
 	createAction("undo", tr("Undo"), "Edit", QKeySequence("Ctrl+Z"));
-	createAction("next", tr("Next"), "View", QKeySequence(Qt::Key_Right), QKeySequence("Num+Right"));
-	createAction("previous", tr("Previous"), "View", QKeySequence(Qt::Key_Left), QKeySequence("Num+Left"));
-	createAction("zoom_in", tr("Zoom In"), "View", QKeySequence(Qt::Key_Plus));
-	createAction("zoom_out", tr("Zoom Out"), "View", QKeySequence(Qt::Key_Minus));
-	createAction("rotate_right", tr("Rotate right"), "View", QKeySequence(Qt::Key_R));
-	createAction("rotate_left", tr("Rotate left"), "View", QKeySequence(Qt::Key_L));
+	action = createAction("next", tr("Next"), "View", QKeySequence(Qt::Key_Right), QKeySequence("Num+Right"));
+	action->setIcon(QIcon(":/icon_next.png"));
+	action = createAction("previous", tr("Previous"), "View", QKeySequence(Qt::Key_Left), QKeySequence("Num+Left"));
+	action->setIcon(QIcon(QPixmap(":/icon_next.png").transformed(QTransform().scale(-1, 1))));
+	action = createAction("zoom_in", tr("Zoom In"), "View", QKeySequence(Qt::Key_Plus));
+	action->setIcon(QIcon(":/icon_zoom_in.png"));
+	action = createAction("zoom_out", tr("Zoom Out"), "View", QKeySequence(Qt::Key_Minus));
+	action->setIcon(QIcon(":/icon_zoom_out.png"));
+	action = createAction("rotate", tr("Rotate"), "View", QKeySequence(Qt::Key_R));
+	action->setIcon(QIcon(":/icon_rotate.png"));
 	createAction("toggle_console", tr("Toggle console"), "View", QKeySequence(Qt::Key_F12));
+	createAction("toggle_status_bar", tr("Toggle status bar"), "View");
+	createAction("toggle_toolbar", tr("Toggle tool bar"), "View");
 	createAction("close_console", tr("Close console"), "", QKeySequence(Qt::Key_Escape));
 	createAction("about", tr("About"), "Help");
 	createAction("preferences", tr("Preferences"), "Tools");
@@ -512,13 +530,8 @@ void Application::execAction(const QString& actionName) {
 		return;
 	}
 
-	if (actionName == "rotate_right") {
+	if (actionName == "rotate") {
 		mainWindow_->setRotation(mainWindow_->rotation() + 90);
-		return;
-	}
-
-	if (actionName == "rotate_left") {
-		mainWindow_->setRotation(mainWindow_->rotation() - 90);
 		return;
 	}
 
@@ -529,6 +542,20 @@ void Application::execAction(const QString& actionName) {
 
 	if (actionName == "toggle_console") {
 		mainWindow_->toggleConsole();
+		return;
+	}
+
+	if (actionName == "toggle_status_bar") {
+		mainWindow_->toggleStatusBar();
+		Settings settings;
+		settings.setValue("showStatusBar", mainWindow_->statusBarShown());
+		return;
+	}
+
+	if (actionName == "toggle_toolbar") {
+		mainWindow_->toggleToolbar();
+		Settings settings;
+		settings.setValue("showToolbar", mainWindow_->toolbarShown());
 		return;
 	}
 

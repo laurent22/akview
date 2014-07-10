@@ -64,6 +64,7 @@
 #include <QString>
 #include <QStringList>
 #include <QTimer>
+#include <QToolBar>
 #include <QUrl>
 #include <QVariant>
 #include <QVBoxLayout>

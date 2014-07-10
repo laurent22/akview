@@ -77,8 +77,15 @@ public:
 	mv::ConsoleWidget* console() const;
 	void showConsole(bool doShow = true);
 	void toggleConsole();
+	void showStatusBar(bool doShow = true);
+	void toggleStatusBar();
+	bool statusBarShown() const;
+	void showToolbar(bool doShow = true);
+	void toggleToolbar();
+	bool toolbarShown() const;
 	bool selectionOn() const;
 	void clearSelection();
+	QToolBar* toolbar() const;
 
 protected:
 
@@ -124,6 +131,7 @@ private:
 	QRect selectionRect_;
 	QPoint selectionP1_;
 	QPoint selectionP2_;
+	QToolBar* toolbar_;
 
 public slots:
 
