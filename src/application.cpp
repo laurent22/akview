@@ -90,8 +90,8 @@ void Application::initialize() {
 	mainWindow_->setStatusItem("counter", "#-/-");
 	mainWindow_->setStatusItem("zoom", "Zoom: 100%");
 
-	mainWindow_->toolbar()->addAction(actionById("zoom_in"));
 	mainWindow_->toolbar()->addAction(actionById("zoom_out"));
+	mainWindow_->toolbar()->addAction(actionById("zoom_in"));
 	mainWindow_->toolbar()->addAction(actionById("rotate"));
 	mainWindow_->toolbar()->addAction(actionById("previous"));
 	mainWindow_->toolbar()->addAction(actionById("next"));
