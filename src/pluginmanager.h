@@ -15,15 +15,17 @@ public:
 	bool loadPlugin(const QString& folderPath);
 	void loadPlugins(const QString& folderPath);
 	PluginVector plugins() const;
-	void onAction(const QString& actionName);
+	void execAction(const QString& actionName, const QStringList& filePaths);
 
 private:
 
 	PluginVector plugins_;
 	QString afterPackageInstallationAction_;
+	QStringList afterPackageInstallationFilePaths_;
 	QScriptEngine* scriptEngine_;
 	QStringList replaceVariables(const QStringList& command);
 	QObject* jsConsole_;
+	QObject* jsImaging_;
 
 public slots:
 

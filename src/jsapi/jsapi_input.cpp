@@ -23,12 +23,11 @@ QStringList Input::filePaths() const {
 	return filePaths_;
 }
 
-QString Input::escapedFilePaths() const {
-	QString output;
+QStringList Input::escapedFilePaths() const {
+	QStringList output;
 	for (int i = 0; i < filePaths_.size(); i++) {
 		QString f = filePaths_[i];
-		if (output != "") output += " ";
-		output += escapePath(f);
+		output.append(escapePath(f));
 	}
 	return output;
 }

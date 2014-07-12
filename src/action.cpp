@@ -2,7 +2,10 @@
 
 namespace mv {
 
-Action::Action(): QAction(NULL) {}
+Action::Action(): QAction(NULL) {
+	batchModeSupported_ = false;
+	showConsole_ = false;
+}
 
 Action::Action(const QJsonObject &jsonObject): QAction(NULL) {
 	jsonObject_ = jsonObject;
@@ -42,6 +45,9 @@ Action::Action(const QJsonObject &jsonObject): QAction(NULL) {
 		defaultShortcuts_.push_back(ks);
 	}
 
+	v = perOsValue(jsonObject, "batch_mode_supported");
+	batchModeSupported_ = v.isUndefined() ? false : v.toBool();
+
 	setShortcuts(shortcuts);
 }
 
@@ -62,6 +68,10 @@ QJsonValue Action::perOsValue(const QJsonObject& jsonObject, const QString& name
 
 bool Action::showConsole() const {
 	return showConsole_;
+}
+
+bool Action::batchModeSupported() const {
+	return batchModeSupported_;
 }
 
 bool Action::supports(const QKeySequence &keySequence) const {

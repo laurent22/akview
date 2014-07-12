@@ -25,6 +25,7 @@ public:
 	bool showConsole() const;
 	QString description() const;
 	QStringList command() const;
+	bool batchModeSupported() const;
 	void setMenu(const QString& menu);
 	void setDefaultShortcuts(const QList<QKeySequence>& v);
 	QList<QKeySequence> defaultShortcuts() const;
@@ -44,6 +45,7 @@ private:
 	QList<QKeySequence> defaultShortcuts_;
 	DependencyVector dependencies_;
 	bool showConsole_;
+	bool batchModeSupported_;
 
 };
 

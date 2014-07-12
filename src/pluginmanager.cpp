@@ -6,6 +6,7 @@
 #include "jsapi/jsapi_application.h"
 #include "jsapi/jsapi_console.h"
 #include "jsapi/jsapi_fileinfo.h"
+#include "jsapi/jsapi_imaging.h"
 #include "jsapi/jsapi_input.h"
 #include "jsapi/jsapi_plugin.h"
 #include "jsapi/jsapi_ui.h"
@@ -62,7 +63,7 @@ QStringList PluginManager::replaceVariables(const QStringList& command) {
 	return output;
 }
 
-void PluginManager::onAction(const QString& actionName) {
+void PluginManager::execAction(const QString& actionName, const QStringList& filePaths) {
 	Application* app = Application::instance();
 
 	for (unsigned int i = 0; i < plugins_.size(); i++) {
@@ -92,6 +93,7 @@ void PluginManager::onAction(const QString& actionName) {
 			app->mainWindow()->showConsole();
 
 			afterPackageInstallationAction_ = actionName;
+			afterPackageInstallationFilePaths_ = filePaths;
 			connect(packageManager, SIGNAL(installationDone()), this, SLOT(packageManager_installationDone()));
 			packageManager->install(missingPackages);
 			return;
@@ -102,11 +104,13 @@ void PluginManager::onAction(const QString& actionName) {
 			QObject* jsApplication = new jsapi::Application(scriptEngine_);
 			jsConsole_ = new jsapi::Console();
 			QObject* jsFileInfo = new jsapi::FileInfo();
+			jsImaging_ = new jsapi::Imaging(scriptEngine_);
 			QObject* jsUi = new jsapi::Ui(scriptEngine_);
 			QObject* jsSystem = new jsapi::System(scriptEngine_);
 			scriptEngine_->globalObject().setProperty("application", scriptEngine_->newQObject(jsApplication));
 			scriptEngine_->globalObject().setProperty("console", scriptEngine_->newQObject(jsConsole_));
 			scriptEngine_->globalObject().setProperty("fileinfo", scriptEngine_->newQObject(jsFileInfo));
+			scriptEngine_->globalObject().setProperty("imaging", scriptEngine_->newQObject(jsImaging_));
 			scriptEngine_->globalObject().setProperty("ui", scriptEngine_->newQObject(jsUi));
 			scriptEngine_->globalObject().setProperty("system", scriptEngine_->newQObject(jsSystem));
 		}
@@ -117,7 +121,7 @@ void PluginManager::onAction(const QString& actionName) {
 		QPixmap* pixmap = app->mainWindow()->pixmap();
 		QObject* jsInput = new jsapi::Input(
 			scriptEngine_,
-			QStringList() << app->source(), app->mainWindow()->selectionRect(),
+			filePaths, app->mainWindow()->selectionRect(),
 			pixmap ? pixmap->size() : QSize()
 		);
 		scriptEngine_->globalObject().setProperty("input", scriptEngine_->newQObject(jsInput));
@@ -139,12 +143,15 @@ void PluginManager::onAction(const QString& actionName) {
 
 		QScriptValue errorValue = scriptEngine_->uncaughtException();
 		if (errorValue.isValid()) {
-			qWarning() << qPrintable(errorValue.toString());
+			qWarning() << qPrintable(QString("%1 at line %2").arg(errorValue.toString()).arg(scriptEngine_->uncaughtExceptionLineNumber()));
 			QStringList backtrace = scriptEngine_->uncaughtExceptionBacktrace();
 			for (int i = 0; i < backtrace.size(); i++) {
 				qDebug() << qPrintable("    " + backtrace[i]);
 			}
 		}
+
+		((jsapi::Imaging*)jsImaging_)->freeMemory();
+
 		return;
 	}
 }
@@ -152,7 +159,7 @@ void PluginManager::onAction(const QString& actionName) {
 void PluginManager::packageManager_installationDone() {
 	PackageManager* packageManager = Application::instance()->packageManager();
 	disconnect(packageManager, SIGNAL(installationDone()), this, SLOT(packageManager_installationDone()));
-	onAction(afterPackageInstallationAction_);
+	execAction(afterPackageInstallationAction_, afterPackageInstallationFilePaths_);
 }
 
 }

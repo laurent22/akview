@@ -50,28 +50,36 @@ function main() {
 			continue;
 		}
 
-		var imageSize = input.imageSize;
+		// TODO: what if batching only one file?
+		if (input.escapedFilePaths.length == 1) application.pushUndoState();
 
-		if (result.unit == "pixels") {
-			// nothing to do
-		} else if (result.unit == "percent") {
-			if (w) w = Math.round(imageSize.width * (w / 100));
-			if (h) h = Math.round(imageSize.height * (h / 100));
-		} else {
-			throw new Exception("invalid unit: " + result.unit);
-		}
+		for (var i = 0; i < input.escapedFilePaths.length; i++) {
+			var image = imaging.newImage(input.filePaths[i]);
+			var imageSize = image.size;
+			var finalWidth = w;
+			var finalHeight = h;
 
-		if (result.preserveAspectRatio) {
-			var ratio = imageSize.width / imageSize.height;
-			if (w === null) {
-				w = Math.round(h * ratio);
+			if (result.unit == "pixels") {
+				// nothing to do
+			} else if (result.unit == "percent") {
+				if (finalWidth) finalWidth = Math.round(imageSize.width * (finalWidth / 100));
+				if (finalHeight) finalHeight = Math.round(imageSize.height * (finalHeight / 100));
 			} else {
-				h = Math.round(w / ratio);
+				throw new Exception("invalid unit: " + result.unit);
 			}
-		}
 
-		application.pushUndoState();
-		system.exec("mogrify -resize " + w + "x" + h + "! " + input.escapedFilePath);
+			if (result.preserveAspectRatio) {
+				var ratio = imageSize.width / imageSize.height;
+				if (finalWidth === null) {
+					finalWidth = Math.round(finalHeight * ratio);
+				} else {
+					finalHeight = Math.round(finalWidth / ratio);
+				}
+			}
+
+			var cmd = "mogrify -resize " + finalWidth + "x" + finalHeight + "! " + input.escapedFilePaths[i];
+			system.exec(cmd);
+		}
 
 		for (var n in result) {
 			if (n == "width" || n == "height") continue;

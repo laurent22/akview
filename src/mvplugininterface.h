@@ -11,7 +11,7 @@ public:
 
 	virtual ~MvPluginInterface() {}
 	virtual void onInitialize(IApplication* application) { Q_UNUSED(application); }
-	virtual void onAction(const QString& action) { Q_UNUSED(action); }
+	virtual void execAction(const QString& action, const QStringList& filePaths) { Q_UNUSED(action); }
 
 };
 

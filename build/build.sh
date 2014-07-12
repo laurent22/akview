@@ -106,7 +106,8 @@ fi
 fn_runAction $ACTION $ROOT_DIR/build-$ACTION $ROOT_DIR/src/MultiViewer.pro
 
 if [ "$LAUNCH_AFTER_BUILD" == "1" ]; then
-	open -a $BUILD_DIR/$(fn_appName $ACTION) "/Users/laurent/Desktop/tilted.jpg"
+	open -a $BUILD_DIR/$(fn_appName $ACTION) "/Users/laurent/Desktop/testone/DSC_01.jpg"
+	# open -a $BUILD_DIR/$(fn_appName $ACTION)
 fi
 
 if [ "$ACTION" == "debugrelease" ]; then

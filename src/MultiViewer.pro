@@ -1,6 +1,6 @@
 TEMPLATE = app
 
-QT += widgets script
+QT += widgets script macextras
 
 CONFIG += precompile_header
 
@@ -41,10 +41,12 @@ HEADERS += \
     jsapi/jsapi_application.h \
     jsapi/jsapi_console.h \
     jsapi/jsapi_fileinfo.h \
+    jsapi/jsapi_imaging.h \
     jsapi/jsapi_input.h \
     jsapi/jsapi_plugin.h \
     jsapi/jsapi_ui.h \
-    jsapi/jsapi_system.h
+    jsapi/jsapi_system.h \
+    batchdialog.h
 	
 SOURCES += main.cpp \
 	action.cpp \
@@ -68,10 +70,12 @@ SOURCES += main.cpp \
     jsapi/jsapi_application.cpp \
     jsapi/jsapi_console.cpp \
     jsapi/jsapi_fileinfo.cpp \
+    jsapi/jsapi_imaging.cpp \
     jsapi/jsapi_input.cpp \
     jsapi/jsapi_plugin.cpp \
     jsapi/jsapi_ui.cpp \
-    jsapi/jsapi_system.cpp
+    jsapi/jsapi_system.cpp \
+    batchdialog.cpp
 
 RESOURCES += resources.qrc
 
@@ -81,4 +85,5 @@ LIBS += /usr/local/Cellar/freeimage/3.15.4/lib/libfreeimage.dylib
 FORMS += \
 	preferencesdialog.ui \
     mainwindow.ui \
-    progressbardialog.ui
+    progressbardialog.ui \
+    batchdialog.ui

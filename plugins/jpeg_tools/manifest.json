@@ -9,6 +9,7 @@
 			"id": "jpeg_auto_rotate",
 			"title": "JPEG lossless auto-rotation",
 			"shortcuts": [ "Ctrl+Shift+R" ],
+			"batch_mode_supported": true,
 			"dependencies": [
 				{ "command": "jhead" },
 				{ "command": "jpegtran", "package": "libjpeg" }

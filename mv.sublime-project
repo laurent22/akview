@@ -12,6 +12,7 @@
 				"build-*",
 				"debug",
 				"release",
+				"_docs",
 				"jhead_lib"
 			]
 		}

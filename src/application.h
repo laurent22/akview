@@ -32,7 +32,7 @@ public:
 	bool actionShortcutIsOverridden(const QString& actionName) const;
 	QKeySequence actionShortcut(const QString& actionName) const;
 	QString shortcutAction(const QKeySequence& shortcut) const;
-	void execAction(const QString& actionName);
+	void execAction(const QString& actionName, const QStringList& filePaths);
 	Action* actionById(const QString& actionId) const;
 	void refreshActionShortcuts();
 	MainWindow* mainWindow() const;
@@ -81,6 +81,7 @@ public slots:
 	QString source() const;
 	void setSource(const QString& source);
 	QStringList supportedFileExtensions() const;
+	QString supportedFilesFilter() const;
 	bool isSupportedFileExtension(const QString& extension) const;
 	bool isSupportedFile(const QString& filePath) const;
 

@@ -1,4 +1,5 @@
 #include "application.h"
+#include "batchdialog.h"
 #include "constants.h"
 #include "exif.h"
 #include "paths.h"
@@ -217,11 +218,26 @@ void Application::setupActions() {
 
 	Action* action = NULL;
 
+	// ===============================================================================================
+	// FILE
+	// ===============================================================================================
+
 	createAction("open_file", tr("Open a file..."), "File", QKeySequence(Qt::CTRL + Qt::Key_O));
 	#ifdef Q_OS_MAC
 	createAction("close_window", tr("Close window"), "File", QKeySequence(Qt::CTRL + Qt::Key_W));
 	#endif
+	createAction("batch_operation", tr("Batch operation..."), "File", QKeySequence(Qt::CTRL + Qt::Key_B));
+
+	// ===============================================================================================
+	// EDIT
+	// ===============================================================================================
+
 	createAction("undo", tr("Undo"), "Edit", QKeySequence("Ctrl+Z"));
+
+	// ===============================================================================================
+	// VIEW
+	// ===============================================================================================
+
 	action = createAction("next", tr("Next"), "View", QKeySequence(Qt::Key_Right), QKeySequence("Num+Right"));
 	action->setIcon(QIcon(":/icon_next.png"));
 	action = createAction("previous", tr("Previous"), "View", QKeySequence(Qt::Key_Left), QKeySequence("Num+Left"));
@@ -235,6 +251,11 @@ void Application::setupActions() {
 	createAction("toggle_console", tr("Toggle console"), "View", QKeySequence(Qt::Key_F12));
 	createAction("toggle_status_bar", tr("Toggle status bar"), "View");
 	createAction("toggle_toolbar", tr("Toggle tool bar"), "View");
+
+	// ===============================================================================================
+	// OTHER
+	// ===============================================================================================
+
 	createAction("close_console", tr("Close console"), "", QKeySequence(Qt::Key_Escape));
 	createAction("about", tr("About"), "Help");
 	createAction("preferences", tr("Preferences"), "Tools");
@@ -477,20 +498,13 @@ void Application::setSource(const QString &source) {
 	onSourceChange();
 }
 
-void Application::execAction(const QString& actionName) {
+void Application::execAction(const QString& actionName, const QStringList& filePaths) {
 	if (actionName == "") return;
 
 	if (actionName == "open_file") {
-		QString filter;
-		QStringList extensions = supportedFileExtensions();
-		for (int i = 0; i < extensions.size(); i++) {
-			QString e = extensions[i];
-			if (filter != "") filter += " ";
-			filter += "*." + e;
-		}
 		Settings settings;
 		QString lastDir = settings.value("lastOpenFileDirectory").toString();
-		QString filePath = QFileDialog::getOpenFileName(NULL, tr("Open File"), lastDir, tr("Supported Files (%1)").arg(filter));
+		QString filePath = QFileDialog::getOpenFileName(NULL, tr("Open File"), lastDir, supportedFilesFilter());
 		if (filePath != "") {
 			browsingDirection_ = Forward;
 			setSource(filePath);
@@ -504,6 +518,13 @@ void Application::execAction(const QString& actionName) {
 			mainWindow_->clearSource();
 			mainWindow_->hide();
 		}
+		return;
+	}
+
+	if (actionName == "batch_operation") {
+		BatchDialog dialog(mainWindow());
+		dialog.setModal(true);
+		dialog.exec();
 		return;
 	}
 
@@ -575,19 +596,19 @@ void Application::execAction(const QString& actionName) {
 		return;
 	}
 
-	pluginManager_->onAction(actionName);
+	pluginManager_->execAction(actionName, filePaths);
 }
 
 void Application::mainWindow_keypressed(QKeyEvent* event) {
 	QKeySequence ks(event->modifiers() + event->key());
 	QString actionName = shortcutAction(ks);
-	execAction(actionName);	
+	execAction(actionName, QStringList() << source());	
 }
 
 void Application::mainWindow_actionTriggered() {
 	Action* action = dynamic_cast<Action*>(sender());
 	QString name = action->id();
-	execAction(name);
+	execAction(name, QStringList() << source());
 }
 
 void Application::onZoomChange() {
@@ -599,7 +620,7 @@ void Application::onSourceChange() {
 	preloadTimer_->stop();
 
 	if (fsWatcher_.files().size()) fsWatcher_.removePaths(fsWatcher_.files());
-	fsWatcher_.addPath(source_);
+	if (source_ != "") fsWatcher_.addPath(source_);
 
 	if (mainWindow_->isHidden()) mainWindow_->show();
 	mainWindow_->resetZoom();
@@ -659,6 +680,17 @@ QStringList Application::supportedFileExtensions() const {
 	QStringList output;
 	output << "jpg" << "jpeg" << "png" << "gif" << "bmp" << "tif" << "tiff";
 	return output;
+}
+
+QString Application::supportedFilesFilter() const {
+	QString filter;
+	QStringList extensions = supportedFileExtensions();
+	for (int i = 0; i < extensions.size(); i++) {
+		QString e = extensions[i];
+		if (filter != "") filter += " ";
+		filter += "*." + e;
+	}
+	return tr("Supported Files (%1)").arg(filter);
 }
 
 bool Application::isSupportedFileExtension(const QString& extension) const {
@@ -797,65 +829,6 @@ QStringList Application::sources() const {
 	return sources(source());
 }
 
-struct naturalSortCompare {
-
-	inline bool isNumber(QChar c) {
-		return c >= '0' && c <= '9';
-	}
-
-	inline bool operator() (const QString& s1, const QString& s2) {
-		if (s1 == "" || s2 == "") return s1 < s2;
-
-		// Move to either the first difference between the strings
-		// or to the first digit.
-		int startIndex = -1;
-		int length = s1.length() > s2.length() ? s2.length() : s1.length();
-		for (int i = 0; i < length; i++) {
-			QChar c1 = s1[i];
-			QChar c2 = s2[i];
-			if (c1 != c2 || (isNumber(c1) && isNumber(c2))) {
-				startIndex = i;
-				break;
-			}
-		}
-
-		// If the strings are the same, exit now.
-		if (startIndex < 0) return s1 < s2;
-
-		// Now extract the numbers, if any, from the two strings.
-		QString sn1;
-		QString sn2;
-		bool done1 = false;
-		bool done2 = false;
-		length = s1.length() < s2.length() ? s2.length() : s1.length();
-		for (int i = startIndex; i < length; i++) {
-			if (!done1 && i < s1.length()) {
-				if (isNumber(s1[i])) {
-					sn1 += QString(s1[i]);
-				} else {
-					done1 = true;
-				}
-			}
-
-			if (!done2 && i < s2.length()) {
-				if (isNumber(s2[i])) {
-					sn2 += QString(s2[i]);
-				} else {
-					done2 = true;
-				}
-			}
-
-			if (done1 && done2) break;
-		}
-
-		// If one of the string doesn't contain a number, use a regular comparison.
-		if (sn1 == "" || sn2 == "") return s1 < s2;
-
-		return sn1.toInt() < sn2.toInt();
-	}
-
-};
-
 QStringList Application::sources(const QString& filePath) const {
 	if (sources_.length()) return sources_;
 
@@ -877,7 +850,7 @@ QStringList Application::sources(const QString& filePath) const {
 		sources_.append(files[i].absoluteFilePath());
 	}
 
-	std::sort(sources_.begin(), sources_.end(), naturalSortCompare());
+	std::sort(sources_.begin(), sources_.end(), stringutil::NaturalSortCompare());
 
 	return sources_;
 }

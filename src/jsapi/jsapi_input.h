@@ -9,7 +9,7 @@ class Input : public QObject {
 	Q_PROPERTY(QString filePath READ filePath)
 	Q_PROPERTY(QString escapedFilePath READ escapedFilePath)
 	Q_PROPERTY(QStringList filePaths READ filePaths)
-	Q_PROPERTY(QString escapedFilePaths READ escapedFilePaths)
+	Q_PROPERTY(QStringList escapedFilePaths READ escapedFilePaths)
 	Q_PROPERTY(QScriptValue selectionRect READ selectionRect)
 	Q_PROPERTY(QScriptValue imageSize READ imageSize)
 
@@ -22,7 +22,7 @@ public slots:
 	QString filePath() const;
 	QString escapedFilePath() const;
 	QStringList filePaths() const;
-	QString escapedFilePaths() const;
+	QStringList escapedFilePaths() const;
 	QScriptValue selectionRect() const;
 	QScriptValue imageSize() const;
 
