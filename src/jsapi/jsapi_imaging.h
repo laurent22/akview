@@ -29,16 +29,14 @@ class Imaging : public QObject {
 public:
 
 	Imaging(QScriptEngine* engine);
-	void freeMemory();
 
 public slots:
 
-	QObject* newImage(const QString& path);
+	QScriptValue newImage(const QString& path);
 
 private:
 
 	QScriptEngine* engine_;
-	std::vector<JsImage*> createdImages_;
 
 };
 

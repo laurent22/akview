@@ -150,7 +150,7 @@ void PluginManager::execAction(const QString& actionName, const QStringList& fil
 			}
 		}
 
-		((jsapi::Imaging*)jsImaging_)->freeMemory();
+		scriptEngine_->collectGarbage();
 
 		return;
 	}
