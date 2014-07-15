@@ -28,14 +28,13 @@ int compareVersions(const QString& v1, const QString& v2) {
 bool NaturalSortCompare::operator() (const QString& s1, const QString& s2) {
 	if (s1 == "" || s2 == "") return s1 < s2;
 
-	// Move to either the first difference between the strings
-	// or to the first digit.
+	// Move to the first difference between the strings
 	int startIndex = -1;
 	int length = s1.length() > s2.length() ? s2.length() : s1.length();
 	for (int i = 0; i < length; i++) {
 		QChar c1 = s1[i];
 		QChar c2 = s2[i];
-		if (c1 != c2 || (isNumber(c1) && isNumber(c2))) {
+		if (c1 != c2) {
 			startIndex = i;
 			break;
 		}
@@ -50,6 +49,7 @@ bool NaturalSortCompare::operator() (const QString& s1, const QString& s2) {
 	bool done1 = false;
 	bool done2 = false;
 	length = s1.length() < s2.length() ? s2.length() : s1.length();
+
 	for (int i = startIndex; i < length; i++) {
 		if (!done1 && i < s1.length()) {
 			if (isNumber(s1[i])) {
@@ -70,8 +70,14 @@ bool NaturalSortCompare::operator() (const QString& s1, const QString& s2) {
 		if (done1 && done2) break;
 	}
 
-	// If one of the string doesn't contain a number, use a regular comparison.
-	if (sn1 == "" || sn2 == "") return s1 < s2;
+	// If none of the string contain a number, use a regular comparison.
+	if (sn1 == "" && sn2 == "") return s1 < s2;
+
+	// If one of the strings doesn't contain a number at that position,
+	// we put the string without number first so that, for example,
+	// "example.bin" is before "example1.bin"
+	if (sn1 == "" && sn2 != "") return true;
+	if (sn1 != "" && sn2 == "") return false;
 
 	return sn1.toInt() < sn2.toInt();
 }
