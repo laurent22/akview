@@ -248,7 +248,7 @@ QObject* Ui::newFormElement(const QString& type, const QString& name, const QStr
 	return dynamic_cast<QObject*>(e);
 }
 
-QString Ui::messageBox(const QString& message, const QString& type) {
+QString Ui::messageBox_(const QString& message, const QString& type) {
 	if (type == "info") {
 		mv::messageBoxes::info(message);
 	} else if (type == "warn" || type == "warning") {
@@ -263,7 +263,27 @@ QString Ui::messageBox(const QString& message, const QString& type) {
 	return "ok";
 }
 
-QScriptValue Ui::form(const QScriptValue& form, const QString& title) {
+QString Ui::messageBox(const QString& message, const QString& type) {
+	// Because scripts are executed from a different thread, GUI
+	// methods need to invoked via QMetaObject::invokeMethod (GUIs can
+	// only be created from the main thread).
+	// ::invokeMethod will push an event, which will be processed as soon
+	// as the application enters the main event loop.
+	// It's called with the Qt::BlockingQueuedConnection parameter so
+	// that scripts can still be written in a synchronous way.
+
+	QString output;
+
+	QMetaObject::invokeMethod(this, "messageBox_", Qt::BlockingQueuedConnection,
+		Q_RETURN_ARG(QString, output),
+		Q_ARG(QString, message),
+		Q_ARG(QString, type)
+	);
+
+	return output;
+}
+
+QScriptValue Ui::form_(const QScriptValue& form, const QString& title) {
 	FormElements formElements;
 	QVariantList elements = form.toVariant().toList();
 	for (int i = 0; i < elements.size(); i++) {
@@ -273,6 +293,7 @@ QScriptValue Ui::form(const QScriptValue& form, const QString& title) {
 
 	FormDialog dialog(formElements);
 	dialog.setWindowTitle(title);
+
 	dialog.setModal(true);
 	int result = dialog.exec();
 
@@ -290,6 +311,18 @@ QScriptValue Ui::form(const QScriptValue& form, const QString& title) {
 		FormElement* e = formElements[i];
 		output.setProperty(e->name(), mv::scriptutil::variantToScriptValue(e->value()));
 	}
+
+	return output;
+}
+
+QScriptValue Ui::form(const QScriptValue& form, const QString& title) {
+	QScriptValue output;
+
+	QMetaObject::invokeMethod(this, "form_", Qt::BlockingQueuedConnection,
+		Q_RETURN_ARG(QScriptValue, output),
+		Q_ARG(QScriptValue, form),
+		Q_ARG(QString, title)
+	);
 
 	return output;
 }

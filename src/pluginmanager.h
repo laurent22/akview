@@ -1,6 +1,7 @@
 #ifndef PLUGINMANAGER_H
 #define PLUGINMANAGER_H
 
+#include "actionthread.h"
 #include "plugin.h"
 
 namespace mv {
@@ -26,10 +27,12 @@ private:
 	QStringList replaceVariables(const QStringList& command);
 	QObject* jsConsole_;
 	QObject* jsImaging_;
+	ActionThread* actionThread_;
 
 public slots:
 
 	void packageManager_installationDone();
+	void actionThread_completed();
 
 };
 

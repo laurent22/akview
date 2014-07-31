@@ -16,6 +16,7 @@ namespace mv {
 
 PluginManager::PluginManager() {
 	scriptEngine_ = NULL;
+	actionThread_ = NULL;
 }
 
 bool PluginManager::loadPlugin(const QString& folderPath) {
@@ -139,21 +140,27 @@ void PluginManager::execAction(const QString& actionName, const QStringList& fil
 		QTextStream stream(&scriptFile);
 		QString contents = stream.readAll();
 		scriptFile.close();
-		scriptEngine_->evaluate(contents, scriptFilePath);
 
-		QScriptValue errorValue = scriptEngine_->uncaughtException();
-		if (errorValue.isValid()) {
-			qWarning() << qPrintable(QString("%1 at line %2").arg(errorValue.toString()).arg(scriptEngine_->uncaughtExceptionLineNumber()));
-			QStringList backtrace = scriptEngine_->uncaughtExceptionBacktrace();
-			for (int i = 0; i < backtrace.size(); i++) {
-				qDebug() << qPrintable("    " + backtrace[i]);
-			}
-		}
-
-		scriptEngine_->collectGarbage();
+		actionThread_ = new ActionThread(scriptEngine_, contents, scriptFilePath);
+		connect(actionThread_, SIGNAL(completed()), this, SLOT(actionThread_completed()));
+		actionThread_->start();
 
 		return;
 	}
+}
+
+void PluginManager::actionThread_completed() {
+	QScriptValue errorValue = scriptEngine_->uncaughtException();
+	if (errorValue.isValid()) {
+		qWarning() << qPrintable(QString("%1 at line %2").arg(errorValue.toString()).arg(scriptEngine_->uncaughtExceptionLineNumber()));
+		QStringList backtrace = scriptEngine_->uncaughtExceptionBacktrace();
+		for (int i = 0; i < backtrace.size(); i++) {
+			qDebug() << qPrintable("    " + backtrace[i]);
+		}
+	}
+
+	delete actionThread_;
+	actionThread_ = NULL;
 }
 
 void PluginManager::packageManager_installationDone() {

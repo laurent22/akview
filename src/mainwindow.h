@@ -142,6 +142,7 @@ public slots:
 	void view_mousePress(QMouseEvent* event);
 	void view_mouseRelease(QMouseEvent* event);
 	void view_mouseDrag(QMouseEvent* event);
+	void consoleLog(const QString& s);
 
 signals:
 

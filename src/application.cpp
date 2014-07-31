@@ -24,13 +24,18 @@ void myMessageHandler(QtMsgType type, const QMessageLogContext&, const QString& 
 	if (!Application::instance()->mainWindow()) {
 		queuedMessages_ << txt;
 	} else {
-		Application::instance()->mainWindow()->console()->log(txt);
+		// The console is populated this way so that log can work from
+		// any thread.
+		QMetaObject::invokeMethod(Application::instance()->mainWindow(), "consoleLog", Qt::QueuedConnection, Q_ARG(QString, txt));
 	}
 
-	// QFile outFile(QDir::homePath() + "/mv.log");
-	// outFile.open(QIODevice::WriteOnly | QIODevice::Append);
-	// QTextStream ts(&outFile);
-	// ts << txt << endl;
+#ifdef QT_DEBUG
+	// Not thread safe - fix?
+	QFile outFile(QDir::homePath() + "/mv.log");
+	outFile.open(QIODevice::WriteOnly | QIODevice::Append);
+	QTextStream ts(&outFile);
+	ts << txt << endl;
+#endif
 }
 
 Application::Application(int &argc, char **argv, int applicationFlags) : QApplication(argc, argv, applicationFlags) {
@@ -110,7 +115,9 @@ void Application::initialize() {
 	mainWindow_->showConsole(true);
 #endif
 
-	for (int i = 0; i < queuedMessages_.size(); i++) mainWindow_->console()->log(queuedMessages_[i]);
+	for (int i = 0; i < queuedMessages_.size(); i++) {
+		QMetaObject::invokeMethod(mainWindow(), "consoleLog", Qt::QueuedConnection, Q_ARG(QString, queuedMessages_[i]));
+	}
 	queuedMessages_.clear();
 }
 

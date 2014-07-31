@@ -16,6 +16,7 @@ equals(AK_IS_DEBUGRELEASE, "1") {
 HEADERS += \
 	action.h \
 	actionlistitemwidget.h \
+	actionthread.h \
 	application.h \
 	consolewidget.h \
 	constants.h \
@@ -51,6 +52,7 @@ HEADERS += \
 SOURCES += main.cpp \
 	action.cpp \
 	actionlistitemwidget.cpp \
+	actionthread.cpp \
 	application.cpp \
 	consolewidget.cpp \
 	exif.cpp \

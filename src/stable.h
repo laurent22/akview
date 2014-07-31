@@ -65,6 +65,7 @@
 #include <QString>
 #include <QStringList>
 #include <QTimer>
+#include <QThread>
 #include <QToolBar>
 #include <QUrl>
 #include <QVariant>

@@ -606,3 +606,7 @@ void MainWindow::updateSelectionDisplay() {
 		selectionRectItem2_->setRect(r);
 	}
 }
+
+void MainWindow::consoleLog(const QString& s) {
+	console()->log(s);
+}

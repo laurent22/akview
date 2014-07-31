@@ -96,6 +96,9 @@ public slots:
 	QObject* newFormElement(const QString& type, const QString& name, const QString& title = "", const QString& description = "");
 	QScriptValue form(const QScriptValue& form, const QString& title = "");
 	QString messageBox(const QString& message, const QString& type = "info");
+	
+	QString messageBox_(const QString& message, const QString& type = "info");
+	QScriptValue form_(const QScriptValue& form, const QString& title);
 
 private:
 
