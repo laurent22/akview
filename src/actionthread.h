@@ -18,10 +18,6 @@ private:
 	QString scriptContent_;
 	QString scriptPath_;
 
-signals:
-
-    void completed();
-
 };
 
 }

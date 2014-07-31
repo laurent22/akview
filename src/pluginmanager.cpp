@@ -65,6 +65,11 @@ QStringList PluginManager::replaceVariables(const QStringList& command) {
 }
 
 void PluginManager::execAction(const QString& actionName, const QStringList& filePaths) {
+	if (actionThread_) {
+		qWarning() << "New actions cannot be executed now as another action is already running.";
+		return;
+	}
+
 	Application* app = Application::instance();
 
 	for (unsigned int i = 0; i < plugins_.size(); i++) {
@@ -142,14 +147,14 @@ void PluginManager::execAction(const QString& actionName, const QStringList& fil
 		scriptFile.close();
 
 		actionThread_ = new ActionThread(scriptEngine_, contents, scriptFilePath);
-		connect(actionThread_, SIGNAL(completed()), this, SLOT(actionThread_completed()));
+		connect(actionThread_, SIGNAL(finished()), this, SLOT(actionThread_finished()));
 		actionThread_->start();
 
 		return;
 	}
 }
 
-void PluginManager::actionThread_completed() {
+void PluginManager::actionThread_finished() {
 	QScriptValue errorValue = scriptEngine_->uncaughtException();
 	if (errorValue.isValid()) {
 		qWarning() << qPrintable(QString("%1 at line %2").arg(errorValue.toString()).arg(scriptEngine_->uncaughtExceptionLineNumber()));

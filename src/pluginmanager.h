@@ -32,7 +32,7 @@ private:
 public slots:
 
 	void packageManager_installationDone();
-	void actionThread_completed();
+	void actionThread_finished();
 
 };
 

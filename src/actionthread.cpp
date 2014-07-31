@@ -12,7 +12,6 @@ void ActionThread::run() {
 	qDebug() << "Running" << scriptPath_;
 	engine_->evaluate(scriptContent_, scriptPath_);
 	engine_->collectGarbage();
-	emit completed();
 }
 
 }
