@@ -11,8 +11,11 @@
 namespace mv {
 
 QStringList queuedMessages_;
+QMutex myMessageHandlerMutex_;
 
 void myMessageHandler(QtMsgType type, const QMessageLogContext&, const QString& msg) {
+	QMutexLocker locker(&myMessageHandlerMutex_);
+
 	QString txt;
 	switch (type) {
 		case QtDebugMsg: txt = QString("%1").arg(msg); break;
@@ -30,7 +33,6 @@ void myMessageHandler(QtMsgType type, const QMessageLogContext&, const QString& 
 	}
 
 #ifdef QT_DEBUG
-	// Not thread safe - fix?
 	QFile outFile(QDir::homePath() + "/mv.log");
 	outFile.open(QIODevice::WriteOnly | QIODevice::Append);
 	QTextStream ts(&outFile);

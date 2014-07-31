@@ -47,6 +47,8 @@
 #include <QMenuBar>
 #include <QMessageBox>
 #include <QMimeData>
+#include <QMutex>
+#include <QMutexLocker>
 #include <QObject>
 #include <QPixmap>
 #include <QPlainTextEdit>
