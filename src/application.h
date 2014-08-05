@@ -38,6 +38,7 @@ public:
 	MainWindow* mainWindow() const;
 	PackageManager* packageManager() const;
 	void refreshMenu(const QString& actionId = "");
+	void refreshStatusBar();
 
 protected:
 
@@ -96,7 +97,7 @@ public slots:
 	QStringList sources() const;
 	QStringList sources(const QString& filePath) const;
 	void refreshSources();
-	void reloadSource() const;
+	void reloadSource();
 	bool runAppleScript(const QString& script);
 	void pushUndoState();
 	void popUndoState();

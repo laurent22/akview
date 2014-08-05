@@ -88,9 +88,11 @@ void Application::initialize() {
 
 	setupActions();
 
-	mainWindow_->setStatusItem("dimensions", "-x-");
-	mainWindow_->setStatusItem("counter", "#-/-");
-	mainWindow_->setStatusItem("zoom", "Zoom: 100%");
+	mainWindow_->setStatusItem("dimensions", "");
+	mainWindow_->setStatusItem("counter", "");
+	mainWindow_->setStatusItem("zoom", "");
+
+	refreshStatusBar();
 
 	mainWindow_->toolbar()->addAction(actionById("zoom_out"));
 	mainWindow_->toolbar()->addAction(actionById("zoom_in"));
@@ -638,14 +640,21 @@ void Application::onSourceChange() {
 	// mainWindow_->setRotation(360 - exif.rotation());
 	mainWindow_->setSource(source_);
 	setWindowTitle(QFileInfo(source_).fileName());
-	QString counter = QString("#%1/%2").arg(sourceIndex() + 1).arg(sources().size());
+	refreshStatusBar();
+
+	preloadTimer_->start();
+}
+
+void Application::refreshStatusBar() {
+	int sourceIndex = this->sourceIndex();
+	QString counter = sourceIndex >= 0 ? QString("#%1/%2").arg(sourceIndex + 1).arg(sources().size()) : "#-/-";
 	mainWindow_->setStatusItem("counter", counter);
 	
 	QPixmap* pixmap = mainWindow_->pixmap();
 	QString sizeString = pixmap ? QString("%1x%2").arg(pixmap->width()).arg(pixmap->height()) : "";
 	mainWindow_->setStatusItem("dimensions", sizeString);
 
-	preloadTimer_->start();
+	onZoomChange();
 }
 
 void Application::saveWindowGeometry() {
@@ -802,8 +811,9 @@ void Application::refreshSources() {
 	sourceIndex_ = -1;
 }
 
-void Application::reloadSource() const {
+void Application::reloadSource() {
 	mainWindow_->reloadSource();
+	refreshStatusBar();
 }
 
 bool Application::runAppleScript(const QString &script) {

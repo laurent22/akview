@@ -17,7 +17,7 @@ public slots:
 	virtual void refreshSources() = 0;
 	virtual void setSourceIndex(int index) = 0;
 	virtual Settings* settings() const = 0;
-	virtual void reloadSource() const = 0;
+	virtual void reloadSource() = 0;
 	virtual bool runAppleScript(const QString& script) = 0;
 
 };
