@@ -32,7 +32,7 @@ public:
 	bool actionShortcutIsOverridden(const QString& actionName) const;
 	QKeySequence actionShortcut(const QString& actionName) const;
 	QString shortcutAction(const QKeySequence& shortcut) const;
-	void execAction(const QString& actionName, const QStringList& filePaths);
+	void execAction(const QString& actionName, const QStringList& filePaths = QStringList());
 	Action* actionById(const QString& actionId) const;
 	void refreshActionShortcuts();
 	MainWindow* mainWindow() const;
@@ -67,6 +67,7 @@ private:
 	void saveWindowGeometry();
 	void loadWindowGeometry();
 	void setupActions();
+	void closeWindowCleanup();
 	QFileSystemWatcher fsWatcher_;
 	mutable PackageManager* packageManager_;
 	QList<QByteArray> undoVector_;
@@ -75,6 +76,7 @@ public slots:
 
 	void mainWindow_keypressed(QKeyEvent* event);
 	void mainWindow_actionTriggered();
+	void mainWindow_closed();
 	void preloadTimer_timeout();
 	void fsWatcher_fileChanged(const QString& path);
 

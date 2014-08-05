@@ -388,12 +388,18 @@ void MainWindow::resizeEvent(QResizeEvent*) {
 	updateDisplayTimer()->start();
 }
 
+void MainWindow::closeEvent(QCloseEvent* event) {
+	emit closed();
+}
+
 void MainWindow::keyPressEvent(QKeyEvent* event) {
 	emit keypressed(event);
 }
 
-void MainWindow::clearSource() {
-	pixmap_ = NULL; // QCache will take care of deleting the object
+void MainWindow::clearSourceAndCache() {
+	source_ = "";
+	pixmap_ = NULL;
+	pixmapCache_.clear();
 	invalidate();
 }
 
@@ -413,7 +419,7 @@ void MainWindow::setSource(const QString& v) {
 	if (source_ == v) return;
 	setRotation(0);
 	source_ = v;
-	pixmap_ = loadSource(source_);
+	pixmap_ = source_ == "" ? NULL : loadSource(source_);
 	clearSelection();
 	invalidate();
 }

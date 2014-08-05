@@ -54,7 +54,6 @@ public:
 	void updateSelectionDisplay();
 	void setSource(const QString& v);
 	QString source() const;
-	void clearSource();
 	void reloadSource();
 	void doLoopAnimation();
 	void setRotation(int v);
@@ -86,6 +85,7 @@ public:
 	bool selectionOn() const;
 	void clearSelection();
 	QToolBar* toolbar() const;
+	void clearSourceAndCache();
 
 protected:
 
@@ -93,6 +93,7 @@ protected:
 	void showEvent(QShowEvent* event);
 	void keyPressEvent(QKeyEvent* event);
 	void paintEvent(QPaintEvent* event);
+	void closeEvent(QCloseEvent* event);
 
 private:
 
@@ -145,6 +146,7 @@ public slots:
 signals:
 
 	void keypressed(QKeyEvent* event);
+	void closed();
 
 };
 

@@ -80,6 +80,7 @@ void Application::initialize() {
 	pluginManager_->loadPlugins(paths.pluginFolder());
 
 	connect(mainWindow_, SIGNAL(keypressed(QKeyEvent*)), this, SLOT(mainWindow_keypressed(QKeyEvent*)));
+	connect(mainWindow_, SIGNAL(closed()), this, SLOT(mainWindow_closed()));
 	connect(&fsWatcher_, SIGNAL(fileChanged(const QString&)), this, SLOT(fsWatcher_fileChanged(const QString&)));
 
 	QStringList filePaths = args.positionalArguments();
@@ -498,6 +499,11 @@ void Application::setSource(const QString &source) {
 	onSourceChange();
 }
 
+void Application::closeWindowCleanup() {
+	setSource("");
+	mainWindow_->clearSourceAndCache();
+}
+
 void Application::execAction(const QString& actionName, const QStringList& filePaths) {
 	if (actionName == "") return;
 
@@ -515,7 +521,7 @@ void Application::execAction(const QString& actionName, const QStringList& fileP
 
 	if (actionName == "close_window") {
 		if (mainWindow_ && !mainWindow_->isHidden()) {
-			mainWindow_->clearSource();
+			closeWindowCleanup();
 			mainWindow_->hide();
 		}
 		return;
@@ -603,6 +609,10 @@ void Application::mainWindow_keypressed(QKeyEvent* event) {
 	QKeySequence ks(event->modifiers() + event->key());
 	QString actionName = shortcutAction(ks);
 	execAction(actionName, QStringList() << source());	
+}
+
+void Application::mainWindow_closed() {
+	closeWindowCleanup();
 }
 
 void Application::mainWindow_actionTriggered() {
