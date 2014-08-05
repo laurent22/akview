@@ -93,7 +93,7 @@ protected:
 	void showEvent(QShowEvent* event);
 	void keyPressEvent(QKeyEvent* event);
 	void paintEvent(QPaintEvent* event);
-	void closeEvent(QCloseEvent* event);
+	void closeEvent(QCloseEvent*);
 
 private:
 

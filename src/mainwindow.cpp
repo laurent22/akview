@@ -388,7 +388,7 @@ void MainWindow::resizeEvent(QResizeEvent*) {
 	updateDisplayTimer()->start();
 }
 
-void MainWindow::closeEvent(QCloseEvent* event) {
+void MainWindow::closeEvent(QCloseEvent*) {
 	emit closed();
 }
 
