@@ -74,6 +74,8 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
 	selectionInvalidated_ = true;
 	autoFit_ = true;
 	loopAnimationPlaying_ = false;
+	progressBarCancelButton_ = NULL;
+	progressBar_ = NULL;
 	selectionP1_ = QPoint(0,0);
 	selectionP2_ = QPoint(0,0);
 
@@ -100,6 +102,8 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
 	noZoomIndex_ = zoomIndex_;
 
 	ui->setupUi(this);
+
+	statusBar()->layout()->setSpacing(0);
 
 	scene_ = new QGraphicsScene(this);
 	scene_->setBackgroundBrush(QBrush(Qt::black));
@@ -161,8 +165,60 @@ MainWindow::~MainWindow() {
 	delete ui;
 }
 
+void MainWindow::onActionStart() {
+	if (!progressBar_) {
+		progressBar_ = new QProgressBar(this);
+		progressBar_->setValue(0);
+		progressBar_->setMinimum(0);
+		progressBar_->setMaximum(0);
+		progressBar_->setMaximumWidth(100);
+		statusBar()->addPermanentWidget(progressBar_);
+	}
+
+	if (!progressBarCancelButton_) {
+		progressBarCancelButton_ = new QLabel(this);
+		progressBarCancelButton_->setText("<a href=\"#\">" + tr("Cancel") + "</a>");
+		progressBarCancelButton_->setTextFormat(Qt::RichText);
+		statusBar()->addPermanentWidget(progressBarCancelButton_);
+		connect(progressBarCancelButton_, SIGNAL(linkActivated(const QString&)), this, SLOT(progressBarCancelButton_linkActivated(const QString&)));
+	}
+
+
+	//setEnabled(false);
+	// menuBar()->setEnabled(false);
+	progressBarCancelButton_->show();
+	progressBar_->show();
+}
+
+void MainWindow::onActionStop() {
+	//setEnabled(true);
+	// menuBar()->setEnabled(true);
+	if (progressBarCancelButton_) progressBarCancelButton_->hide();
+	if (progressBar_) progressBar_->hide();
+}
+
 QToolBar* MainWindow::toolbar() const {
 	return toolbar_;
+}
+
+void MainWindow::progressBarCancelButton_linkActivated(const QString&) {
+	emit cancelButtonClicked();
+}
+
+void MainWindow::showProgressBar(bool doShow) {
+	if (doShow) {
+		progressBar_->show();
+	} else {
+		progressBar_->hide();
+	}
+}
+
+void MainWindow::showProgressBarCancelButton(bool doShow) {
+	if (doShow) {
+		progressBarCancelButton_->show();
+	} else {
+		progressBarCancelButton_->hide();
+	}
 }
 
 void MainWindow::clearSelection() {

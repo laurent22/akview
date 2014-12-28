@@ -8,6 +8,8 @@
 BatchDialog::BatchDialog(QWidget *parent) : QDialog(parent), ui(new Ui::BatchDialog) {
 	ui->setupUi(this);
 
+	firstShow_ = true;
+
 	ui->fileListWidget->setSelectionMode(QAbstractItemView::ExtendedSelection);
 
 	connect(ui->addFilesButton, SIGNAL(clicked()), this, SLOT(addFilesButton_clicked()));
@@ -28,6 +30,15 @@ BatchDialog::BatchDialog(QWidget *parent) : QDialog(parent), ui(new Ui::BatchDia
 
 BatchDialog::~BatchDialog() {
 	delete ui;
+}
+
+void BatchDialog::showEvent(QShowEvent* event) {
+	QDialog::showEvent(event);
+
+	if (firstShow_) {
+		firstShow_ = false;
+		QTimer::singleShot(500, this, SLOT(addFilesButton_clicked()));
+	}
 }
 
 void BatchDialog::buttonBox_accepted() {

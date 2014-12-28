@@ -54,6 +54,7 @@
 #include <QPlainTextEdit>
 #include <QPluginLoader>
 #include <QProcess>
+#include <QProgressBar>
 #include <QPushButton>
 #include <QRect>
 #include <QScriptEngine>
@@ -64,6 +65,7 @@
 #include <QShowEvent>
 #include <QSpinBox>
 #include <QSplitter>
+#include <QStatusBar>
 #include <QString>
 #include <QStringList>
 #include <QTimer>

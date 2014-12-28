@@ -3,6 +3,7 @@
 
 #include "actionthread.h"
 #include "plugin.h"
+#include "progressbardialog.h"
 
 namespace mv {
 
@@ -27,12 +28,15 @@ private:
 	QStringList replaceVariables(const QStringList& command);
 	QObject* jsConsole_;
 	QObject* jsImaging_;
+	QObject* jsSystem_;
 	ActionThread* actionThread_;
+	bool canceling_;
 
 public slots:
 
 	void packageManager_installationDone();
 	void actionThread_finished();
+	void mainWindow_cancelButtonClicked();
 
 };
 

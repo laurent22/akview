@@ -14,4 +14,9 @@ void ActionThread::run() {
 	engine_->collectGarbage();
 }
 
+void ActionThread::quit() {
+	engine_->abortEvaluation();
+	QThread::quit();
+}
+
 }

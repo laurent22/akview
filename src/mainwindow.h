@@ -86,6 +86,10 @@ public:
 	void clearSelection();
 	QToolBar* toolbar() const;
 	void clearSourceAndCache();
+	void showProgressBar(bool doShow);
+	void showProgressBarCancelButton(bool doShow);
+	void onActionStart();
+	void onActionStop();
 
 protected:
 
@@ -133,6 +137,8 @@ private:
 	QPoint selectionP1_;
 	QPoint selectionP2_;
 	QToolBar* toolbar_;
+	QProgressBar* progressBar_;
+	QLabel* progressBarCancelButton_;
 
 public slots:
 
@@ -142,12 +148,15 @@ public slots:
 	void view_mousePress(QMouseEvent* event);
 	void view_mouseRelease(QMouseEvent* event);
 	void view_mouseDrag(QMouseEvent* event);
+	void progressBarCancelButton_linkActivated(const QString&);
+
 	void consoleLog(const QString& s);
 
 signals:
 
 	void keypressed(QKeyEvent* event);
 	void closed();
+	void cancelButtonClicked();
 
 };
 

@@ -17,6 +17,10 @@ namespace mv {
 PluginManager::PluginManager() {
 	scriptEngine_ = NULL;
 	actionThread_ = NULL;
+	jsConsole_ = NULL;
+	jsImaging_ = NULL;
+	jsSystem_ = NULL;
+	canceling_ = false;
 }
 
 bool PluginManager::loadPlugin(const QString& folderPath) {
@@ -112,13 +116,13 @@ void PluginManager::execAction(const QString& actionName, const QStringList& fil
 			QObject* jsFileInfo = new jsapi::FileInfo();
 			jsImaging_ = new jsapi::Imaging(scriptEngine_);
 			QObject* jsUi = new jsapi::Ui(scriptEngine_);
-			QObject* jsSystem = new jsapi::System(scriptEngine_);
+			jsSystem_ = new jsapi::System(scriptEngine_);
 			scriptEngine_->globalObject().setProperty("application", scriptEngine_->newQObject(jsApplication));
 			scriptEngine_->globalObject().setProperty("console", scriptEngine_->newQObject(jsConsole_));
 			scriptEngine_->globalObject().setProperty("fileinfo", scriptEngine_->newQObject(jsFileInfo));
 			scriptEngine_->globalObject().setProperty("imaging", scriptEngine_->newQObject(jsImaging_));
 			scriptEngine_->globalObject().setProperty("ui", scriptEngine_->newQObject(jsUi));
-			scriptEngine_->globalObject().setProperty("system", scriptEngine_->newQObject(jsSystem));
+			scriptEngine_->globalObject().setProperty("system", scriptEngine_->newQObject(jsSystem_));
 		}
 
 		jsapi::Console* c = (jsapi::Console*)jsConsole_;
@@ -142,9 +146,16 @@ void PluginManager::execAction(const QString& actionName, const QStringList& fil
 			return;
 		}
 
+		((jsapi::System*)jsSystem_)->resetState();
+
 		QTextStream stream(&scriptFile);
 		QString contents = stream.readAll();
 		scriptFile.close();
+
+		// TOOD: also gray out image to show that app is disabled
+
+		connect(app->mainWindow(), SIGNAL(cancelButtonClicked()), this, SLOT(mainWindow_cancelButtonClicked()), Qt::UniqueConnection);
+		app->mainWindow()->onActionStart();
 
 		actionThread_ = new ActionThread(scriptEngine_, contents, scriptFilePath);
 		connect(actionThread_, SIGNAL(finished()), this, SLOT(actionThread_finished()));
@@ -164,8 +175,24 @@ void PluginManager::actionThread_finished() {
 		}
 	}
 
+	Application* app = Application::instance();
+	disconnect(app->mainWindow(), SIGNAL(cancelButtonClicked()), this, SLOT(mainWindow_cancelButtonClicked()));
+	app->mainWindow()->onActionStop();
+
 	delete actionThread_;
 	actionThread_ = NULL;
+}
+
+void PluginManager::mainWindow_cancelButtonClicked() {
+	if (!actionThread_) return;
+	if (canceling_) return;
+
+	canceling_ = true;
+
+	if (jsSystem_) ((jsapi::System*)jsSystem_)->onScriptAbort();
+	if (actionThread_) actionThread_->quit();
+
+	canceling_ = false;
 }
 
 void PluginManager::packageManager_installationDone() {

@@ -15,11 +15,16 @@ public:
 	explicit BatchDialog(QWidget *parent = 0);
 	~BatchDialog();
 
+protected:
+
+	void showEvent(QShowEvent* event);
+
 private:
 
 	Ui::BatchDialog *ui;
 	void updateButtons();
 	QStringList addedFilePaths() const;
+	bool firstShow_;
 
 public slots:
 

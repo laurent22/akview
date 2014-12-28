@@ -11,6 +11,7 @@ public:
 
 	ActionThread(QScriptEngine* engine, const QString& scriptContent, const QString& scriptPath);
 	void run();
+	void quit();
 
 private:
 
