@@ -130,18 +130,20 @@ if [ "$ACTION" == "release" ] || [ "$ACTION" == "debugrelease" ]; then
 fi
 fn_runAction $ACTION $ROOT_DIR/build-$ACTION $ROOT_DIR/src/MultiViewer.pro
 
-# if [ "$LAUNCH_AFTER_BUILD" == "1" ]; then
-# 	# rm ~/Desktop/test\ -\ copie/*\~
-# 	# rsync -a --size-only ~/Desktop/test/ ~/Desktop/test\ -\ copie/
+if [ "$LAUNCH_AFTER_BUILD" == "1" ]; then
+	# rm ~/Desktop/test\ -\ copie/*\~
+	# rsync -a --size-only ~/Desktop/test/ ~/Desktop/test\ -\ copie/
 
-# 	# open -a $BUILD_DIR/$(fn_appName $ACTION) "/Users/laurent/Docs/Photos/_afaire/Telephone/100ANDRO/DSC_2077.jpg"
-# 	# open -a $BUILD_DIR/$(fn_appName $ACTION)
-# 	# open -a $BUILD_DIR/$(fn_appName $ACTION) "/Users/laurent/Desktop/sort/DSC_2.jpg"
-# 	# open -a $BUILD_DIR/$(fn_appName $ACTION)
-# fi
+	# open -a $BUILD_DIR/$(fn_appName $ACTION) "/Users/laurent/Docs/Photos/_afaire/Telephone/100ANDRO/DSC_2077.jpg"
+	# open -a $BUILD_DIR/$(fn_appName $ACTION)
+	# open -a $BUILD_DIR/$(fn_appName $ACTION) "/Users/laurent/Desktop/sort/DSC_2.jpg"
+	# open -a $BUILD_DIR/$(fn_appName $ACTION)
 
-if [ "$ACTION" == "debugrelease" ]; then
-	rm -rf $BUILD_DIR/../$(fn_appName $ACTION)
-	mv $BUILD_DIR/$(fn_appName $ACTION) $BUILD_DIR/../
-	open $BUILD_DIR/../
+	$BUILD_DIR/$(fn_appName $ACTION)
 fi
+
+# if [ "$ACTION" == "debugrelease" ]; then
+# 	rm -rf $BUILD_DIR/../$(fn_appName $ACTION)
+# 	mv $BUILD_DIR/$(fn_appName $ACTION) $BUILD_DIR/../
+# 	open $BUILD_DIR/../
+# fi

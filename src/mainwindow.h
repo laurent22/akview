@@ -86,6 +86,7 @@ public:
 	void clearSelection();
 	QToolBar* toolbar() const;
 	void clearSourceAndCache();
+	QMenuBar* menubar();
 
 protected:
 
@@ -102,7 +103,7 @@ private:
 	QSize viewContainerSize() const;
 	QPoint mapViewToPixmapItem(const QPoint& point) const;
 	QRectF mapPixmapItemToView(const QRect& rect) const;
-	
+
 	Ui::MainWindow *ui;
 	QGraphicsPixmapItem* pixmapItem_;
 	QGraphicsScene* scene_;
