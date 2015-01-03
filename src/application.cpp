@@ -226,10 +226,12 @@ void Application::setupActions() {
 	// ===============================================================================================
 
 	createAction("open_file", tr("Open a file..."), "File", QKeySequence(Qt::CTRL + Qt::Key_O));
+	createAction("batch_operation", tr("Batch operation..."), "File", QKeySequence(Qt::CTRL + Qt::Key_B));
 	#ifdef Q_OS_MAC
 	createAction("close_window", tr("Close window"), "File", QKeySequence(Qt::CTRL + Qt::Key_W));
+	#else
+	createAction("quit", tr("Quit"), "File", QKeySequence(Qt::CTRL + Qt::Key_Q));
 	#endif
-	createAction("batch_operation", tr("Batch operation..."), "File", QKeySequence(Qt::CTRL + Qt::Key_B));
 
 	// ===============================================================================================
 	// EDIT
@@ -526,6 +528,11 @@ void Application::execAction(const QString& actionName, const QStringList& fileP
 			closeWindowCleanup();
 			mainWindow_->hide();
 		}
+		return;
+	}
+
+	if (actionName == "quit") {
+		quit();
 		return;
 	}
 
