@@ -15,9 +15,13 @@ QString Paths::pluginFolder() const {
 	QString appFilePath = qApp->applicationFilePath();
 	QDir dir = QFileInfo(appFilePath).dir();
 
+#ifdef Q_OS_LINUX
+	return QDir::homePath() + "/.config/akview/plugins";
+#endif
+
 #ifdef QT_DEBUG
 	return QDir::homePath() + "/.config/akview/plugins";
-#else // QT_DEBUG
+#endif // QT_DEBUG
 
 #ifdef MV_DEBUG
 	if (appFilePath.indexOf(".app/Contents/MacOS/") >= 0) {
@@ -34,8 +38,6 @@ QString Paths::pluginFolder() const {
 		dir.cd("PlugIns/multiviewer");
 	}
 #endif // MV_DEBUG
-
-#endif // QT_DEBUG
 
 	return dir.absolutePath();
 }
