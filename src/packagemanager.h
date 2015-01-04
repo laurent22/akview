@@ -53,6 +53,7 @@ private:
 	mutable QStringList installedCommands_;
 	ProgressBarDialog* progressBarDialog_;
 	QProcess* installProcess_;
+	QProcessEnvironment* installProcessEnv_;
 
 public slots:
 

@@ -144,10 +144,8 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
 	console_->hide();
 	connect(splitter_, SIGNAL(splitterMoved(int, int)), this, SLOT(splitter_splitterMoved(int, int)));
 
-	toolbar_ = new QToolBar(this);
-	toolbar_->setStyleSheet("QToolButton:hover { background-color: rgba(0, 0, 0, 10%); } QToolButton:!hover { color: rgba(0, 0, 0, 0%); }");
+	toolbar()->setStyleSheet("QToolButton:hover { background-color: rgba(0, 0, 0, 10%); } QToolButton:!hover { color: rgba(0, 0, 0, 0%); }");
 
-	ui->centralwidget->layout()->addWidget(toolbar_);
 	ui->centralwidget->layout()->addWidget(splitter_);
 
 	connect(view_, SIGNAL(mousePress(QMouseEvent*)), this, SLOT(view_mousePress(QMouseEvent*)));
@@ -198,7 +196,7 @@ void MainWindow::onActionStop() {
 }
 
 QToolBar* MainWindow::toolbar() const {
-	return toolbar_;
+	return ui->mainToolbar;
 }
 
 void MainWindow::progressBarCancelButton_linkActivated(const QString&) {
@@ -360,11 +358,11 @@ void MainWindow::setStatusItem(const QString& name, const QString& value) {
 	if (statusLabels_.find(name) == statusLabels_.end()) {
 		label = new QLabel(this);
 		statusBar()->insertPermanentWidget(0, label);
-		statusLabels_[name] = label;	
+		statusLabels_[name] = label;
 	} else {
 		label = statusLabels_[name];
 	}
-	
+
 	label->setText(" " + value + " ");
 }
 
@@ -558,7 +556,7 @@ void MainWindow::resetZoom() {
 }
 
 void MainWindow::zoomIn() {
-	setZoomIndex(zoomIndex_ + 1);	
+	setZoomIndex(zoomIndex_ + 1);
 }
 
 void MainWindow::zoomOut() {
@@ -604,9 +602,9 @@ void MainWindow::updateDisplay(int renderingType) {
 	invalidated_ = false;
 
 	QSize winSize = viewContainerSize();
-	
+
 	if (winSize.width() <= 0 || winSize.height() <= 0) return;
-	
+
 	if (!pixmap_) {
 		pixmapItem_->setPixmap(QPixmap());
 	} else {
@@ -621,7 +619,7 @@ void MainWindow::updateDisplay(int renderingType) {
 
 		// If we're not trying to fit the photo within the view, we apply the user supplied zoom
 		if (!autoFit_) zoom = zoom * this->zoom();
-		
+
 		// If autoFit, we use a nicely scaled pixmap. If not, scaling is done
 		// via QGraphicsItem (no smoothing).
 		QPixmap drawnPixmap = autoFit_ ? pixmap_->scaled(zoom * (float)pixmapWidth, zoom * (float)pixmapHeight, Qt::KeepAspectRatio, renderingType == QuickRendering ? Qt::FastTransformation : Qt::SmoothTransformation) : *pixmap_;

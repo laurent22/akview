@@ -1,6 +1,10 @@
 TEMPLATE = app
 
-QT += widgets script macextras
+QT += widgets script
+
+macx {
+	QT += macextras
+}
 
 CONFIG += precompile_header
 
@@ -48,7 +52,7 @@ HEADERS += \
     jsapi/jsapi_ui.h \
     jsapi/jsapi_system.h \
     batchdialog.h
-	
+
 SOURCES += main.cpp \
 	action.cpp \
 	actionlistitemwidget.cpp \
@@ -81,8 +85,15 @@ SOURCES += main.cpp \
 
 RESOURCES += resources.qrc
 
-INCLUDEPATH += "/usr/local/Cellar/freeimage/3.15.4/include"
-LIBS += /usr/local/Cellar/freeimage/3.15.4/lib/libfreeimage.dylib
+macx {
+	INCLUDEPATH += "/usr/local/Cellar/freeimage/3.15.4/include"
+	LIBS += /usr/local/Cellar/freeimage/3.15.4/lib/libfreeimage.dylib
+}
+
+unix {
+	INCLUDEPATH += /usr/include
+	LIBS += /usr/lib/libfreeimage.so
+}
 
 FORMS += \
 	preferencesdialog.ui \

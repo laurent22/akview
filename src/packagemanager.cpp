@@ -37,12 +37,15 @@ QString Manager::command() const {
 PackageManager::PackageManager() {
 	progressBarDialog_ = NULL;
 	installProcess_ = NULL;
+	installProcessEnv_ = NULL;
 	managers_.push_back(new Manager(1, "Homebrew", "http://brew.sh", "brew", QStringList() << "brew" << "install" << "__PACKAGE__"));
+	// TODO: check that gksudo is installed
+	managers_.push_back(new Manager(2, "APT", "https://wiki.debian.org/Apt", "apt-get", QStringList() << "gksudo" << "--" << "apt-get" << "-q" << "-y" << "install" << "__PACKAGE__"));
 	selectedManagerId_ = 0;
 }
 
 PackageManager::~PackageManager() {
-	
+
 }
 
 void PackageManager::progressBarDialog_rejected() {
@@ -56,6 +59,8 @@ void PackageManager::progressBarDialog_rejected() {
 
 	delete installProcess_;
 	installProcess_ = NULL;
+	delete installProcessEnv_;
+	installProcessEnv_ = NULL;
 }
 
 bool PackageManager::installationInProgress() const {
@@ -121,7 +126,9 @@ void PackageManager::process_finished(int, QProcess::ExitStatus) {
 	progressBarDialog_ = NULL;
 	delete installProcess_;
 	installProcess_ = NULL;
-	
+	delete installProcessEnv_;
+	installProcessEnv_ = NULL;
+
 	emit installationDone();
 }
 
@@ -149,7 +156,12 @@ void PackageManager::install(const QStringList& packages) {
 
 	qDebug() << qPrintable("$ " + command.join(" "));
 
+	QProcessEnvironment sysEnv = QProcessEnvironment::systemEnvironment();
+	installProcessEnv_ = new QProcessEnvironment(sysEnv);
+	installProcessEnv_->insert("DEBIAN_FRONTEND", "noninteractive"); // NOT working
+
 	installProcess_ = new QProcess();
+	installProcess_->setProcessEnvironment(*installProcessEnv_);
 	connect(installProcess_, SIGNAL(readyReadStandardError()), this, SLOT(process_readyReadStandardError()));
 	connect(installProcess_, SIGNAL(readyReadStandardOutput()), this, SLOT(process_readyReadStandardOutput()));
 	connect(installProcess_, SIGNAL(finished(int, QProcess::ExitStatus)), this, SLOT(process_finished(int, QProcess::ExitStatus)));

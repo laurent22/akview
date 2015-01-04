@@ -90,6 +90,7 @@ public:
 	void showProgressBarCancelButton(bool doShow);
 	void onActionStart();
 	void onActionStop();
+	QMenuBar* menubar();
 
 protected:
 
@@ -106,7 +107,7 @@ private:
 	QSize viewContainerSize() const;
 	QPoint mapViewToPixmapItem(const QPoint& point) const;
 	QRectF mapPixmapItemToView(const QRect& rect) const;
-	
+
 	Ui::MainWindow *ui;
 	QGraphicsPixmapItem* pixmapItem_;
 	QGraphicsScene* scene_;

@@ -235,10 +235,12 @@ void Application::setupActions() {
 	// ===============================================================================================
 
 	createAction("open_file", tr("Open a file..."), "File", QKeySequence(Qt::CTRL + Qt::Key_O));
+	createAction("batch_operation", tr("Batch operation..."), "File", QKeySequence(Qt::CTRL + Qt::Key_B));
 	#ifdef Q_OS_MAC
 	createAction("close_window", tr("Close window"), "File", QKeySequence(Qt::CTRL + Qt::Key_W));
+	#else
+	createAction("quit", tr("Quit"), "File", QKeySequence(Qt::CTRL + Qt::Key_Q));
 	#endif
-	createAction("batch_operation", tr("Batch operation..."), "File", QKeySequence(Qt::CTRL + Qt::Key_B));
 
 	// ===============================================================================================
 	// EDIT
@@ -281,7 +283,7 @@ void Application::setupActions() {
 		}
 	}
 
-	menuBar_ = new QMenuBar(mainWindow_);
+	menuBar_ = mainWindow_->menubar();
 
 	for (int i = 0; i < menuOrder.size(); i++) {
 		menuBar_->addMenu(menus_[menuOrder[i]]);
@@ -538,6 +540,11 @@ void Application::execAction(const QString& actionName, const QStringList& fileP
 		return;
 	}
 
+	if (actionName == "quit") {
+		quit();
+		return;
+	}
+
 	if (actionName == "batch_operation") {
 		BatchDialog dialog(mainWindow());
 		dialog.setModal(true);
@@ -619,7 +626,7 @@ void Application::execAction(const QString& actionName, const QStringList& fileP
 void Application::mainWindow_keypressed(QKeyEvent* event) {
 	QKeySequence ks(event->modifiers() + event->key());
 	QString actionName = shortcutAction(ks);
-	execAction(actionName, QStringList() << source());	
+	execAction(actionName, QStringList() << source());
 }
 
 void Application::mainWindow_closed() {
@@ -658,7 +665,7 @@ void Application::refreshStatusBar() {
 	int sourceIndex = this->sourceIndex();
 	QString counter = sourceIndex >= 0 ? QString("#%1/%2").arg(sourceIndex + 1).arg(sources().size()) : "#-/-";
 	mainWindow_->setStatusItem("counter", counter);
-	
+
 	QPixmap* pixmap = mainWindow_->pixmap();
 	QString sizeString = pixmap ? QString("%1x%2").arg(pixmap->width()).arg(pixmap->height()) : "";
 	mainWindow_->setStatusItem("dimensions", sizeString);

@@ -8,7 +8,10 @@
 			"id": "move_to_trash",
 			"title": "Move file to trash",
 			"shortcuts": [ "Delete" ],
-			"osx_shortcuts": [ "Ctrl + Backspace" ]
+			"osx_shortcuts": [ "Ctrl + Backspace" ],
+			"linux_dependencies": [
+				{ "command": "trash", "package": "trash-cli" }
+			]
 		}
 	]
 }

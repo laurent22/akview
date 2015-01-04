@@ -17,6 +17,10 @@
 			"win_dependencies": [
 				{ "command": "jhead" },
 				{ "command": "jpegtran" }
+			],
+			"linux_dependencies": [
+				{ "command": "jhead" },
+				{ "command": "jpegtran", "package": "libjpeg-progs" }
 			]
 		},
 		{

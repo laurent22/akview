@@ -21,29 +21,29 @@
 	[
 		{
 			"name": "Run Debug",
-			"working_dir": "/Users/laurent/Docs/PROGS/C++/mv",
-			"cmd": ["/Users/laurent/Docs/PROGS/C++/mv/build/build.sh", "debug", "1"],
+			"working_dir": "/home/laurent/Docs/PROGS/C++/mv",
+			"cmd": ["/home/laurent/Docs/PROGS/C++/mv/build/build.sh", "debug", "1"],
 			"file_regex": "^../([^:]+):([^:]+):([^:]+):\\s[a-z]+:\\s(.*)$"
 		},
 		{
 			"name": "Build Debug-Release",
-			"working_dir": "/Users/laurent/Docs/PROGS/C++/mv",
-			"cmd": ["/Users/laurent/Docs/PROGS/C++/mv/build/build.sh", "debugrelease"],
+			"working_dir": "/home/laurent/Docs/PROGS/C++/mv",
+			"cmd": ["/home/laurent/Docs/PROGS/C++/mv/build/build.sh", "debugrelease"],
 			"file_regex": "^../([^:]+):([^:]+):([^:]+):\\s[a-z]+:\\s(.*)$"
 		},
 		{
 			"name": "Run Release",
-			"working_dir": "/Users/laurent/Docs/PROGS/C++/mv",
-			"cmd": ["/Users/laurent/Docs/PROGS/C++/mv/build/build.sh", "release", "1"],
+			"working_dir": "/home/laurent/Docs/PROGS/C++/mv",
+			"cmd": ["/home/laurent/Docs/PROGS/C++/mv/build/build.sh", "release", "1"],
 			"file_regex": "^../([^:]+):([^:]+):([^:]+):\\s[a-z]+:\\s(.*)$"
 		},
 		{
 			"name": "Clean Debug",
-			"cmd": ["/Users/laurent/Docs/PROGS/C++/mv/build/build.sh", "clean-debug"]
+			"cmd": ["/home/laurent/Docs/PROGS/C++/mv/build/build.sh", "clean-debug"]
 		},
 		{
 			"name": "Clean Release",
-			"cmd": ["/Users/laurent/Docs/PROGS/C++/mv/build/build.sh", "clean-release"]
+			"cmd": ["/home/laurent/Docs/PROGS/C++/mv/build/build.sh", "clean-release"]
 		}
 	]
 }
