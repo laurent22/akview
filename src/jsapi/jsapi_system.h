@@ -29,6 +29,7 @@ private:
 	QScriptValue buildExecResponse(int exitCode, int exitStatus, QString stdout, QString stderr) const;
 	QProcess* execProcess_;
 	bool scriptAborting_;
+	QMutex scriptAbortMutex_;
 
 };
 

@@ -44,6 +44,8 @@ QScriptValue System::exec(const QString& program, const QStringList& args) {
 }
 
 void System::execProcess_finished(int, QProcess::ExitStatus) {
+	QMutexLocker locker(&scriptAbortMutex_);
+
 	if (execProcess_) {
 		delete execProcess_;
 		execProcess_ = NULL;
@@ -88,15 +90,24 @@ QString System::os() const {
 }
 
 void System::onScriptAbort() {
+	QMutexLocker locker(&scriptAbortMutex_);
+
 	if (execProcess_) {
 		scriptAborting_ = true;
 		QString s = QString("Terminating: %1").arg(execProcess_->program());
 		if (execProcess_->arguments().size()) s += QString(" %1").arg(execProcess_->arguments().join(" "));
 		qDebug() << qPrintable(s);
 		execProcess_->terminate();
-		execProcess_->waitForFinished(300);
-		execProcess_->kill();
-		execProcess_->waitForFinished(1000);
+
+		// TODO: there is no guarantee that the process has actually been terminated.
+		// Maybe kill() should be called right away? The checks below don't work
+		// properly has execProcess_ might be deleted when they happen.
+
+		// At any point below, `execProcess_finished()` might be called, which
+		// will destroy execProcess_ and set it to NULL.
+		// if (execProcess_) execProcess_->waitForFinished(300);
+		// if (execProcess_) execProcess_->kill();
+		// if (execProcess_) execProcess_->waitForFinished(1000);
 		scriptAborting_ = false;
 	}
 }
