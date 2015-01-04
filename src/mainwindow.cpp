@@ -199,6 +199,10 @@ QToolBar* MainWindow::toolbar() const {
 	return ui->mainToolbar;
 }
 
+QMenuBar* MainWindow::menubar() {
+	return ui->mainMenuBar;
+}
+
 void MainWindow::progressBarCancelButton_linkActivated(const QString&) {
 	emit cancelButtonClicked();
 }
